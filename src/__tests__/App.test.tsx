@@ -25,8 +25,9 @@ describe('App', () => {
     const user = userEvent.setup()
     render(<App />)
     await user.click(screen.getByText('Start Game'))
-    expect(screen.getByText('Game Screen')).toBeInTheDocument()
-    expect(screen.getByText('Back to Config')).toBeInTheDocument()
+    // GameScreen renders with SETUP phase — shows turn indicator and quit button
+    expect(screen.getByText('Choose a starting word')).toBeInTheDocument()
+    expect(screen.getByText('Quit')).toBeInTheDocument()
   })
 
   it('shows loading state when dictionary status is loading', () => {
