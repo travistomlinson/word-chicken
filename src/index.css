@@ -1,1 +1,11 @@
-/* placeholder */
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;700&display=swap');
+
+@theme {
+  --color-corbusier-red: #d0021b;
+  --color-corbusier-blue: #003f91;
+  --color-corbusier-yellow: #f5a623;
+  --color-concrete: #f2f0eb;
+  --color-charcoal: #3a3a3a;
+  --font-jost: 'Jost', sans-serif;
+}
