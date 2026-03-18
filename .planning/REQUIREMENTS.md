@@ -55,12 +55,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Game UI
 
-- [ ] **UI-01**: Current word displayed prominently, updated each turn
+- [x] **UI-01**: Current word displayed prominently, updated each turn
 - [ ] **UI-02**: Player's 9-tile hand displayed as clickable/tappable tiles
-- [ ] **UI-03**: Clear turn indicator showing whose turn it is (player vs AI)
+- [x] **UI-03**: Clear turn indicator showing whose turn it is (player vs AI)
 - [ ] **UI-04**: Game over screen with win/loss result, score summary, and "play again" option
-- [ ] **UI-05**: Word history display showing the sequence of words and who played each turn
-- [ ] **UI-06**: Tension ramp visualization ("chicken-o-meter") showing escalating pressure as the word grows
+- [x] **UI-05**: Word history display showing the sequence of words and who played each turn
+- [x] **UI-06**: Tension ramp visualization ("chicken-o-meter") showing escalating pressure as the word grows
 - [ ] **UI-07**: Round start and round end transitions are visually clear
 
 ### Configuration
@@ -146,12 +146,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AI-07 | Phase 3 | Complete |
 | SCOR-03 | Phase 4 | Complete |
 | SCOR-04 | Phase 4 | Complete |
-| UI-01 | Phase 4 | Pending |
+| UI-01 | Phase 4 | Complete |
 | UI-02 | Phase 4 | Pending |
-| UI-03 | Phase 4 | Pending |
+| UI-03 | Phase 4 | Complete |
 | UI-04 | Phase 4 | Pending |
-| UI-05 | Phase 4 | Pending |
-| UI-06 | Phase 4 | Pending |
+| UI-05 | Phase 4 | Complete |
+| UI-06 | Phase 4 | Complete |
 | UI-07 | Phase 4 | Pending |
 | CONF-01 | Phase 4 | Complete |
 | CONF-02 | Phase 4 | Complete |
