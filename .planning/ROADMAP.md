@@ -78,13 +78,13 @@ Plans:
   4. The word history shows the sequence of words played and which player played each one
   5. After a game ends, the player sees win/loss result, round scores, and can start a new game without refreshing the page
   6. The layout is usable on a mobile browser — tile hand and word display are tappable and readable at phone screen widths
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 04-01: Config screen and HowToPlay modal
-- [ ] 04-02: GameBoard component (shared word display, word history, chicken-o-meter, turn indicator)
-- [ ] 04-03: PlayerHand component (tile rack, click/keyboard selection, validation feedback, AI thinking state)
-- [ ] 04-04: Score panel, GameOver screen, responsive layout pass
+- [ ] 04-01-PLAN.md — TileCard component, ConfigScreen with localStorage persistence, HowToPlayModal
+- [ ] 04-02-PLAN.md — GameScreen orchestrator, SharedWordDisplay, ChickenOMeter, TurnIndicator, WordHistory, ScorePanel
+- [ ] 04-03-PLAN.md — PlayerHand with staging area tile interaction, validation feedback, AI thinking animation
+- [ ] 04-04-PLAN.md — RoundEndCard, GameOverScreen, tile scatter animation, responsive layout pass
 
 ## Progress
 
