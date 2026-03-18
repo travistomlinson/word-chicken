@@ -127,15 +127,15 @@ describe('drawToNine', () => {
 describe('statistical properties', () => {
   it('dealing 9 tiles from Bananagrams bag produces at least 2 vowels (statistical, 100 trials)', () => {
     const VOWELS = new Set(['A', 'E', 'I', 'O', 'U'])
-    let failCount = 0
+    let atLeastTwoVowelCount = 0
     for (let trial = 0; trial < 100; trial++) {
       const bag = createBag('bananagrams')
       const hand = dealHand(bag, 9)
       const vowelCount = hand.filter(t => VOWELS.has(t)).length
-      if (vowelCount < 2) failCount++
+      if (vowelCount >= 2) atLeastTwoVowelCount++
     }
-    // With Bananagrams distribution, ~58% of tiles are vowels.
-    // P(< 2 vowels in 9 tiles) is astronomically small. Zero failures expected.
-    expect(failCount).toBe(0)
+    // Bananagrams has 60/144 (~42%) vowels. P(>=2 vowels in 9 tiles) ≈ 96%.
+    // Over 100 trials, we expect >=90 to have 2+ vowels with overwhelming probability.
+    expect(atLeastTwoVowelCount).toBeGreaterThanOrEqual(85)
   })
 })
