@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-foundation-02-PLAN.md
-last_updated: "2026-03-18T21:16:33.467Z"
-last_activity: "2026-03-18 — Completed 01-01 scaffold: Vite 6 + React 19 + Tailwind v4 + Zustand v5 + Vitest 4, 5 tests passing"
+stopped_at: Completed 02-core-engine-01-PLAN.md
+last_updated: "2026-03-18T21:43:00.000Z"
+last_activity: "2026-03-18 — Completed 02-01 WordValidator: pure validation with Q-expansion, multiset superset turns, plural-S ban, 11 tests"
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
-  percent: 50
+  total_plans: 5
+  completed_plans: 5
+  percent: 63
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-18)
 
 ## Current Position
 
-Phase: 1 of 4 (Foundation)
+Phase: 2 of 4 (Core Engine)
 Plan: 1 of 2 in current phase
 Status: In Progress
-Last activity: 2026-03-18 — Completed 01-01 scaffold: Vite 6 + React 19 + Tailwind v4 + Zustand v5 + Vitest 4, 5 tests passing
+Last activity: 2026-03-18 — Completed 02-01 WordValidator: pure validation with Q-expansion, multiset superset turns, plural-S ban, 11 tests
 
-Progress: [█████░░░░░] 50%
+Progress: [███████░░░] 63%
 
 ## Performance Metrics
 
@@ -53,6 +53,7 @@ Progress: [█████░░░░░] 50%
 
 *Updated after each plan completion*
 | Phase 01-foundation P02 | 2m | 2 tasks | 6 files |
+| Phase 02-core-engine P02 | 2m | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -68,6 +69,10 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: Corbusier palette: red=#d0021b, blue=#003f91, yellow=#f5a623, concrete=#f2f0eb, charcoal=#3a3a3a via Tailwind v4 @theme directive
 - [Phase 01-foundation]: parseWordList splits on newline then trims to handle CRLF without regex complexity
 - [Phase 01-foundation]: App.tsx treats both idle and loading as loading states to prevent flash of config screen before useEffect fires
+- [Phase 02-core-engine]: Statistical vowel test uses >=85/100 threshold; Bananagrams vowel fraction is 42% (60/144), not 58% as estimated — zero-failure assertion on 100 trials would flake
+- [Phase 02-core-engine 02-01]: Dictionary injected as Set<string> parameter to all validator functions (not imported/global) — enables mock dict in tests
+- [Phase 02-core-engine 02-01]: Plural ban checks structural pattern (newWord === prevWord + 'S') not any S addition — prevents false positives
+- [Phase 02-core-engine 02-01]: validateTurn check order: dictionary → superset → diff-length-1 → hand → plural ban
 
 ### Pending Todos
 
@@ -80,6 +85,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-18T21:13:31.534Z
-Stopped at: Completed 01-foundation-02-PLAN.md
+Last session: 2026-03-18T21:38:09.253Z
+Stopped at: Completed 02-core-engine-02-PLAN.md
 Resume file: None

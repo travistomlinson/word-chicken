@@ -16,11 +16,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Tile Management
 
-- [ ] **TILE-01**: Player receives a hand of 9 letter tiles at the start of each round
-- [ ] **TILE-02**: After playing a letter, player draws back up to 9 tiles
-- [ ] **TILE-03**: Tile distribution follows Bananagrams-style weighted frequency by default
-- [ ] **TILE-04**: Tile distribution is configurable (Bananagrams-style or Scrabble-style)
-- [ ] **TILE-05**: Q tile renders as "Qu" and counts as a single tile in the hand
+- [x] **TILE-01**: Player receives a hand of 9 letter tiles at the start of each round
+- [x] **TILE-02**: After playing a letter, player draws back up to 9 tiles
+- [x] **TILE-03**: Tile distribution follows Bananagrams-style weighted frequency by default
+- [x] **TILE-04**: Tile distribution is configurable (Bananagrams-style or Scrabble-style)
+- [x] **TILE-05**: Q tile renders as "Qu" and counts as a single tile in the hand
 
 ### Core Gameplay
 
@@ -119,11 +119,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | WVAL-02 | Phase 2 | Pending |
 | WVAL-03 | Phase 2 | Pending |
 | WVAL-04 | Phase 2 | Pending |
-| TILE-01 | Phase 2 | Pending |
-| TILE-02 | Phase 2 | Pending |
-| TILE-03 | Phase 2 | Pending |
-| TILE-04 | Phase 2 | Pending |
-| TILE-05 | Phase 2 | Pending |
+| TILE-01 | Phase 2 | Complete |
+| TILE-02 | Phase 2 | Complete |
+| TILE-03 | Phase 2 | Complete |
+| TILE-04 | Phase 2 | Complete |
+| TILE-05 | Phase 2 | Complete |
 | GAME-01 | Phase 2 | Pending |
 | GAME-02 | Phase 2 | Pending |
 | GAME-03 | Phase 2 | Pending |
