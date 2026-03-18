@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 4 context gathered
-last_updated: "2026-03-18T22:11:17.153Z"
+stopped_at: Completed 03-01-PLAN.md (GameReducer FSM)
+last_updated: "2026-03-18T22:47:35.324Z"
 last_activity: "2026-03-18 — Completed 02-01 WordValidator: pure validation with Q-expansion, multiset superset turns, plural-S ban, 11 tests"
 progress:
   total_phases: 4
   completed_phases: 2
-  total_plans: 5
-  completed_plans: 5
+  total_plans: 7
+  completed_plans: 6
   percent: 63
 ---
 
@@ -55,6 +55,7 @@ Progress: [███████░░░] 63%
 | Phase 01-foundation P02 | 2m | 2 tasks | 6 files |
 | Phase 02-core-engine P02 | 2m | 2 tasks | 2 files |
 | Phase 02-core-engine P03 | 3min | 2 tasks | 6 files |
+| Phase 03-ai-and-state-machine P01 | 3min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -77,6 +78,9 @@ Recent decisions affecting current work:
 - [Phase 02-core-engine 02-03]: scoreWord receives raw Q char earning 10-point bonus directly — no QU expansion in scoring, only dictionary lookup expands Q
 - [Phase 02-core-engine 02-03]: startNextRound revives all eliminated players with fresh 9-tile hands (GAME-08) — round boundaries are full resets
 - [Phase 02-core-engine 02-03]: validateStartingWord check order: dictionary first, corpus second, hand last — fail-fast on most common rejections
+- [Phase 03-ai-and-state-machine]: Dictionary injected via GameConfig.dictionary (Set<string>) — keeps gameReducer pure and testable without store coupling
+- [Phase 03-ai-and-state-machine]: RESET_GAME returns null from reducer; store interprets null as no active game
+- [Phase 03-ai-and-state-machine]: Illegal FSM transitions return unchanged state reference (no throw); console.warn in DEV mode
 
 ### Pending Todos
 
@@ -89,6 +93,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-18T22:11:17.150Z
-Stopped at: Phase 4 context gathered
-Resume file: .planning/phases/04-game-ui/04-CONTEXT.md
+Last session: 2026-03-18T22:47:35.321Z
+Stopped at: Completed 03-01-PLAN.md (GameReducer FSM)
+Resume file: None

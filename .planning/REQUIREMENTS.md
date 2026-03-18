@@ -38,20 +38,20 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### AI Opponent
 
-- [ ] **AI-01**: Single-player mode against one AI opponent (1v1)
+- [x] **AI-01**: Single-player mode against one AI opponent (1v1)
 - [ ] **AI-02**: AI has three difficulty levels: Easy, Medium, Hard
 - [ ] **AI-03**: Easy AI selects from a curated common-word vocabulary (~5K words)
 - [ ] **AI-04**: Medium AI selects from a moderate vocabulary (~20K words)
 - [ ] **AI-05**: Hard AI uses the full dictionary
 - [ ] **AI-06**: AI respects all configured game rules (plurals toggle, etc.)
-- [ ] **AI-07**: AI displays a "thinking" state so player knows the game is processing
+- [x] **AI-07**: AI displays a "thinking" state so player knows the game is processing
 
 ### Scoring
 
 - [x] **SCOR-01**: Words earn points based on word length
 - [x] **SCOR-02**: Rare letters (Q, Z, X, J, etc.) earn bonus points
-- [ ] **SCOR-03**: Running score is displayed during the game
-- [ ] **SCOR-04**: End-of-round score summary shows points earned
+- [x] **SCOR-03**: Running score is displayed during the game
+- [x] **SCOR-04**: End-of-round score summary shows points earned
 
 ### Game UI
 
@@ -137,15 +137,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | GAME-11 | Phase 2 | Complete |
 | SCOR-01 | Phase 2 | Complete |
 | SCOR-02 | Phase 2 | Complete |
-| AI-01 | Phase 3 | Pending |
+| AI-01 | Phase 3 | Complete |
 | AI-02 | Phase 3 | Pending |
 | AI-03 | Phase 3 | Pending |
 | AI-04 | Phase 3 | Pending |
 | AI-05 | Phase 3 | Pending |
 | AI-06 | Phase 3 | Pending |
-| AI-07 | Phase 3 | Pending |
-| SCOR-03 | Phase 4 | Pending |
-| SCOR-04 | Phase 4 | Pending |
+| AI-07 | Phase 3 | Complete |
+| SCOR-03 | Phase 4 | Complete |
+| SCOR-04 | Phase 4 | Complete |
 | UI-01 | Phase 4 | Pending |
 | UI-02 | Phase 4 | Pending |
 | UI-03 | Phase 4 | Pending |

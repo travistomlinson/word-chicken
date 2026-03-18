@@ -95,5 +95,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Foundation | 2/2 | Complete   | 2026-03-18 |
 | 2. Core Engine | 2/3 | In Progress|  |
-| 3. AI and State Machine | 0/2 | Not started | - |
+| 3. AI and State Machine | 1/2 | In Progress|  |
 | 4. Game UI | 0/4 | Not started | - |
