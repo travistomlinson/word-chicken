@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-01-PLAN.md (GameReducer FSM)
-last_updated: "2026-03-18T22:47:35.324Z"
+stopped_at: Completed 03-02-PLAN.md (AI Engine and useAI hook)
+last_updated: "2026-03-18T23:08:39.902Z"
 last_activity: "2026-03-18 — Completed 02-01 WordValidator: pure validation with Q-expansion, multiset superset turns, plural-S ban, 11 tests"
 progress:
   total_phases: 4
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 7
-  completed_plans: 6
+  completed_plans: 7
   percent: 63
 ---
 
@@ -56,6 +56,7 @@ Progress: [███████░░░] 63%
 | Phase 02-core-engine P02 | 2m | 2 tasks | 2 files |
 | Phase 02-core-engine P03 | 3min | 2 tasks | 6 files |
 | Phase 03-ai-and-state-machine P01 | 3min | 2 tasks | 4 files |
+| Phase 03-ai-and-state-machine P02 | 18min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -81,6 +82,10 @@ Recent decisions affecting current work:
 - [Phase 03-ai-and-state-machine]: Dictionary injected via GameConfig.dictionary (Set<string>) — keeps gameReducer pure and testable without store coupling
 - [Phase 03-ai-and-state-machine]: RESET_GAME returns null from reducer; store interprets null as no active game
 - [Phase 03-ai-and-state-machine]: Illegal FSM transitions return unchanged state reference (no throw); console.warn in DEV mode
+- [Phase 03-ai-and-state-machine]: getVocabulary filters uppercase source lists against lowercase game dictionary at runtime — no static preprocessing
+- [Phase 03-ai-and-state-machine]: findAIMove uses random-start wrap-around iteration — O(n) guaranteed, no array allocation per move
+- [Phase 03-ai-and-state-machine]: MEDIUM_WORDS deduped against EASY_WORDS at module level — ensures medium is always strict superset of easy
+- [Phase 03-ai-and-state-machine]: useAI re-reads store inside rAF callback to avoid stale closure on rapid phase changes
 
 ### Pending Todos
 
@@ -93,6 +98,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-18T22:47:35.321Z
-Stopped at: Completed 03-01-PLAN.md (GameReducer FSM)
+Last session: 2026-03-18T23:08:39.899Z
+Stopped at: Completed 03-02-PLAN.md (AI Engine and useAI hook)
 Resume file: None
