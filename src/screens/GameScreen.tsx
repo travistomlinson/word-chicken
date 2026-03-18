@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useGameStore } from '../store/gameSlice'
 import { useAppStore } from '../store/appSlice'
 import { useAI } from '../hooks/useAI'
@@ -8,6 +8,8 @@ import { TurnIndicator } from '../components/TurnIndicator'
 import { WordHistory } from '../components/WordHistory'
 import { ScorePanel } from '../components/ScorePanel'
 import { PlayerHand } from '../components/PlayerHand'
+import { RoundEndCard } from '../components/RoundEndCard'
+import { GameOverScreen } from '../components/GameOverScreen'
 
 export function GameScreen() {
   // Mount AI hook at top level — fires on AI_THINKING and AI SETUP phases
@@ -20,12 +22,21 @@ export function GameScreen() {
   const dispatch = useGameStore(s => s.dispatch)
   const setScreen = useAppStore(s => s.setScreen)
 
+  const [showGameOver, setShowGameOver] = useState(false)
+
   // Guard: if no game started, redirect to config
   useEffect(() => {
     if (!useGameStore.getState().gameState) {
       setScreen('config')
     }
   }, [setScreen])
+
+  // Reset showGameOver when a new game/round starts
+  useEffect(() => {
+    if (phase === 'SETUP') {
+      setShowGameOver(false)
+    }
+  }, [phase])
 
   // Return empty div while state resolves
   if (!phase || !round) {
@@ -34,8 +45,11 @@ export function GameScreen() {
 
   function handleQuit() {
     if (window.confirm('End the current game?')) {
-      dispatch({ type: 'RESET_GAME' })
-      setScreen('config')
+      // Dispatch END_ROUND to compute final scores if we're mid-round
+      if (phase !== 'ROUND_END') {
+        dispatch({ type: 'END_ROUND' })
+      }
+      setShowGameOver(true)
     }
   }
 
@@ -43,7 +57,7 @@ export function GameScreen() {
     phase === 'SETUP' || phase === 'HUMAN_TURN' || phase === 'AI_THINKING'
 
   return (
-    <div className="flex flex-col min-h-screen bg-concrete p-4">
+    <div className="flex flex-col min-h-screen bg-concrete p-2 sm:p-4">
       {/* Top bar: turn indicator + quit button */}
       <div className="relative flex items-center justify-center mb-2">
         <TurnIndicator phase={phase} currentPlayerId={round.currentPlayerId} />
@@ -87,19 +101,9 @@ export function GameScreen() {
         </>
       )}
 
-      {phase === 'ROUND_END' && (
-        <div className="flex flex-col items-center justify-center flex-1">
-          <p className="font-jost font-bold text-2xl text-charcoal">Round Over</p>
-          {/* Plan 04 will add the proper RoundEnd overlay card */}
-        </div>
-      )}
+      {phase === 'ROUND_END' && <RoundEndCard />}
 
-      {phase === 'GAME_OVER' && (
-        <div className="flex flex-col items-center justify-center flex-1">
-          <p className="font-jost font-bold text-2xl text-charcoal">Game Over</p>
-          {/* Plan 04 will add the proper GameOver overlay card */}
-        </div>
-      )}
+      {(phase === 'GAME_OVER' || showGameOver) && <GameOverScreen />}
     </div>
   )
 }

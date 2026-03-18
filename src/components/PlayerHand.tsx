@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useGameStore } from '../store/gameSlice'
 import { validateTurn } from '../lib/wordValidator'
 import { validateStartingWord } from '../lib/roundManager'
 import { TileCard } from './TileCard'
 import { StagingArea } from './StagingArea'
+import type React from 'react'
 
 const LETTERS = 'ABCDEFGHIJKLMNOPRSTUW'
 
@@ -14,10 +15,16 @@ export function PlayerHand() {
   const roundNumber = useGameStore(s => s.gameState?.round.roundNumber)
   const config = useGameStore(s => s.gameState?.config)
   const dispatch = useGameStore(s => s.dispatch)
+  const humanPlayer = useGameStore(s => s.gameState?.round.players['human'])
 
   const [stagedIndices, setStagedIndices] = useState<number[]>([])
   const [error, setError] = useState<string | null>(null)
   const [shaking, setShaking] = useState(false)
+
+  // Tile scatter elimination animation state
+  const [eliminating, setEliminating] = useState(false)
+  const wasActive = useRef(true)
+  const isActive = humanPlayer?.isActive ?? true
 
   // AI thinking animation state
   const [displayLetters, setDisplayLetters] = useState<string[]>(['?', '?', '?', '?'])
@@ -27,6 +34,16 @@ export function PlayerHand() {
     setStagedIndices([])
     setError(null)
   }, [roundNumber, phase])
+
+  // Scatter animation when human player is eliminated
+  useEffect(() => {
+    if (wasActive.current && !isActive) {
+      setEliminating(true)
+      const timer = setTimeout(() => setEliminating(false), 800)
+      return () => clearTimeout(timer)
+    }
+    wasActive.current = isActive
+  }, [isActive])
 
   // AI thinking animation
   useEffect(() => {
@@ -41,6 +58,21 @@ export function PlayerHand() {
     }, 80)
     return () => clearInterval(interval)
   }, [phase, currentWord.length])
+
+  // Scatter style for elimination animation
+  function scatterStyle(index: number): React.CSSProperties {
+    if (!eliminating) return {}
+    const angle = (index * 45 + Math.random() * 30) - 90  // spread in arc
+    const distance = 200 + Math.random() * 300
+    const x = Math.cos(angle * Math.PI / 180) * distance
+    const y = Math.sin(angle * Math.PI / 180) * distance - 200  // bias upward then fall
+    const rotation = (Math.random() - 0.5) * 720
+    return {
+      transform: `translate(${x}px, ${y}px) rotate(${rotation}deg)`,
+      opacity: 0,
+      transition: `all 0.6s ease-in ${index * 0.05}s`,  // stagger each tile
+    }
+  }
 
   // Tile interaction: uses INDEX tracking to handle duplicate letters
   function handleTileClick(handIndex: number) {
@@ -134,15 +166,16 @@ export function PlayerHand() {
         </div>
 
         {/* Human hand — visible but disabled during AI turn */}
-        <div className="flex gap-1 sm:gap-2 flex-wrap justify-center opacity-50">
+        <div className="grid grid-cols-5 sm:flex sm:flex-wrap gap-1 sm:gap-2 justify-center opacity-50">
           {hand.map((letter, idx) => (
-            <TileCard
-              key={idx}
-              letter={letter}
-              color="concrete"
-              size="md"
-              disabled
-            />
+            <div key={idx} style={scatterStyle(idx)}>
+              <TileCard
+                letter={letter}
+                color="concrete"
+                size="md"
+                disabled
+              />
+            </div>
           ))}
         </div>
       </div>
@@ -163,15 +196,16 @@ export function PlayerHand() {
       />
 
       {/* Hand tiles — only unstaged tiles shown */}
-      <div className="flex gap-1 sm:gap-2 flex-wrap justify-center mt-4">
+      <div className="grid grid-cols-5 sm:flex sm:flex-wrap gap-1 sm:gap-2 justify-center mt-4">
         {remainingHand.map(({ letter, idx }) => (
-          <TileCard
-            key={idx}
-            letter={letter}
-            color="concrete"
-            size="md"
-            onClick={() => handleTileClick(idx)}
-          />
+          <div key={idx} style={scatterStyle(idx)}>
+            <TileCard
+              letter={letter}
+              color="concrete"
+              size="md"
+              onClick={() => handleTileClick(idx)}
+            />
+          </div>
         ))}
       </div>
 

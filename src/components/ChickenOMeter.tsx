@@ -12,7 +12,7 @@ export function ChickenOMeter({ wordLength }: ChickenOMeterProps) {
 
   return (
     <div
-      className="relative h-64 w-4 rounded overflow-hidden"
+      className="relative h-48 sm:h-64 w-4 rounded overflow-hidden"
       style={{ background: 'linear-gradient(to top, #003f91, #f5a623, #d0021b)' }}
       aria-label={`Tension meter: ${Math.round(fillPercent)}%`}
     >
