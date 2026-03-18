@@ -1,0 +1,40 @@
+/**
+ * Curated corpus of 3-letter starting words for Word Chicken.
+ * All entries are uppercase. All words are valid TWL/dictionary words.
+ * Chosen for having common 4-letter extensions (good gameplay potential).
+ */
+export const STARTING_WORDS: string[] = [
+  'ACE', 'ACT', 'AGE', 'AID', 'AIM', 'AIR', 'ALE', 'APE', 'ARC', 'ARE',
+  'ARK', 'ARM', 'ART', 'ATE', 'AWE', 'AXE', 'BAD', 'BAG', 'BAR', 'BAT',
+  'BED', 'BET', 'BIG', 'BIT', 'BOW', 'BOX', 'BUD', 'BUG', 'BUS', 'BUT',
+  'CAB', 'CAM', 'CAN', 'CAP', 'CAR', 'CAT', 'COB', 'COD', 'COG', 'COP',
+  'COT', 'COW', 'CUB', 'CUD', 'CUP', 'CUR', 'CUT', 'DAB', 'DAM', 'DEN',
+  'DEW', 'DIG', 'DIM', 'DIN', 'DIP', 'DOC', 'DOG', 'DOT', 'DUB', 'DUG',
+  'DUN', 'EAR', 'EAT', 'EEL', 'ELF', 'ELM', 'ERA', 'EWE', 'FAN', 'FAR',
+  'FAT', 'FIG', 'FIN', 'FIT', 'FOB', 'FOG', 'FOP', 'FOX', 'FUN', 'FUR',
+  'GAB', 'GAG', 'GAP', 'GAS', 'GEL', 'GEM', 'GIN', 'GOB', 'GOD', 'GOT',
+  'GUM', 'GUN', 'GUT', 'GUY', 'HAD', 'HAM', 'HAS', 'HAT', 'HEN', 'HER',
+  'HEW', 'HID', 'HIM', 'HIP', 'HIT', 'HOB', 'HOG', 'HOP', 'HOT', 'HOW',
+  'HUB', 'HUE', 'HUG', 'HUM', 'HUT', 'ICE', 'ILL', 'IMP', 'INK', 'INN',
+  'ION', 'IRE', 'IRK', 'IVY', 'JAB', 'JAG', 'JAM', 'JAR', 'JAW', 'JAY',
+  'JET', 'JIG', 'JOB', 'JOG', 'JOT', 'JOY', 'JUG', 'JUT', 'KEG', 'KID',
+  'KIN', 'KIT', 'LAB', 'LAD', 'LAG', 'LAP', 'LAW', 'LAY', 'LEA', 'LED',
+  'LEG', 'LET', 'LID', 'LIT', 'LOG', 'LOT', 'LOW', 'LUG', 'MAD', 'MAN',
+  'MAP', 'MAR', 'MAT', 'MAW', 'MEN', 'MET', 'MOB', 'MOP', 'MOW', 'MUD',
+  'MUG', 'NAB', 'NAG', 'NAP', 'NET', 'NEW', 'NIT', 'NOB', 'NOD', 'NOR',
+  'NOT', 'NOW', 'NUB', 'NUN', 'NUT', 'OAK', 'OAR', 'OAT', 'ODD', 'OPT',
+  'ORB', 'ORE', 'OUR', 'OUT', 'OWE', 'OWL', 'OWN', 'PAD', 'PAN', 'PAT',
+  'PAW', 'PEA', 'PEG', 'PEN', 'PEP', 'PER', 'PET', 'PIG', 'PIN', 'PIT',
+  'POD', 'POP', 'POT', 'POW', 'PUB', 'PUG', 'PUN', 'PUP', 'PUT', 'RAG',
+  'RAM', 'RAN', 'RAP', 'RAT', 'RAW', 'RAY', 'RED', 'RIB', 'RID', 'RIG',
+  'RIM', 'RIP', 'ROB', 'ROD', 'ROT', 'ROW', 'RUB', 'RUG', 'RUM', 'RUN',
+  'RUT', 'SAC', 'SAD', 'SAG', 'SAP', 'SAT', 'SAW', 'SAY', 'SEA', 'SET',
+  'SEW', 'SIN', 'SIP', 'SIR', 'SIS', 'SIT', 'SOB', 'SOD', 'SON', 'SOP',
+  'SOT', 'SOW', 'SOY', 'SPA', 'SUB', 'SUM', 'SUN', 'SUP', 'TAB', 'TAD',
+  'TAG', 'TAN', 'TAP', 'TAR', 'TAT', 'TAX', 'TEA', 'TEN', 'TIN', 'TIP',
+  'TOE', 'TON', 'TOP', 'TOT', 'TOW', 'TOY', 'TUB', 'TUG', 'TUN', 'TWO',
+  'URN', 'USE', 'VAN', 'VAT', 'VET', 'VIA', 'VIE', 'VOW', 'WAD', 'WAG',
+  'WAR', 'WAX', 'WAY', 'WEB', 'WED', 'WET', 'WIG', 'WIN', 'WIT', 'WOE',
+  'WOK', 'WON', 'WOO', 'YAK', 'YAM', 'YAP', 'YAW', 'YEA', 'YES', 'YET',
+  'YEW', 'YIN', 'ZAP', 'ZEN', 'ZIT', 'ZOO',
+]
