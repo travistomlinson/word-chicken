@@ -31,8 +31,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Vite + React + TypeScript + Tailwind + Zustand + Vitest scaffold with Corbusier theme
-- [ ] 01-02-PLAN.md — Dictionary fetch-and-parse module with loading state
+- [x] 01-01-PLAN.md — Vite + React + TypeScript + Tailwind + Zustand + Vitest scaffold with Corbusier theme
+- [x] 01-02-PLAN.md — Dictionary fetch-and-parse module with loading state
 
 ### Phase 2: Core Engine
 **Goal**: All game rules exist as pure TypeScript functions that are fully unit-tested before any UI is built on top of them
@@ -44,12 +44,12 @@ Plans:
   3. A turn submission is rejected if the new word is not a strict multiset superset of the previous word plus exactly one tile from the player's hand
   4. Dealing a hand of 9 tiles from a Bananagrams-weighted bag produces at least 2 vowels — unit tests confirm distribution properties
   5. A word's score is calculated from its length plus bonus points for rare letters (Q, Z, X, J) and the scorer returns 0 for invalid words without throwing
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 02-01: WordValidator module (dictionary lookup, Q expansion, plural filter, multiset superset check)
-- [ ] 02-02: TileBag module (Bananagrams distribution, deal, draw-to-9, Scrabble-style alternative)
-- [ ] 02-03: ScoreCalculator and RoundManager (scoring, elimination detection, round lifecycle, starting word corpus)
+- [ ] 02-01-PLAN.md — WordValidator: dictionary lookup, Q expansion, multiset superset check, plural ban
+- [ ] 02-02-PLAN.md — TileBag: Bananagrams/Scrabble distributions, Fisher-Yates shuffle, deal, draw-to-9
+- [ ] 02-03-PLAN.md — ScoreCalculator and RoundManager: scoring, starting word corpus, elimination, round lifecycle
 
 ### Phase 3: AI and State Machine
 **Goal**: A complete game loop runs — human and AI take turns, words grow, players are eliminated, rounds end — all driven by a FSM reducer that prevents illegal state transitions
