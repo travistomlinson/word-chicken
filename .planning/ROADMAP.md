@@ -28,11 +28,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Running `npm test` executes a passing Vitest suite
   3. The TWL dictionary is loaded via fetch, parsed into a `Set<string>`, and ready for lookup within two seconds of first render — not bundled as a JS array
   4. The app shell routes between at least a placeholder Config screen and a placeholder Game screen
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: Vite + React + TypeScript + Tailwind + Zustand + Vitest scaffold
-- [ ] 01-02: Dictionary fetch-and-parse module with loading state
+- [ ] 01-01-PLAN.md — Vite + React + TypeScript + Tailwind + Zustand + Vitest scaffold with Corbusier theme
+- [ ] 01-02-PLAN.md — Dictionary fetch-and-parse module with loading state
 
 ### Phase 2: Core Engine
 **Goal**: All game rules exist as pure TypeScript functions that are fully unit-tested before any UI is built on top of them
