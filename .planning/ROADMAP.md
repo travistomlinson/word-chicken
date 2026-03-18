@@ -61,11 +61,11 @@ Plans:
   3. AI computation runs off the main thread (via requestAnimationFrame or worker) — the game does not freeze while the AI picks a move
   4. Running score is updated after every valid turn and is accessible from game state
   5. End-of-round state includes each player's points earned in that round
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 03-01: GameReducer FSM (GameState shape, TurnPhase enum, all action types, GameContext)
-- [ ] 03-02: AIEngine module (Easy/Medium/Hard strategy, vocabulary subsetting, useAI hook with rAF pacing)
+- [ ] 03-01-PLAN.md — GameReducer FSM: pure reducer, GameState types, TurnPhase enum, Zustand gameSlice store
+- [ ] 03-02-PLAN.md — AIEngine: findAIMove, vocabulary subsetting (Easy/Medium/Hard), curated word lists, useAI hook with rAF pacing
 
 ### Phase 4: Game UI
 **Goal**: The game is fully playable in a browser — a human can configure a game, play complete rounds against the AI, and see results
