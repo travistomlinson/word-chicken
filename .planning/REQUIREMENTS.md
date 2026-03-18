@@ -24,14 +24,14 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Core Gameplay
 
-- [ ] **GAME-01**: Starting player creates a 3-letter word to begin a round
+- [x] **GAME-01**: Starting player creates a 3-letter word to begin a round
 - [x] **GAME-02**: Each subsequent turn, a player adds one letter to the existing word
 - [x] **GAME-03**: Rearranging letters is allowed when extending a word (e.g., CAT + R → CART)
 - [x] **GAME-04**: Turn submission validates that the new word uses all previous letters plus exactly one new letter from the player's hand
-- [ ] **GAME-05**: Player is eliminated from the round if they cannot form a valid word
-- [ ] **GAME-06**: Last player standing wins the round
-- [ ] **GAME-07**: Round winner starts the next round with a new 3-letter word
-- [ ] **GAME-08**: All players receive new hands at the start of each round
+- [x] **GAME-05**: Player is eliminated from the round if they cannot form a valid word
+- [x] **GAME-06**: Last player standing wins the round
+- [x] **GAME-07**: Round winner starts the next round with a new 3-letter word
+- [x] **GAME-08**: All players receive new hands at the start of each round
 - [x] **GAME-09**: No maximum word length — word grows until someone can't extend
 - [x] **GAME-10**: No passing allowed — starting player must play a word
 - [x] **GAME-11**: Pluralizing with S is banned by default (configurable toggle to allow)
@@ -48,8 +48,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Scoring
 
-- [ ] **SCOR-01**: Words earn points based on word length
-- [ ] **SCOR-02**: Rare letters (Q, Z, X, J, etc.) earn bonus points
+- [x] **SCOR-01**: Words earn points based on word length
+- [x] **SCOR-02**: Rare letters (Q, Z, X, J, etc.) earn bonus points
 - [ ] **SCOR-03**: Running score is displayed during the game
 - [ ] **SCOR-04**: End-of-round score summary shows points earned
 
@@ -124,19 +124,19 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TILE-03 | Phase 2 | Complete |
 | TILE-04 | Phase 2 | Complete |
 | TILE-05 | Phase 2 | Complete |
-| GAME-01 | Phase 2 | Pending |
+| GAME-01 | Phase 2 | Complete |
 | GAME-02 | Phase 2 | Complete |
 | GAME-03 | Phase 2 | Complete |
 | GAME-04 | Phase 2 | Complete |
-| GAME-05 | Phase 2 | Pending |
-| GAME-06 | Phase 2 | Pending |
-| GAME-07 | Phase 2 | Pending |
-| GAME-08 | Phase 2 | Pending |
+| GAME-05 | Phase 2 | Complete |
+| GAME-06 | Phase 2 | Complete |
+| GAME-07 | Phase 2 | Complete |
+| GAME-08 | Phase 2 | Complete |
 | GAME-09 | Phase 2 | Complete |
 | GAME-10 | Phase 2 | Complete |
 | GAME-11 | Phase 2 | Complete |
-| SCOR-01 | Phase 2 | Pending |
-| SCOR-02 | Phase 2 | Pending |
+| SCOR-01 | Phase 2 | Complete |
+| SCOR-02 | Phase 2 | Complete |
 | AI-01 | Phase 3 | Pending |
 | AI-02 | Phase 3 | Pending |
 | AI-03 | Phase 3 | Pending |

@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-core-engine-01-PLAN.md
-last_updated: "2026-03-18T21:43:00.000Z"
+stopped_at: Completed 02-core-engine-03-PLAN.md
+last_updated: "2026-03-18T21:43:28.802Z"
 last_activity: "2026-03-18 — Completed 02-01 WordValidator: pure validation with Q-expansion, multiset superset turns, plural-S ban, 11 tests"
 progress:
   total_phases: 4
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 5
   completed_plans: 5
   percent: 63
@@ -54,6 +54,7 @@ Progress: [███████░░░] 63%
 *Updated after each plan completion*
 | Phase 01-foundation P02 | 2m | 2 tasks | 6 files |
 | Phase 02-core-engine P02 | 2m | 2 tasks | 2 files |
+| Phase 02-core-engine P03 | 3min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -73,6 +74,9 @@ Recent decisions affecting current work:
 - [Phase 02-core-engine 02-01]: Dictionary injected as Set<string> parameter to all validator functions (not imported/global) — enables mock dict in tests
 - [Phase 02-core-engine 02-01]: Plural ban checks structural pattern (newWord === prevWord + 'S') not any S addition — prevents false positives
 - [Phase 02-core-engine 02-01]: validateTurn check order: dictionary → superset → diff-length-1 → hand → plural ban
+- [Phase 02-core-engine 02-03]: scoreWord receives raw Q char earning 10-point bonus directly — no QU expansion in scoring, only dictionary lookup expands Q
+- [Phase 02-core-engine 02-03]: startNextRound revives all eliminated players with fresh 9-tile hands (GAME-08) — round boundaries are full resets
+- [Phase 02-core-engine 02-03]: validateStartingWord check order: dictionary first, corpus second, hand last — fail-fast on most common rejections
 
 ### Pending Todos
 
@@ -85,6 +89,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-18T21:43:00.000Z
-Stopped at: Completed 02-core-engine-01-PLAN.md
+Last session: 2026-03-18T21:43:28.798Z
+Stopped at: Completed 02-core-engine-03-PLAN.md
 Resume file: None
