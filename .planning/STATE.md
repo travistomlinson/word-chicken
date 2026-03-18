@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-02-PLAN.md (AI Engine and useAI hook)
-last_updated: "2026-03-18T23:12:15.043Z"
+stopped_at: Completed 04-01-PLAN.md (TileCard, ConfigScreen, HowToPlayModal)
+last_updated: "2026-03-18T23:37:19.784Z"
 last_activity: "2026-03-18 — Completed 02-01 WordValidator: pure validation with Q-expansion, multiset superset turns, plural-S ban, 11 tests"
 progress:
   total_phases: 4
   completed_phases: 3
-  total_plans: 7
-  completed_plans: 7
+  total_plans: 11
+  completed_plans: 8
   percent: 63
 ---
 
@@ -57,6 +57,7 @@ Progress: [███████░░░] 63%
 | Phase 02-core-engine P03 | 3min | 2 tasks | 6 files |
 | Phase 03-ai-and-state-machine P01 | 3min | 2 tasks | 4 files |
 | Phase 03-ai-and-state-machine P02 | 18min | 2 tasks | 5 files |
+| Phase 04-game-ui P01 | 2min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -86,6 +87,9 @@ Recent decisions affecting current work:
 - [Phase 03-ai-and-state-machine]: findAIMove uses random-start wrap-around iteration — O(n) guaranteed, no array allocation per move
 - [Phase 03-ai-and-state-machine]: MEDIUM_WORDS deduped against EASY_WORDS at module level — ensures medium is always strict superset of easy
 - [Phase 03-ai-and-state-machine]: useAI re-reads store inside rAF callback to avoid stale closure on rapid phase changes
+- [Phase 04-game-ui]: TileCard min-w/h-[44px] ensures mobile touch targets at all size variants
+- [Phase 04-game-ui]: banPluralS toggle inverted from UI: Allow plurals ON = banPluralS false, OFF (default) = true
+- [Phase 04-game-ui]: ConfigScreen uses useDictionaryStore.getState().words imperatively in click handler to avoid stale closure
 
 ### Pending Todos
 
@@ -98,6 +102,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-18T23:08:39.899Z
-Stopped at: Completed 03-02-PLAN.md (AI Engine and useAI hook)
+Last session: 2026-03-18T23:37:19.782Z
+Stopped at: Completed 04-01-PLAN.md (TileCard, ConfigScreen, HowToPlayModal)
 Resume file: None

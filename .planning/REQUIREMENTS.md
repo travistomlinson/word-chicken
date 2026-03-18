@@ -65,15 +65,15 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Configuration
 
-- [ ] **CONF-01**: Pre-game screen to select AI difficulty (Easy/Medium/Hard)
-- [ ] **CONF-02**: Pre-game toggle for allowing/banning plurals (S)
-- [ ] **CONF-03**: Pre-game selection of tile distribution (Bananagrams or Scrabble style)
-- [ ] **CONF-04**: Sensible defaults: Medium difficulty, plurals banned, Bananagrams distribution
+- [x] **CONF-01**: Pre-game screen to select AI difficulty (Easy/Medium/Hard)
+- [x] **CONF-02**: Pre-game toggle for allowing/banning plurals (S)
+- [x] **CONF-03**: Pre-game selection of tile distribution (Bananagrams or Scrabble style)
+- [x] **CONF-04**: Sensible defaults: Medium difficulty, plurals banned, Bananagrams distribution
 
 ### UX
 
 - [ ] **UX-01**: Keyboard input support — desktop users can type to select tiles
-- [ ] **UX-02**: "How to Play" modal explaining the rules for first-time players
+- [x] **UX-02**: "How to Play" modal explaining the rules for first-time players
 - [ ] **UX-03**: Responsive layout — playable on both desktop and mobile browsers
 
 ## v2 Requirements
@@ -153,12 +153,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UI-05 | Phase 4 | Pending |
 | UI-06 | Phase 4 | Pending |
 | UI-07 | Phase 4 | Pending |
-| CONF-01 | Phase 4 | Pending |
-| CONF-02 | Phase 4 | Pending |
-| CONF-03 | Phase 4 | Pending |
-| CONF-04 | Phase 4 | Pending |
+| CONF-01 | Phase 4 | Complete |
+| CONF-02 | Phase 4 | Complete |
+| CONF-03 | Phase 4 | Complete |
+| CONF-04 | Phase 4 | Complete |
 | UX-01 | Phase 4 | Pending |
-| UX-02 | Phase 4 | Pending |
+| UX-02 | Phase 4 | Complete |
 | UX-03 | Phase 4 | Pending |
 
 **Coverage:**
