@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation** - Vite + React + TypeScript scaffold with dictionary loading and dev tooling (completed 2026-03-18)
 - [ ] **Phase 2: Core Engine** - Pure-TypeScript game logic: word validation, tile bag, scoring, and all game rules
 - [x] **Phase 3: AI and State Machine** - FSM reducer wiring all engine modules into a playable loop; AI opponent at three difficulty levels (completed 2026-03-18)
-- [ ] **Phase 4: Game UI** - All browser-facing components: board, hand, config screen, score, responsive layout
+- [x] **Phase 4: Game UI** - All browser-facing components: board, hand, config screen, score, responsive layout (completed 2026-03-18)
 
 ## Phase Details
 
@@ -96,4 +96,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Foundation | 2/2 | Complete   | 2026-03-18 |
 | 2. Core Engine | 2/3 | In Progress|  |
 | 3. AI and State Machine | 2/2 | Complete   | 2026-03-18 |
-| 4. Game UI | 3/4 | In Progress|  |
+| 4. Game UI | 4/4 | Complete   | 2026-03-18 |
