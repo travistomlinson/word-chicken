@@ -9,7 +9,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Word Validation
 
-- [ ] **WVAL-01**: Game loads a bundled TWL dictionary client-side for instant word lookup
+- [x] **WVAL-01**: Game loads a bundled TWL dictionary client-side for instant word lookup
 - [ ] **WVAL-02**: Submitted words are validated against the dictionary in real-time
 - [ ] **WVAL-03**: Invalid submissions show specific error: "not a valid word" vs "letters not available in your hand"
 - [ ] **WVAL-04**: Q tile represents "Qu" — dictionary lookups handle Qu-prefix words correctly
@@ -115,7 +115,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| WVAL-01 | Phase 1 | Pending |
+| WVAL-01 | Phase 1 | Complete |
 | WVAL-02 | Phase 2 | Pending |
 | WVAL-03 | Phase 2 | Pending |
 | WVAL-04 | Phase 2 | Pending |
