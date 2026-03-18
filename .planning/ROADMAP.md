@@ -12,7 +12,7 @@ Word Chicken ships as a pure client-side single-page application. Four phases bu
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation** - Vite + React + TypeScript scaffold with dictionary loading and dev tooling
+- [x] **Phase 1: Foundation** - Vite + React + TypeScript scaffold with dictionary loading and dev tooling (completed 2026-03-18)
 - [ ] **Phase 2: Core Engine** - Pure-TypeScript game logic: word validation, tile bag, scoring, and all game rules
 - [ ] **Phase 3: AI and State Machine** - FSM reducer wiring all engine modules into a playable loop; AI opponent at three difficulty levels
 - [ ] **Phase 4: Game UI** - All browser-facing components: board, hand, config screen, score, responsive layout
@@ -93,7 +93,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 1/2 | In Progress|  |
+| 1. Foundation | 2/2 | Complete   | 2026-03-18 |
 | 2. Core Engine | 0/3 | Not started | - |
 | 3. AI and State Machine | 0/2 | Not started | - |
 | 4. Game UI | 0/4 | Not started | - |

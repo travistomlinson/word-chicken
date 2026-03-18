@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: in-progress
-stopped_at: Completed 01-foundation-01-PLAN.md
-last_updated: "2026-03-18T21:09:21.148Z"
-last_activity: 2026-03-18 — Roadmap created, 37/37 v1 requirements mapped across 4 phases
+status: executing
+stopped_at: Completed 01-foundation-02-PLAN.md
+last_updated: "2026-03-18T21:13:31.537Z"
+last_activity: "2026-03-18 — Completed 01-01 scaffold: Vite 6 + React 19 + Tailwind v4 + Zustand v5 + Vitest 4, 5 tests passing"
 progress:
   total_phases: 4
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 2
-  completed_plans: 1
+  completed_plans: 2
   percent: 50
 ---
 
@@ -52,6 +52,7 @@ Progress: [█████░░░░░] 50%
 | Phase 01-foundation P01 | 5m | 3 tasks | 17 files |
 
 *Updated after each plan completion*
+| Phase 01-foundation P02 | 2m | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -65,6 +66,8 @@ Recent decisions affecting current work:
 - [Roadmap]: AI difficulty implemented as vocabulary scope (Easy ~5K, Medium ~20K, Hard full list) — not search depth
 - [Phase 01-foundation]: Used vitest@4.1.0 over 2.x to avoid bundled vite type conflicts; downgraded jsdom to v25 for Node 22.9 compatibility
 - [Phase 01-foundation]: Corbusier palette: red=#d0021b, blue=#003f91, yellow=#f5a623, concrete=#f2f0eb, charcoal=#3a3a3a via Tailwind v4 @theme directive
+- [Phase 01-foundation]: parseWordList splits on newline then trims to handle CRLF without regex complexity
+- [Phase 01-foundation]: App.tsx treats both idle and loading as loading states to prevent flash of config screen before useEffect fires
 
 ### Pending Todos
 
@@ -77,6 +80,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-18T21:09:21.146Z
-Stopped at: Completed 01-foundation-01-PLAN.md
+Last session: 2026-03-18T21:13:31.534Z
+Stopped at: Completed 01-foundation-02-PLAN.md
 Resume file: None
