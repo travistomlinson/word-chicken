@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-02-PLAN.md (GameScreen, SharedWordDisplay, ChickenOMeter, TurnIndicator, WordHistory, ScorePanel)
-last_updated: "2026-03-18T23:41:12.441Z"
+stopped_at: Completed 04-03-PLAN.md (PlayerHand, StagingArea, GameScreen wired)
+last_updated: "2026-03-18T23:44:34.536Z"
 last_activity: "2026-03-18 — Completed 02-01 WordValidator: pure validation with Q-expansion, multiset superset turns, plural-S ban, 11 tests"
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 11
-  completed_plans: 9
+  completed_plans: 10
   percent: 63
 ---
 
@@ -59,6 +59,7 @@ Progress: [███████░░░] 63%
 | Phase 03-ai-and-state-machine P02 | 18min | 2 tasks | 5 files |
 | Phase 04-game-ui P01 | 2min | 2 tasks | 4 files |
 | Phase 04-game-ui P02 | 5min | 2 tasks | 7 files |
+| Phase 04-game-ui P03 | 2min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -93,6 +94,7 @@ Recent decisions affecting current work:
 - [Phase 04-game-ui]: ConfigScreen uses useDictionaryStore.getState().words imperatively in click handler to avoid stale closure
 - [Phase 04-game-ui]: GameScreen isGamePhase flag gates the full board layout; ROUND_END/GAME_OVER show placeholder text (Plan 04 fills)
 - [Phase 04-game-ui]: Display components accept minimal props with no store access — Zustand reads only at GameScreen boundary
+- [Phase 04-game-ui]: PlayerHand uses index-based staging — handles duplicate letters correctly, tapping one E never affects other Es
 
 ### Pending Todos
 
@@ -105,6 +107,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-18T23:41:12.438Z
-Stopped at: Completed 04-02-PLAN.md (GameScreen, SharedWordDisplay, ChickenOMeter, TurnIndicator, WordHistory, ScorePanel)
+Last session: 2026-03-18T23:44:34.533Z
+Stopped at: Completed 04-03-PLAN.md (PlayerHand, StagingArea, GameScreen wired)
 Resume file: None
