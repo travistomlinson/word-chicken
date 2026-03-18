@@ -7,6 +7,7 @@ import { ChickenOMeter } from '../components/ChickenOMeter'
 import { TurnIndicator } from '../components/TurnIndicator'
 import { WordHistory } from '../components/WordHistory'
 import { ScorePanel } from '../components/ScorePanel'
+import { PlayerHand } from '../components/PlayerHand'
 
 export function GameScreen() {
   // Mount AI hook at top level — fires on AI_THINKING and AI SETUP phases
@@ -73,10 +74,9 @@ export function GameScreen() {
               <WordHistory turnHistory={round.turnHistory} />
             </div>
 
-            {/* Main flexible area — PlayerHand will go here (Plan 03) */}
-            <div className="flex-1 flex flex-col items-center justify-end">
-              {/* PlayerHand placeholder — Plan 03 fills this */}
-              <div id="player-hand-area" />
+            {/* Main flexible area — PlayerHand */}
+            <div className="flex-1 flex flex-col items-center justify-end pb-8">
+              <PlayerHand />
             </div>
 
             {/* Chicken-o-meter — right side */}
