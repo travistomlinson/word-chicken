@@ -111,7 +111,7 @@ Plans:
 
 Plans:
 - [x] 06-01-PLAN.md — Safe-area inset padding on all screens, test scaffold for Phase 6
-- [ ] 06-02-PLAN.md — Touch target audit on all secondary action buttons (44px minimum) (completed 2026-03-19)
+- [x] 06-02-PLAN.md — Touch target audit on all secondary action buttons (44px minimum)
 
 #### Phase 7: Color and Contrast Audit
 **Goal**: All text in both light and dark mode passes WCAG AA contrast — no text is invisible on any surface
@@ -122,9 +122,11 @@ Plans:
   2. In dark mode, no informational text uses an opacity below /50 — all text is readable on OLED displays
   3. Yellow tile and button backgrounds display dark charcoal text instead of white, passing WCAG AA
   4. The ChickenOMeter gradient is driven by CSS design tokens rather than hardcoded hex values — changing a color token updates the gradient automatically
-**Plans**: TBD
+**Plans**: 2 plans
 
-Plans: TBD
+Plans:
+- [ ] 07-01-PLAN.md — Test scaffold, CSS design tokens, yellow text fix, ChickenOMeter gradient tokenization
+- [ ] 07-02-PLAN.md — Replace all failing text-ink opacity and brand color text with contrast-safe tokens
 
 #### Phase 8: Visual Polish and Hierarchy
 **Goal**: The game's key status signals have clear visual weight — turn state, score, and tension are readable at a glance
@@ -152,6 +154,6 @@ Phases execute in numeric order: 5 → 6 → 7 → 8
 | 3. AI and State Machine | v1.0 | 2/2 | Complete | 2026-03-18 |
 | 4. Game UI | v1.0 | 4/4 | Complete | 2026-03-18 |
 | 5. Viewport Foundation | v1.1 | 2/2 | Complete | 2026-03-19 |
-| 6. Mobile Layout and Touch Audit | 2/2 | Complete   | 2026-03-19 | - |
-| 7. Color and Contrast Audit | v1.1 | 0/TBD | Not started | - |
+| 6. Mobile Layout and Touch Audit | v1.1 | 2/2 | Complete | 2026-03-19 |
+| 7. Color and Contrast Audit | v1.1 | 0/2 | Not started | - |
 | 8. Visual Polish and Hierarchy | v1.1 | 0/TBD | Not started | - |
