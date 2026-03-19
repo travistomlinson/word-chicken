@@ -376,14 +376,14 @@ export function PlayerHand() {
           {!hintUsed && (
             <button
               onClick={handleHint}
-              className="text-corbusier-blue text-xs font-jost uppercase cursor-pointer hover:text-corbusier-blue/70 bg-transparent border border-corbusier-blue/30 rounded px-3 py-1 transition-colors"
+              className="text-corbusier-blue text-xs font-jost uppercase cursor-pointer hover:text-corbusier-blue/70 bg-transparent border border-corbusier-blue/30 rounded px-3 min-h-[44px] flex items-center transition-colors"
             >
               Show a Word
             </button>
           )}
           <button
             onClick={handleGiveUp}
-            className="text-ink/40 text-xs font-jost uppercase cursor-pointer hover:text-corbusier-red bg-transparent border-none transition-colors"
+            className="text-ink/40 text-xs font-jost uppercase cursor-pointer hover:text-corbusier-red bg-transparent border-none transition-colors min-h-[44px] flex items-center"
           >
             Give Up
           </button>

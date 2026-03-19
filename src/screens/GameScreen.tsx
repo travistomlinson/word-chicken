@@ -181,7 +181,7 @@ export function GameScreen() {
         <TurnIndicator phase={phase} currentPlayerId={round.currentPlayerId} />
         <button
           onClick={handleQuit}
-          className="absolute right-0 text-ink/40 text-xs uppercase font-jost hover:text-corbusier-red transition-colors cursor-pointer"
+          className="absolute right-0 text-ink/40 text-xs uppercase font-jost hover:text-corbusier-red transition-colors cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-end"
         >
           Quit
         </button>
