@@ -1,125 +1,94 @@
-import { useEffect, useRef, useCallback } from 'react'
-import type { DataConnection } from 'peerjs'
+import { useEffect } from 'react'
 import { useGameStore } from '../store/gameSlice'
 import { useMultiplayerStore } from '../store/multiplayerSlice'
 import { useDictionaryStore } from '../store/dictionarySlice'
 import {
+  sendMessage,
+  setMessageHandler,
+  setDisconnectHandler,
   serializeGameState,
   deserializeGameState,
   type MultiplayerMessage,
-  type PeerConnection,
 } from '../lib/multiplayer'
 import type { RemoteGameAction } from '../types/game'
 
 /**
- * Manages multiplayer state sync between host and guest.
- * - Host: sends game state on every change, receives actions from guest
- * - Guest: receives game state, sends actions to host
+ * Manages multiplayer message handling.
+ * Uses module-level connection from multiplayer.ts (survives component unmounts).
+ *
+ * - Host: sends game state on every store change, receives actions from guest
+ * - Guest: receives game state from host, sends actions via sendMessage
  */
 export function useMultiplayer() {
-  const peerRef = useRef<PeerConnection | null>(null)
-  const connRef = useRef<DataConnection | null>(null)
-  const role = useMultiplayerStore(s => s.role)
   const gameMode = useMultiplayerStore(s => s.gameMode)
+  const role = useMultiplayerStore(s => s.role)
   const dispatch = useGameStore(s => s.dispatch)
 
-  /** Send a message to the connected peer */
-  const send = useCallback((msg: MultiplayerMessage) => {
-    const conn = connRef.current
-    if (conn && conn.open) {
-      conn.send(msg)
-    }
-  }, [])
+  // Register message + disconnect handlers (updates when role changes)
+  useEffect(() => {
+    if (gameMode !== 'pvp') return
 
-  /** Host: send current game state to guest */
-  const syncStateToGuest = useCallback(() => {
-    const state = useGameStore.getState().gameState
-    if (!state) return
-    send({ type: 'game-state', state: serializeGameState(state) })
-  }, [send])
+    setMessageHandler((msg: MultiplayerMessage) => {
+      const dictionary = useDictionaryStore.getState().words
+      const mpState = useMultiplayerStore.getState()
 
-  /** Guest: send an action to the host for processing */
-  const sendAction = useCallback((action: RemoteGameAction) => {
-    send({ type: 'action', action })
-  }, [send])
+      if (mpState.role === 'host') {
+        if (msg.type === 'action') {
+          useGameStore.getState().dispatch(msg.action)
+        } else if (msg.type === 'opponent-quit') {
+          mpState.setConnectionStatus('disconnected')
+          mpState.setErrorMessage('Opponent disconnected')
+        }
+      } else {
+        // Guest
+        if (msg.type === 'game-state') {
+          const state = deserializeGameState(msg.state, dictionary)
+          useGameStore.getState().dispatch({ type: 'SET_STATE', state })
+        } else if (msg.type === 'opponent-quit') {
+          mpState.setConnectionStatus('disconnected')
+          mpState.setErrorMessage('Opponent disconnected')
+        }
+      }
+    })
 
-  /** Notify opponent about quit */
-  const sendQuit = useCallback(() => {
-    send({ type: 'opponent-quit' })
-  }, [send])
+    setDisconnectHandler(() => {
+      const mpState = useMultiplayerStore.getState()
+      if (mpState.connectionStatus === 'connected') {
+        mpState.setConnectionStatus('disconnected')
+        mpState.setErrorMessage('Opponent disconnected')
+      }
+    })
+  }, [gameMode, role, dispatch])
 
   // Host: subscribe to game state changes and sync to guest
   useEffect(() => {
     if (gameMode !== 'pvp' || role !== 'host') return
 
     const unsub = useGameStore.subscribe(() => {
-      syncStateToGuest()
+      const state = useGameStore.getState().gameState
+      if (state) {
+        sendMessage({ type: 'game-state', state: serializeGameState(state) })
+      }
     })
 
     return unsub
-  }, [gameMode, role, syncStateToGuest])
+  }, [gameMode, role])
+}
 
-  /** Set up the data connection (called after peer connects) */
-  const setupConnection = useCallback((conn: DataConnection) => {
-    connRef.current = conn
+/** Send a game action to the host (used by guest) */
+export function sendRemoteAction(action: RemoteGameAction): void {
+  sendMessage({ type: 'action', action })
+}
 
-    conn.on('data', (raw) => {
-      const msg = raw as MultiplayerMessage
-      const dictionary = useDictionaryStore.getState().words
+/** Notify opponent about quit */
+export function sendQuitMessage(): void {
+  sendMessage({ type: 'opponent-quit' })
+}
 
-      if (role === 'host') {
-        // Host receives actions from guest
-        if (msg.type === 'action') {
-          dispatch(msg.action)
-        } else if (msg.type === 'opponent-quit') {
-          useMultiplayerStore.getState().setConnectionStatus('disconnected')
-          useMultiplayerStore.getState().setErrorMessage('Opponent disconnected')
-        }
-      } else {
-        // Guest receives game state from host
-        if (msg.type === 'game-state') {
-          const state = deserializeGameState(msg.state, dictionary)
-          dispatch({ type: 'SET_STATE', state })
-        } else if (msg.type === 'start-game' || msg.type === 'rematch') {
-          // Host started/restarted the game — state will arrive via game-state message
-        } else if (msg.type === 'opponent-quit') {
-          useMultiplayerStore.getState().setConnectionStatus('disconnected')
-          useMultiplayerStore.getState().setErrorMessage('Opponent disconnected')
-        }
-      }
-    })
-
-    conn.on('close', () => {
-      const mp = useMultiplayerStore.getState()
-      if (mp.connectionStatus === 'connected') {
-        mp.setConnectionStatus('disconnected')
-        mp.setErrorMessage('Opponent disconnected')
-      }
-    })
-  }, [role, dispatch])
-
-  /** Store the peer connection ref for cleanup */
-  const setPeerConnection = useCallback((pc: PeerConnection) => {
-    peerRef.current = pc
-  }, [])
-
-  /** Cleanup on unmount */
-  useEffect(() => {
-    return () => {
-      peerRef.current?.destroy()
-      peerRef.current = null
-      connRef.current = null
-    }
-  }, [])
-
-  return {
-    send,
-    sendAction,
-    sendQuit,
-    syncStateToGuest,
-    setupConnection,
-    setPeerConnection,
-    connRef,
-    peerRef,
+/** Sync current game state to guest (used by host) */
+export function syncStateToGuest(): void {
+  const state = useGameStore.getState().gameState
+  if (state) {
+    sendMessage({ type: 'game-state', state: serializeGameState(state) })
   }
 }

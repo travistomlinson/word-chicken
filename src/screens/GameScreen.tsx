@@ -3,7 +3,8 @@ import { useGameStore } from '../store/gameSlice'
 import { useAppStore } from '../store/appSlice'
 import { useMultiplayerStore } from '../store/multiplayerSlice'
 import { useAI } from '../hooks/useAI'
-import { useMultiplayer } from '../hooks/useMultiplayer'
+import { useMultiplayer, sendQuitMessage } from '../hooks/useMultiplayer'
+import { destroyPeer } from '../lib/multiplayer'
 import { SharedWordDisplay } from '../components/SharedWordDisplay'
 import { ChickenOMeter } from '../components/ChickenOMeter'
 import { TurnIndicator } from '../components/TurnIndicator'
@@ -32,7 +33,6 @@ export function GameScreen() {
   const setScreen = useAppStore(s => s.setScreen)
 
   const [showGameOver, setShowGameOver] = useState(false)
-  const { sendQuit } = useMultiplayer()
 
   // Guard: if no game started, redirect to config
   useEffect(() => {
@@ -65,6 +65,7 @@ export function GameScreen() {
           <p className="font-jost text-charcoal/60 text-sm mb-6">{mpErrorMessage}</p>
           <button
             onClick={() => {
+              destroyPeer()
               dispatch({ type: 'RESET_GAME' })
               useMultiplayerStore.getState().reset()
               setScreen('config')
@@ -81,7 +82,7 @@ export function GameScreen() {
   function handleQuit() {
     if (window.confirm('End the current game?')) {
       if (gameMode === 'pvp') {
-        sendQuit()
+        sendQuitMessage()
       }
       // Dispatch END_ROUND to compute final scores if we're mid-round
       if (phase !== 'ROUND_END') {

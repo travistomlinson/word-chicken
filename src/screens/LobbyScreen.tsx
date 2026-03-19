@@ -3,11 +3,11 @@ import { useAppStore } from '../store/appSlice'
 import { useGameStore } from '../store/gameSlice'
 import { useMultiplayerStore } from '../store/multiplayerSlice'
 import { useDictionaryStore } from '../store/dictionarySlice'
-import { useMultiplayer } from '../hooks/useMultiplayer'
+import { useMultiplayer, syncStateToGuest } from '../hooks/useMultiplayer'
 import {
   generateLobbyCode,
-  createHost,
-  connectToHost,
+  createHostPeer,
+  connectToHostPeer,
 } from '../lib/multiplayer'
 import type { TileDistribution } from '../lib/tileBag'
 
@@ -39,7 +39,8 @@ export function LobbyScreen() {
     setRole, setLobbyCode, setConnectionStatus, setErrorMessage, reset,
   } = useMultiplayerStore()
 
-  const { setupConnection, setPeerConnection, syncStateToGuest } = useMultiplayer()
+  // Mount multiplayer hook to register message handlers
+  useMultiplayer()
 
   const [joinCode, setJoinCode] = useState('')
   const [config] = useState<StoredConfig>(loadConfig)
@@ -64,7 +65,7 @@ export function LobbyScreen() {
         setScreen('game')
       }, 100)
     }
-  }, [connectionStatus, role, config, dispatch, syncStateToGuest, setScreen])
+  }, [connectionStatus, role, config, dispatch, setScreen])
 
   // Guest: once we receive game state, navigate to game
   useEffect(() => {
@@ -87,10 +88,9 @@ export function LobbyScreen() {
     setErrorMessage(null)
     hasStartedGame.current = false
 
-    const pc = createHost(
+    createHostPeer(
       code,
-      (conn) => {
-        setupConnection(conn)
+      () => {
         setConnectionStatus('connected')
       },
       (err) => {
@@ -101,7 +101,6 @@ export function LobbyScreen() {
         // Peer opened successfully
       },
     )
-    setPeerConnection(pc)
   }
 
   function handleJoinGame() {
@@ -117,10 +116,9 @@ export function LobbyScreen() {
     setErrorMessage(null)
     hasStartedGame.current = false
 
-    const pc = connectToHost(
+    connectToHostPeer(
       code,
-      (conn) => {
-        setupConnection(conn)
+      () => {
         setConnectionStatus('connected')
       },
       (err) => {
@@ -133,7 +131,6 @@ export function LobbyScreen() {
         }
       },
     )
-    setPeerConnection(pc)
   }
 
   function handleBack() {

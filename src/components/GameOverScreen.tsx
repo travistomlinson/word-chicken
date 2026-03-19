@@ -1,7 +1,8 @@
 import { useGameStore } from '../store/gameSlice'
 import { useAppStore } from '../store/appSlice'
 import { useMultiplayerStore } from '../store/multiplayerSlice'
-import { useMultiplayer } from '../hooks/useMultiplayer'
+import { sendQuitMessage } from '../hooks/useMultiplayer'
+import { destroyPeer } from '../lib/multiplayer'
 
 export function GameOverScreen() {
   const totalScores = useGameStore(s => s.gameState!.totalScores)
@@ -13,7 +14,6 @@ export function GameOverScreen() {
   const gameMode = useMultiplayerStore(s => s.gameMode)
   const localPlayerId = useMultiplayerStore(s => s.localPlayerId)
   const role = useMultiplayerStore(s => s.role)
-  const { sendQuit } = useMultiplayer()
 
   const opponentId = localPlayerId === 'human' ? 'ai' : 'human'
   const opponentLabel = gameMode === 'pvp' ? 'Opponent' : 'AI'
@@ -39,7 +39,8 @@ export function GameOverScreen() {
 
   function handleNewGame() {
     if (gameMode === 'pvp') {
-      sendQuit()
+      sendQuitMessage()
+      destroyPeer()
       useMultiplayerStore.getState().reset()
     }
     dispatch({ type: 'RESET_GAME' })

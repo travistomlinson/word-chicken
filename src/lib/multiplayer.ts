@@ -20,16 +20,13 @@ export function lobbyCodeToPeerId(code: string): string {
 export type MultiplayerMessage =
   | { type: 'game-state'; state: SerializedGameState }
   | { type: 'action'; action: RemoteGameAction }
-  | { type: 'start-game'; config: SerializedGameConfig }
-  | { type: 'rematch'; config: SerializedGameConfig }
+  | { type: 'start-game' }
   | { type: 'opponent-quit' }
 
 /** GameState without the dictionary Set (can't serialize Sets) */
 export type SerializedGameState = Omit<GameState, 'config'> & {
   config: Omit<GameState['config'], 'dictionary'>
 }
-
-export type SerializedGameConfig = Omit<GameState['config'], 'dictionary'>
 
 /** Strip the dictionary from game state for network transfer */
 export function serializeGameState(state: GameState): SerializedGameState {
@@ -54,66 +51,89 @@ export function deserializeGameState(
   }
 }
 
-export interface PeerConnection {
-  peer: Peer
-  connection: DataConnection | null
-  destroy: () => void
+// --- Module-level connection state (shared across all hook instances) ---
+
+let _peer: Peer | null = null
+let _conn: DataConnection | null = null
+let _onData: ((msg: MultiplayerMessage) => void) | null = null
+let _onDisconnect: (() => void) | null = null
+
+/** Send a message to the connected peer */
+export function sendMessage(msg: MultiplayerMessage): void {
+  if (_conn && _conn.open) {
+    _conn.send(msg)
+  }
 }
 
-/**
- * Create a host peer that waits for a guest to connect.
- */
-export function createHost(
-  lobbyCode: string,
-  onConnection: (conn: DataConnection) => void,
-  onError: (err: Error) => void,
-  onOpen: () => void,
-): PeerConnection {
-  const peerId = lobbyCodeToPeerId(lobbyCode)
-  const peer = new Peer(peerId)
-  let connection: DataConnection | null = null
+/** Register the handler for incoming messages */
+export function setMessageHandler(handler: (msg: MultiplayerMessage) => void): void {
+  _onData = handler
+}
 
-  peer.on('open', () => {
-    onOpen()
+/** Register the handler for disconnection */
+export function setDisconnectHandler(handler: () => void): void {
+  _onDisconnect = handler
+}
+
+function wireConnection(conn: DataConnection): void {
+  _conn = conn
+
+  conn.on('data', (raw) => {
+    if (_onData) {
+      _onData(raw as MultiplayerMessage)
+    }
   })
 
+  conn.on('close', () => {
+    if (_onDisconnect) {
+      _onDisconnect()
+    }
+  })
+}
+
+/** Create a host peer that waits for a guest to connect. */
+export function createHostPeer(
+  lobbyCode: string,
+  onConnection: () => void,
+  onError: (err: Error) => void,
+  onOpen: () => void,
+): void {
+  destroyPeer()
+  const peerId = lobbyCodeToPeerId(lobbyCode)
+  const peer = new Peer(peerId)
+  _peer = peer
+
+  peer.on('open', onOpen)
+
   peer.on('connection', (conn) => {
-    connection = conn
-    onConnection(conn)
+    conn.on('open', () => {
+      wireConnection(conn)
+      onConnection()
+    })
   })
 
   peer.on('error', (err) => {
     onError(err as unknown as Error)
   })
-
-  return {
-    peer,
-    get connection() { return connection },
-    destroy: () => {
-      connection?.close()
-      peer.destroy()
-    },
-  }
 }
 
-/**
- * Connect to a host peer as a guest.
- */
-export function connectToHost(
+/** Connect to a host peer as a guest. */
+export function connectToHostPeer(
   lobbyCode: string,
-  onConnection: (conn: DataConnection) => void,
+  onConnection: () => void,
   onError: (err: Error) => void,
-): PeerConnection {
+): void {
+  destroyPeer()
   const peer = new Peer()
-  let connection: DataConnection | null = null
+  _peer = peer
 
   peer.on('open', () => {
     const hostPeerId = lobbyCodeToPeerId(lobbyCode)
     const conn = peer.connect(hostPeerId, { reliable: true })
 
     conn.on('open', () => {
-      connection = conn
-      onConnection(conn)
+      wireConnection(conn)
+      onConnection()
     })
 
     conn.on('error', (err) => {
@@ -124,13 +144,14 @@ export function connectToHost(
   peer.on('error', (err) => {
     onError(err as unknown as Error)
   })
+}
 
-  return {
-    peer,
-    get connection() { return connection },
-    destroy: () => {
-      connection?.close()
-      peer.destroy()
-    },
-  }
+/** Destroy the peer connection and clean up */
+export function destroyPeer(): void {
+  _conn?.close()
+  _conn = null
+  _peer?.destroy()
+  _peer = null
+  _onData = null
+  _onDisconnect = null
 }

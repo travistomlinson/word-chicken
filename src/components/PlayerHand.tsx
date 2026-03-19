@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useGameStore } from '../store/gameSlice'
 import { useMultiplayerStore } from '../store/multiplayerSlice'
-import { useMultiplayer } from '../hooks/useMultiplayer'
+import { sendRemoteAction } from '../hooks/useMultiplayer'
 import { validateTurn } from '../lib/wordValidator'
 import { validateStartingWord } from '../lib/roundManager'
 import { findAIMove, getVocabulary } from '../lib/aiEngine'
@@ -41,7 +41,6 @@ export function PlayerHand() {
   const gameMode = useMultiplayerStore(s => s.gameMode)
   const localPlayerId = useMultiplayerStore(s => s.localPlayerId)
   const role = useMultiplayerStore(s => s.role)
-  const { sendAction } = useMultiplayer()
 
   // In multiplayer, the local player's data key depends on role
   const myId = gameMode === 'pvp' ? localPlayerId : 'human'
@@ -181,7 +180,7 @@ export function PlayerHand() {
   function dispatchAction(action: { type: 'SUBMIT_STARTING_WORD'; playerId: string; word: string } | { type: 'SUBMIT_WORD'; playerId: string; word: string }) {
     if (gameMode === 'pvp' && role === 'guest') {
       // Guest sends action to host
-      sendAction(action)
+      sendRemoteAction(action)
     } else {
       // Host or AI mode: dispatch locally
       dispatch(action)
