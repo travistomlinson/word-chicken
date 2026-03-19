@@ -79,7 +79,7 @@ Plans:
 
 </details>
 
-### 🚧 v1.1 Design Audit (In Progress)
+### v1.1 Design Audit (In Progress)
 
 **Milestone Goal:** Make the game feel polished and professional across all screen sizes — fix viewport and layout breakage, bring touch targets and color contrast to standard, and refine visual hierarchy.
 
@@ -95,8 +95,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Replace min-h-screen with dvh/svh on App shell, ConfigScreen, and LobbyScreen
-- [ ] 05-02-PLAN.md — GameScreen viewport fix, dark mode overscroll bleed fix, viewport-fit=cover prerequisite
+- [x] 05-01-PLAN.md — Replace min-h-screen with dvh/svh on App shell, ConfigScreen, and LobbyScreen
+- [x] 05-02-PLAN.md — GameScreen viewport fix, dark mode overscroll bleed fix, viewport-fit=cover prerequisite
 
 #### Phase 6: Mobile Layout and Touch Audit
 **Goal**: Every interactive element is reachable by thumb and nothing is obscured by device hardware affordances
@@ -107,9 +107,11 @@ Plans:
   2. The Submit button and staging area consistently appear in the lower third of the screen, reachable without shifting the grip
   3. All secondary action buttons (Quit, Give Up, Show a Word, How to Play, Back, Copy Code) have touch targets of at least 44px in both dimensions
   4. On the Lobby screen, the Back button remains tappable and visible when the virtual keyboard is open
-**Plans**: TBD
+**Plans**: 2 plans
 
-Plans: TBD
+Plans:
+- [ ] 06-01-PLAN.md — Safe-area inset padding on all screens, test scaffold for Phase 6
+- [ ] 06-02-PLAN.md — Touch target audit on all secondary action buttons (44px minimum)
 
 #### Phase 7: Color and Contrast Audit
 **Goal**: All text in both light and dark mode passes WCAG AA contrast — no text is invisible on any surface
@@ -149,7 +151,7 @@ Phases execute in numeric order: 5 → 6 → 7 → 8
 | 2. Core Engine | v1.0 | 3/3 | Complete | 2026-03-18 |
 | 3. AI and State Machine | v1.0 | 2/2 | Complete | 2026-03-18 |
 | 4. Game UI | v1.0 | 4/4 | Complete | 2026-03-18 |
-| 5. Viewport Foundation | 2/2 | Complete   | 2026-03-19 | - |
-| 6. Mobile Layout and Touch Audit | v1.1 | 0/TBD | Not started | - |
+| 5. Viewport Foundation | v1.1 | 2/2 | Complete | 2026-03-19 |
+| 6. Mobile Layout and Touch Audit | v1.1 | 0/2 | Not started | - |
 | 7. Color and Contrast Audit | v1.1 | 0/TBD | Not started | - |
 | 8. Visual Polish and Hierarchy | v1.1 | 0/TBD | Not started | - |
