@@ -70,7 +70,7 @@ function App() {
 
   if (status === 'idle' || status === 'loading') {
     return (
-      <div className={`bg-surface min-h-screen font-jost flex items-center justify-center ${darkMode ? 'dark' : ''}`}>
+      <div className={`bg-surface min-h-svh font-jost flex items-center justify-center ${darkMode ? 'dark' : ''}`}>
         <span className="text-ink">Loading dictionary...</span>
       </div>
     )
@@ -78,14 +78,14 @@ function App() {
 
   if (status === 'error') {
     return (
-      <div className={`bg-surface min-h-screen font-jost flex items-center justify-center ${darkMode ? 'dark' : ''}`}>
+      <div className={`bg-surface min-h-svh font-jost flex items-center justify-center ${darkMode ? 'dark' : ''}`}>
         <span className="text-corbusier-red">Failed to load dictionary.</span>
       </div>
     )
   }
 
   return (
-    <div className={`bg-surface min-h-screen font-jost ${darkMode ? 'dark' : ''}`}>
+    <div className={`bg-surface min-h-dvh font-jost ${darkMode ? 'dark' : ''}`}>
       {screen === 'config' && <ConfigScreen />}
       {screen === 'lobby' && <LobbyScreen />}
       {screen === 'game' && <GameScreen />}

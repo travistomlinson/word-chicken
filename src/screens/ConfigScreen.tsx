@@ -91,7 +91,7 @@ export function ConfigScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-surface via-surface to-corbusier-blue/5 p-4">
+    <div className="min-h-dvh bg-gradient-to-br from-surface via-surface to-corbusier-blue/5 p-4">
       <div className="max-w-md mx-auto">
         {/* Dark mode toggle */}
         <div className="flex justify-end pt-2">
