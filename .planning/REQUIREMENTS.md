@@ -1,171 +1,93 @@
-# Requirements: Word Chicken
+# Requirements: Word Chicken v1.1
 
 **Defined:** 2026-03-18
 **Core Value:** The escalating tension of "can I extend this word?" — the chicken moment where the word keeps growing and you either find a play or you're out.
 
-## v1 Requirements
+## v1.1 Requirements
 
-Requirements for initial release. Each maps to roadmap phases.
+Requirements for the design audit and fix pass. Each maps to roadmap phases.
 
-### Word Validation
+### Viewport & Layout
 
-- [x] **WVAL-01**: Game loads a bundled TWL dictionary client-side for instant word lookup
-- [x] **WVAL-02**: Submitted words are validated against the dictionary in real-time
-- [x] **WVAL-03**: Invalid submissions show specific error: "not a valid word" vs "letters not available in your hand"
-- [x] **WVAL-04**: Q tile represents "Qu" — dictionary lookups handle Qu-prefix words correctly
+- [ ] **VPRT-01**: App fills the visible viewport on mobile without overflow or wasted space on first load
+- [ ] **VPRT-02**: Game content does not require scrolling during active gameplay on any standard phone size (375px+)
+- [ ] **VPRT-03**: Config and Lobby screens scroll gracefully when content exceeds viewport height
+- [ ] **VPRT-04**: No content is clipped by iPhone notch, Dynamic Island, or home indicator gesture zone
+- [ ] **VPRT-05**: Dark mode does not show white background bleed on iOS overscroll rubber-banding
 
-### Tile Management
+### Touch & Interaction
 
-- [x] **TILE-01**: Player receives a hand of 9 letter tiles at the start of each round
-- [x] **TILE-02**: After playing a letter, player draws back up to 9 tiles
-- [x] **TILE-03**: Tile distribution follows Bananagrams-style weighted frequency by default
-- [x] **TILE-04**: Tile distribution is configurable (Bananagrams-style or Scrabble-style)
-- [x] **TILE-05**: Q tile renders as "Qu" and counts as a single tile in the hand
+- [ ] **TUCH-01**: All secondary action buttons (Quit, Give Up, Show a Word, How to Play, Back, Copy Code) have minimum 44px touch targets
+- [ ] **TUCH-02**: Primary action area (Submit button, staging area) reliably lands in the bottom thumb zone of the screen
+- [ ] **TUCH-03**: Lobby screen input and buttons remain accessible when the virtual keyboard is open
 
-### Core Gameplay
+### Color & Contrast
 
-- [x] **GAME-01**: Starting player creates a 3-letter word to begin a round
-- [x] **GAME-02**: Each subsequent turn, a player adds one letter to the existing word
-- [x] **GAME-03**: Rearranging letters is allowed when extending a word (e.g., CAT + R → CART)
-- [x] **GAME-04**: Turn submission validates that the new word uses all previous letters plus exactly one new letter from the player's hand
-- [x] **GAME-05**: Player is eliminated from the round if they cannot form a valid word
-- [x] **GAME-06**: Last player standing wins the round
-- [x] **GAME-07**: Round winner starts the next round with a new 3-letter word
-- [x] **GAME-08**: All players receive new hands at the start of each round
-- [x] **GAME-09**: No maximum word length — word grows until someone can't extend
-- [x] **GAME-10**: No passing allowed — starting player must play a word
-- [x] **GAME-11**: Pluralizing with S is banned by default (configurable toggle to allow)
+- [ ] **COLR-01**: All text passes WCAG AA contrast ratio (4.5:1 for normal text, 3:1 for large text) in light mode
+- [ ] **COLR-02**: All text passes WCAG AA contrast ratio in dark mode — no opacity below /50 for informational text
+- [ ] **COLR-03**: Yellow backgrounds use dark text (charcoal) instead of white text for WCAG AA compliance
+- [ ] **COLR-04**: ChickenOMeter gradient uses CSS custom properties from the design token system instead of hardcoded hex values
 
-### AI Opponent
+### Visual Polish
 
-- [x] **AI-01**: Single-player mode against one AI opponent (1v1)
-- [x] **AI-02**: AI has three difficulty levels: Easy, Medium, Hard
-- [x] **AI-03**: Easy AI selects from a curated common-word vocabulary (~5K words)
-- [x] **AI-04**: Medium AI selects from a moderate vocabulary (~20K words)
-- [x] **AI-05**: Hard AI uses the full dictionary
-- [x] **AI-06**: AI respects all configured game rules (plurals toggle, etc.)
-- [x] **AI-07**: AI displays a "thinking" state so player knows the game is processing
+- [ ] **PLSH-01**: Turn indicator has clear visual dominance over round counter and Quit button in the top bar
+- [ ] **PLSH-02**: Score panel visually distinguishes round score (primary) from total score (secondary)
+- [ ] **PLSH-03**: ChickenOMeter is wide enough to read as a tension indicator on mobile (32-40px vs current 20px)
+- [ ] **PLSH-04**: Staged tiles have an unambiguous "taken" visual state in the player hand
+- [ ] **PLSH-05**: RoundEndCard displays as an overlay consistent with GameOverScreen styling
 
-### Scoring
+## v1.2+ Requirements
 
-- [x] **SCOR-01**: Words earn points based on word length
-- [x] **SCOR-02**: Rare letters (Q, Z, X, J, etc.) earn bonus points
-- [x] **SCOR-03**: Running score is displayed during the game
-- [x] **SCOR-04**: End-of-round score summary shows points earned
+Deferred to future release.
 
-### Game UI
+### Transitions & Animation
 
-- [x] **UI-01**: Current word displayed prominently, updated each turn
-- [x] **UI-02**: Player's 9-tile hand displayed as clickable/tappable tiles
-- [x] **UI-03**: Clear turn indicator showing whose turn it is (player vs AI)
-- [x] **UI-04**: Game over screen with win/loss result, score summary, and "play again" option
-- [x] **UI-05**: Word history display showing the sequence of words and who played each turn
-- [x] **UI-06**: Tension ramp visualization ("chicken-o-meter") showing escalating pressure as the word grows
-- [x] **UI-07**: Round start and round end transitions are visually clear
+- **TRAN-01**: Animated screen transitions between config/lobby/game
+- **TRAN-02**: Word history mobile drawer (slide-up panel)
 
-### Configuration
+### Multiplayer UX
 
-- [x] **CONF-01**: Pre-game screen to select AI difficulty (Easy/Medium/Hard)
-- [x] **CONF-02**: Pre-game toggle for allowing/banning plurals (S)
-- [x] **CONF-03**: Pre-game selection of tile distribution (Bananagrams or Scrabble style)
-- [x] **CONF-04**: Sensible defaults: Medium difficulty, plurals banned, Bananagrams distribution
-
-### UX
-
-- [x] **UX-01**: Keyboard input support — desktop users can type to select tiles
-- [x] **UX-02**: "How to Play" modal explaining the rules for first-time players
-- [x] **UX-03**: Responsive layout — playable on both desktop and mobile browsers
-
-## v2 Requirements
-
-Deferred to future release. Tracked but not in current roadmap.
-
-### AI Enhancements
-
-- **AIX-01**: AI flavor text / personality commentary during play
-- **AIX-02**: Multiple AI opponents (3-player mode: 1 human vs 2 AI)
-
-### Polish
-
-- **POL-01**: Sound effects for valid/invalid words, elimination, round win
-- **POL-02**: Session stats tracking (longest word, rarest letter, win streak)
-- **POL-03**: Achievements / badges system
-
-### Multiplayer
-
-- **MULT-01**: Online multiplayer with real-time play
-- **MULT-02**: User accounts and authentication
-- **MULT-03**: Leaderboards
-- **MULT-04**: Local pass-and-play multiplayer
+- **MPUX-01**: Silent reconnect without user notification (see pending todo)
+- **MPUX-02**: Show valid word on elimination (see pending todo)
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Online multiplayer | High complexity, validates mechanic first with AI |
-| User accounts / login | No social graph in v1, play-immediately is better |
-| Drag-and-drop tiles | Accessibility complexity disproportionate to value; tap/click sufficient |
-| Real-time chat with AI | LLM cost/latency/moderation risk; pre-scripted flavor text is v2 |
-| Timer / countdown per turn | Elimination mechanic already creates pressure naturally |
-| Mobile native app | Web-first; revisit if PWA metrics show strong mobile usage |
+| Game logic changes | This is a design-only milestone — no mechanics modifications |
+| New game features | Polish pass, not feature build |
+| Sound effects / haptics | Deferred to future milestone |
+| Drag-and-drop tile reordering | Accessibility complexity disproportionate to value |
+| Floating action button for Submit | Anti-feature per research — inline button is correct |
+| Word history on mobile (visible) | Anti-feature per research — hidden on mobile is correct pattern |
 
 ## Traceability
 
-Which phases cover which requirements. Updated during roadmap creation.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| WVAL-01 | Phase 1 | Complete |
-| WVAL-02 | Phase 2 | Complete |
-| WVAL-03 | Phase 2 | Complete |
-| WVAL-04 | Phase 2 | Complete |
-| TILE-01 | Phase 2 | Complete |
-| TILE-02 | Phase 2 | Complete |
-| TILE-03 | Phase 2 | Complete |
-| TILE-04 | Phase 2 | Complete |
-| TILE-05 | Phase 2 | Complete |
-| GAME-01 | Phase 2 | Complete |
-| GAME-02 | Phase 2 | Complete |
-| GAME-03 | Phase 2 | Complete |
-| GAME-04 | Phase 2 | Complete |
-| GAME-05 | Phase 2 | Complete |
-| GAME-06 | Phase 2 | Complete |
-| GAME-07 | Phase 2 | Complete |
-| GAME-08 | Phase 2 | Complete |
-| GAME-09 | Phase 2 | Complete |
-| GAME-10 | Phase 2 | Complete |
-| GAME-11 | Phase 2 | Complete |
-| SCOR-01 | Phase 2 | Complete |
-| SCOR-02 | Phase 2 | Complete |
-| AI-01 | Phase 3 | Complete |
-| AI-02 | Phase 3 | Complete |
-| AI-03 | Phase 3 | Complete |
-| AI-04 | Phase 3 | Complete |
-| AI-05 | Phase 3 | Complete |
-| AI-06 | Phase 3 | Complete |
-| AI-07 | Phase 3 | Complete |
-| SCOR-03 | Phase 4 | Complete |
-| SCOR-04 | Phase 4 | Complete |
-| UI-01 | Phase 4 | Complete |
-| UI-02 | Phase 4 | Complete |
-| UI-03 | Phase 4 | Complete |
-| UI-04 | Phase 4 | Complete |
-| UI-05 | Phase 4 | Complete |
-| UI-06 | Phase 4 | Complete |
-| UI-07 | Phase 4 | Complete |
-| CONF-01 | Phase 4 | Complete |
-| CONF-02 | Phase 4 | Complete |
-| CONF-03 | Phase 4 | Complete |
-| CONF-04 | Phase 4 | Complete |
-| UX-01 | Phase 4 | Complete |
-| UX-02 | Phase 4 | Complete |
-| UX-03 | Phase 4 | Complete |
+| VPRT-01 | Phase 5 | Pending |
+| VPRT-02 | Phase 5 | Pending |
+| VPRT-03 | Phase 5 | Pending |
+| VPRT-04 | Phase 6 | Pending |
+| VPRT-05 | Phase 5 | Pending |
+| TUCH-01 | Phase 6 | Pending |
+| TUCH-02 | Phase 6 | Pending |
+| TUCH-03 | Phase 6 | Pending |
+| COLR-01 | Phase 7 | Pending |
+| COLR-02 | Phase 7 | Pending |
+| COLR-03 | Phase 7 | Pending |
+| COLR-04 | Phase 7 | Pending |
+| PLSH-01 | Phase 8 | Pending |
+| PLSH-02 | Phase 8 | Pending |
+| PLSH-03 | Phase 8 | Pending |
+| PLSH-04 | Phase 8 | Pending |
+| PLSH-05 | Phase 8 | Pending |
 
 **Coverage:**
-- v1 requirements: 37 total
-- Mapped to phases: 37
+- v1.1 requirements: 17 total
+- Mapped to phases: 17
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-18*
-*Last updated: 2026-03-18 — traceability populated after roadmap creation*
+*Last updated: 2026-03-18 after initial definition*
