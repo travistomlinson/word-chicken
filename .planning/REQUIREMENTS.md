@@ -12,14 +12,14 @@ Requirements for the design audit and fix pass. Each maps to roadmap phases.
 - [x] **VPRT-01**: App fills the visible viewport on mobile without overflow or wasted space on first load
 - [x] **VPRT-02**: Game content does not require scrolling during active gameplay on any standard phone size (375px+)
 - [x] **VPRT-03**: Config and Lobby screens scroll gracefully when content exceeds viewport height
-- [ ] **VPRT-04**: No content is clipped by iPhone notch, Dynamic Island, or home indicator gesture zone
+- [x] **VPRT-04**: No content is clipped by iPhone notch, Dynamic Island, or home indicator gesture zone
 - [x] **VPRT-05**: Dark mode does not show white background bleed on iOS overscroll rubber-banding
 
 ### Touch & Interaction
 
 - [ ] **TUCH-01**: All secondary action buttons (Quit, Give Up, Show a Word, How to Play, Back, Copy Code) have minimum 44px touch targets
-- [ ] **TUCH-02**: Primary action area (Submit button, staging area) reliably lands in the bottom thumb zone of the screen
-- [ ] **TUCH-03**: Lobby screen input and buttons remain accessible when the virtual keyboard is open
+- [x] **TUCH-02**: Primary action area (Submit button, staging area) reliably lands in the bottom thumb zone of the screen
+- [x] **TUCH-03**: Lobby screen input and buttons remain accessible when the virtual keyboard is open
 
 ### Color & Contrast
 
@@ -68,11 +68,11 @@ Deferred to future release.
 | VPRT-01 | Phase 5 | Complete |
 | VPRT-02 | Phase 5 | Complete |
 | VPRT-03 | Phase 5 | Complete |
-| VPRT-04 | Phase 6 | Pending |
+| VPRT-04 | Phase 6 | Complete |
 | VPRT-05 | Phase 5 | Complete |
 | TUCH-01 | Phase 6 | Pending |
-| TUCH-02 | Phase 6 | Pending |
-| TUCH-03 | Phase 6 | Pending |
+| TUCH-02 | Phase 6 | Complete |
+| TUCH-03 | Phase 6 | Complete |
 | COLR-01 | Phase 7 | Pending |
 | COLR-02 | Phase 7 | Pending |
 | COLR-03 | Phase 7 | Pending |

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Design Audit
 status: planning
-stopped_at: Completed 05-viewport-foundation-01-PLAN.md
-last_updated: "2026-03-19T15:19:55.552Z"
+stopped_at: Completed 06-mobile-layout-and-touch-audit-01-PLAN.md
+last_updated: "2026-03-19T20:23:27.674Z"
 last_activity: 2026-03-18 — v1.1 roadmap written, ready for Phase 5 planning
 progress:
   total_phases: 8
   completed_phases: 5
-  total_plans: 13
-  completed_plans: 13
+  total_plans: 15
+  completed_plans: 14
   percent: 0
 ---
 
@@ -48,6 +48,7 @@ Progress: [░░░░░░░░░░] 0%
 *Updated after each plan completion*
 | Phase 05-viewport-foundation P02 | 3m | 2 tasks | 4 files |
 | Phase 05-viewport-foundation P01 | 2 | 2 tasks | 4 files |
+| Phase 06-mobile-layout-and-touch-audit P01 | 2m | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -62,6 +63,8 @@ Progress: [░░░░░░░░░░] 0%
 - [Phase 05-viewport-foundation]: GameScreen uses min-h-dvh (not h-dvh) on outer container to avoid reflow jitter on iOS Safari; both fixed overlays use h-dvh; html:has(.dark) fixes dark mode overscroll bleed; viewport-fit=cover added as Phase 6 gate
 - [Phase 05-viewport-foundation]: App shell loading/error states use min-h-svh (not dvh) to avoid reflow jitter on iOS Safari
 - [Phase 05-viewport-foundation]: Scrollable screens (Config, Lobby) use min-h-dvh so content fills dynamic viewport after browser chrome collapses
+- [Phase 06-mobile-layout-and-touch-audit]: pt-safe/pb-safe CSS utilities use max(env(safe-area-inset-*), 0.5rem) to ensure minimum padding on non-notched devices
+- [Phase 06-mobile-layout-and-touch-audit]: ConfigScreen and LobbyScreen get pb-safe only (scrollable screens don't need top inset)
 
 ### Pending Todos
 
@@ -75,6 +78,6 @@ Progress: [░░░░░░░░░░] 0%
 
 ## Session Continuity
 
-Last session: 2026-03-19T15:16:08.197Z
-Stopped at: Completed 05-viewport-foundation-01-PLAN.md
+Last session: 2026-03-19T20:23:27.672Z
+Stopped at: Completed 06-mobile-layout-and-touch-audit-01-PLAN.md
 Resume file: None
