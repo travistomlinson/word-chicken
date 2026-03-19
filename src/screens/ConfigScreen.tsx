@@ -78,40 +78,46 @@ export function ConfigScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-concrete p-4">
+    <div className="min-h-screen bg-gradient-to-br from-concrete via-concrete to-corbusier-blue/5 p-4">
       <div className="max-w-md mx-auto">
-        <h1 className="font-jost font-bold uppercase tracking-widest text-charcoal text-4xl sm:text-5xl mb-2 mt-8">
-          Word Chicken
-        </h1>
-        <button
-          onClick={() => setModalOpen(true)}
-          className="text-corbusier-blue underline cursor-pointer text-sm font-jost uppercase mb-8"
-        >
-          How to Play
-        </button>
+        {/* Title with accent bar */}
+        <div className="mb-8 mt-8">
+          <div className="w-12 h-1 bg-corbusier-red rounded-full mb-4" />
+          <h1 className="font-jost font-bold uppercase tracking-widest text-charcoal text-4xl sm:text-5xl mb-2">
+            Word Chicken
+          </h1>
+          <button
+            onClick={() => setModalOpen(true)}
+            className="text-corbusier-blue underline cursor-pointer text-sm font-jost uppercase hover:text-corbusier-blue/70 transition-colors"
+          >
+            How to Play
+          </button>
+        </div>
 
         {/* Difficulty */}
-        <div className="mb-4">
+        <div className="mb-6">
           <p className="font-jost font-bold uppercase tracking-wider text-charcoal text-sm mb-3">
             Difficulty
           </p>
-          {difficultyOptions.map((opt) => (
-            <button
-              key={opt.value}
-              onClick={() => updateConfig({ difficulty: opt.value })}
-              className={[
-                'w-full p-4 rounded mb-2 text-left',
-                opt.bg,
-                'text-white',
-                config.difficulty === opt.value
-                  ? 'ring-2 ring-charcoal ring-offset-2'
-                  : 'opacity-60',
-              ].join(' ')}
-            >
-              <span className="font-jost font-bold uppercase block">{opt.label}</span>
-              <span className="font-jost text-sm">{opt.subtitle}</span>
-            </button>
-          ))}
+          <div className="flex flex-col gap-2">
+            {difficultyOptions.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => updateConfig({ difficulty: opt.value })}
+                className={[
+                  'w-full p-4 rounded-lg text-left transition-all duration-200',
+                  opt.bg,
+                  'text-white',
+                  config.difficulty === opt.value
+                    ? 'ring-2 ring-charcoal ring-offset-2 scale-[1.02] shadow-lg'
+                    : 'opacity-60 hover:opacity-80',
+                ].join(' ')}
+              >
+                <span className="font-jost font-bold uppercase block">{opt.label}</span>
+                <span className="font-jost text-sm opacity-80">{opt.subtitle}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Rules */}
@@ -121,19 +127,19 @@ export function ConfigScreen() {
           </p>
 
           {/* Plurals toggle */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-4 bg-white/60 rounded-lg p-3">
             <span className="font-jost text-charcoal text-sm">Allow plurals (adding S)</span>
             <button
               onClick={() => updateConfig({ banPluralS: !config.banPluralS })}
               className={[
-                'w-12 h-6 rounded-full relative transition-colors',
+                'w-12 h-6 rounded-full relative transition-colors cursor-pointer',
                 !config.banPluralS ? 'bg-corbusier-blue' : 'bg-charcoal/30',
               ].join(' ')}
               aria-pressed={!config.banPluralS}
             >
               <span
                 className={[
-                  'absolute top-0.5 w-5 h-5 rounded-full bg-white transition-transform',
+                  'absolute top-0.5 w-5 h-5 rounded-full bg-white transition-transform shadow-sm',
                   !config.banPluralS ? 'translate-x-6' : 'translate-x-0.5',
                 ].join(' ')}
               />
@@ -147,10 +153,10 @@ export function ConfigScreen() {
                 key={dist}
                 onClick={() => updateConfig({ tileDistribution: dist })}
                 className={[
-                  'px-4 py-2 rounded font-jost text-sm font-bold uppercase',
+                  'px-4 py-2 rounded-lg font-jost text-sm font-bold uppercase transition-all duration-200 cursor-pointer',
                   config.tileDistribution === dist
-                    ? 'bg-charcoal text-white'
-                    : 'bg-white text-charcoal border border-charcoal/20',
+                    ? 'bg-charcoal text-white shadow-md'
+                    : 'bg-white text-charcoal border border-charcoal/10 hover:border-charcoal/30',
                 ].join(' ')}
               >
                 {dist}
@@ -162,7 +168,7 @@ export function ConfigScreen() {
         {/* Start Game */}
         <button
           onClick={handleStartGame}
-          className="w-full bg-corbusier-red text-white font-jost font-bold uppercase text-lg py-3 rounded mt-8"
+          className="w-full bg-corbusier-red text-white font-jost font-bold uppercase text-lg py-4 rounded-lg mt-8 shadow-lg shadow-corbusier-red/20 hover:shadow-xl hover:shadow-corbusier-red/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer"
         >
           Start Game
         </button>

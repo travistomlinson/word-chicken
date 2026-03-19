@@ -22,10 +22,11 @@ export function StagingArea({
   isSetup,
 }: StagingAreaProps) {
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex flex-col items-center gap-3">
       {/* Staged tiles row */}
       <div className={[
-        'flex gap-1 min-h-[48px] items-center justify-center flex-wrap',
+        'flex gap-1 min-h-[52px] items-center justify-center flex-wrap px-4 py-1 rounded-xl',
+        stagedLetters.length > 0 ? 'bg-charcoal/5' : '',
         shaking ? 'animate-shake' : '',
       ].filter(Boolean).join(' ')}>
         {stagedLetters.length === 0 && !disabled ? (
@@ -46,14 +47,14 @@ export function StagingArea({
 
       {/* Error text */}
       {error !== null && (
-        <p className="text-corbusier-red text-xs font-jost mt-1">{error}</p>
+        <p className="text-corbusier-red text-xs font-jost font-bold animate-fade-in">{error}</p>
       )}
 
       {/* Submit button */}
       <button
         onClick={onSubmit}
         disabled={stagedLetters.length === 0 || disabled}
-        className="bg-corbusier-red text-white font-jost font-bold uppercase px-6 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+        className="bg-corbusier-red text-white font-jost font-bold uppercase px-8 py-2.5 rounded-lg shadow-md shadow-corbusier-red/20 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 cursor-pointer"
       >
         {isSetup ? 'Start Round' : 'Submit Word'}
       </button>

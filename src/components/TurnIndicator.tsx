@@ -6,7 +6,7 @@ interface TurnIndicatorProps {
 }
 
 export function TurnIndicator({ phase, currentPlayerId: _currentPlayerId }: TurnIndicatorProps) {
-  const baseClass = 'font-jost uppercase tracking-wider text-sm py-2 text-center'
+  const baseClass = 'font-jost uppercase tracking-wider text-sm py-2 text-center transition-all duration-300'
 
   if (phase === 'SETUP') {
     return (
@@ -19,6 +19,7 @@ export function TurnIndicator({ phase, currentPlayerId: _currentPlayerId }: Turn
   if (phase === 'HUMAN_TURN') {
     return (
       <div className={`${baseClass} text-corbusier-blue font-bold`}>
+        <span className="inline-block w-2 h-2 rounded-full bg-corbusier-blue mr-2 animate-pulse" />
         Your Turn
       </div>
     )
@@ -26,7 +27,8 @@ export function TurnIndicator({ phase, currentPlayerId: _currentPlayerId }: Turn
 
   if (phase === 'AI_THINKING') {
     return (
-      <div className={`${baseClass} text-corbusier-red font-bold animate-pulse`}>
+      <div className={`${baseClass} text-corbusier-red font-bold`}>
+        <span className="inline-block w-2 h-2 rounded-full bg-corbusier-red mr-2 animate-pulse" />
         AI is thinking...
       </div>
     )

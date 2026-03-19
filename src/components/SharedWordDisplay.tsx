@@ -14,7 +14,7 @@ export function SharedWordDisplay({ word }: SharedWordDisplayProps) {
   if (!word) {
     return (
       <div className="flex justify-center items-center py-4">
-        <span className="text-charcoal/50 font-jost italic">Waiting for starting word...</span>
+        <span className="text-charcoal/40 font-jost italic text-sm">Waiting for starting word...</span>
       </div>
     )
   }
@@ -23,7 +23,7 @@ export function SharedWordDisplay({ word }: SharedWordDisplayProps) {
   const size = getTileSize(letters.length)
 
   return (
-    <div className="flex gap-1 sm:gap-2 justify-center items-center flex-wrap py-2">
+    <div className="flex gap-1 sm:gap-2 justify-center items-center flex-wrap py-3 px-4 bg-corbusier-yellow/10 rounded-xl">
       {letters.map((letter, index) => (
         <TileCard
           key={index}

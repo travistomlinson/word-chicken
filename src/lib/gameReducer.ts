@@ -120,6 +120,7 @@ export function createInitialGameState(config: GameConfig): GameState {
     config,
     roundScores: { human: 0, ai: 0 },
     totalScores: { human: 0, ai: 0 },
+    hintUsed: false,
   }
 }
 
@@ -287,6 +288,10 @@ export function gameReducer(state: GameState, action: GameAction): GameState | n
         round: newRound,
         roundScores: { human: 0, ai: 0 },
       }
+    }
+
+    case 'USE_HINT': {
+      return { ...state, hintUsed: true }
     }
 
     case 'AI_TURN_START': {

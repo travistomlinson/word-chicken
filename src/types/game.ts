@@ -55,6 +55,7 @@ export interface GameState {
   config: GameConfig
   roundScores: Record<string, number>
   totalScores: Record<string, number>
+  hintUsed: boolean
 }
 
 export type GameAction =
@@ -64,5 +65,6 @@ export type GameAction =
   | { type: 'ELIMINATE_PLAYER'; playerId: string }
   | { type: 'END_ROUND' }
   | { type: 'NEXT_ROUND'; winnerId: string }
+  | { type: 'USE_HINT' }
   | { type: 'AI_TURN_START' }
   | { type: 'RESET_GAME' }

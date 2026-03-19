@@ -9,17 +9,26 @@ function tensionPercent(len: number): number {
 export function ChickenOMeter({ wordLength }: ChickenOMeterProps) {
   const fillPercent = tensionPercent(wordLength)
   const maskHeight = 100 - fillPercent
+  const isHot = fillPercent > 66
 
   return (
-    <div
-      className="relative h-48 sm:h-64 w-4 rounded overflow-hidden"
-      style={{ background: 'linear-gradient(to top, #003f91, #f5a623, #d0021b)' }}
-      aria-label={`Tension meter: ${Math.round(fillPercent)}%`}
-    >
+    <div className="flex flex-col items-center gap-2">
       <div
-        className="absolute top-0 left-0 right-0 bg-concrete transition-all duration-300 ease-out"
-        style={{ height: `${maskHeight}%` }}
-      />
+        className={[
+          'relative h-48 sm:h-64 w-5 rounded-full overflow-hidden',
+          isHot ? 'animate-pulse' : '',
+        ].join(' ')}
+        style={{ background: 'linear-gradient(to top, #003f91, #f5a623, #d0021b)' }}
+        aria-label={`Tension meter: ${Math.round(fillPercent)}%`}
+      >
+        <div
+          className="absolute top-0 left-0 right-0 bg-concrete/90 transition-all duration-500 ease-out"
+          style={{ height: `${maskHeight}%` }}
+        />
+      </div>
+      <span className="text-[10px] font-jost uppercase tracking-wider text-charcoal/40">
+        {wordLength}
+      </span>
     </div>
   )
 }

@@ -57,13 +57,16 @@ export function GameScreen() {
     phase === 'SETUP' || phase === 'HUMAN_TURN' || phase === 'AI_THINKING'
 
   return (
-    <div className="flex flex-col min-h-screen bg-concrete p-2 sm:p-4">
-      {/* Top bar: turn indicator + quit button */}
-      <div className="relative flex items-center justify-center mb-2">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-concrete to-concrete/80 p-2 sm:p-4">
+      {/* Top bar: turn indicator + round + quit */}
+      <div className="relative flex items-center justify-center mb-3">
+        <span className="absolute left-0 text-charcoal/30 text-[10px] uppercase font-jost tracking-wider">
+          R{round.roundNumber}
+        </span>
         <TurnIndicator phase={phase} currentPlayerId={round.currentPlayerId} />
         <button
           onClick={handleQuit}
-          className="absolute right-0 text-charcoal/50 text-xs uppercase font-jost"
+          className="absolute right-0 text-charcoal/40 text-xs uppercase font-jost hover:text-corbusier-red transition-colors cursor-pointer"
         >
           Quit
         </button>

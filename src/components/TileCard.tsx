@@ -14,10 +14,10 @@ const sizeClasses = {
 }
 
 const colorClasses = {
-  red: 'bg-corbusier-red text-white',
-  blue: 'bg-corbusier-blue text-white',
-  yellow: 'bg-corbusier-yellow text-white',
-  concrete: 'bg-concrete text-charcoal border border-charcoal/20',
+  red: 'bg-corbusier-red text-white shadow-md shadow-corbusier-red/30',
+  blue: 'bg-corbusier-blue text-white shadow-md shadow-corbusier-blue/30',
+  yellow: 'bg-corbusier-yellow text-white shadow-md shadow-corbusier-yellow/30',
+  concrete: 'bg-white text-charcoal border border-charcoal/10 shadow-sm',
 }
 
 export function TileCard({
@@ -35,11 +35,13 @@ export function TileCard({
       onClick={onClick}
       disabled={disabled}
       className={[
-        'font-jost font-bold uppercase flex items-center justify-center rounded select-none',
+        'font-jost font-bold uppercase flex items-center justify-center rounded-lg select-none transition-all duration-150',
         'min-w-[44px] min-h-[44px]',
         sizeClasses[size],
         colorClasses[color],
-        disabled ? 'opacity-50 cursor-not-allowed' : '',
+        disabled
+          ? 'opacity-50 cursor-not-allowed'
+          : 'hover:scale-110 hover:-translate-y-0.5 active:scale-95 cursor-pointer',
         className,
       ]
         .filter(Boolean)

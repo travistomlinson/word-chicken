@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useGameStore } from '../store/gameSlice'
 import { validateTurn } from '../lib/wordValidator'
 import { validateStartingWord } from '../lib/roundManager'
+import { findAIMove, getVocabulary } from '../lib/aiEngine'
 import { TileCard } from './TileCard'
 import { StagingArea } from './StagingArea'
 import type React from 'react'
@@ -16,6 +17,7 @@ export function PlayerHand() {
   const config = useGameStore(s => s.gameState?.config)
   const dispatch = useGameStore(s => s.dispatch)
   const humanPlayer = useGameStore(s => s.gameState?.round.players['human'])
+  const hintUsed = useGameStore(s => s.gameState?.hintUsed ?? false)
 
   const [stagedIndices, setStagedIndices] = useState<number[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -29,10 +31,16 @@ export function PlayerHand() {
   // AI thinking animation state
   const [displayLetters, setDisplayLetters] = useState<string[]>(['?', '?', '?', '?'])
 
-  // Reset staged tiles on phase/round change (pitfall 4 from RESEARCH)
+  // Tile entrance animation
+  const [entered, setEntered] = useState(false)
+
+  // Reset staged tiles on phase/round change
   useEffect(() => {
     setStagedIndices([])
     setError(null)
+    setEntered(false)
+    const timer = setTimeout(() => setEntered(true), 50)
+    return () => clearTimeout(timer)
   }, [roundNumber, phase])
 
   // Scatter animation when human player is eliminated
@@ -62,15 +70,25 @@ export function PlayerHand() {
   // Scatter style for elimination animation
   function scatterStyle(index: number): React.CSSProperties {
     if (!eliminating) return {}
-    const angle = (index * 45 + Math.random() * 30) - 90  // spread in arc
+    const angle = (index * 45 + Math.random() * 30) - 90
     const distance = 200 + Math.random() * 300
     const x = Math.cos(angle * Math.PI / 180) * distance
-    const y = Math.sin(angle * Math.PI / 180) * distance - 200  // bias upward then fall
+    const y = Math.sin(angle * Math.PI / 180) * distance - 200
     const rotation = (Math.random() - 0.5) * 720
     return {
       transform: `translate(${x}px, ${y}px) rotate(${rotation}deg)`,
       opacity: 0,
-      transition: `all 0.6s ease-in ${index * 0.05}s`,  // stagger each tile
+      transition: `all 0.6s ease-in ${index * 0.05}s`,
+    }
+  }
+
+  // Tile entrance style
+  function entranceStyle(index: number): React.CSSProperties {
+    if (eliminating) return scatterStyle(index)
+    return {
+      opacity: entered ? 1 : 0,
+      transform: entered ? 'translateY(0) scale(1)' : 'translateY(20px) scale(0.8)',
+      transition: `all 0.3s ease-out ${index * 0.04}s`,
     }
   }
 
@@ -79,10 +97,8 @@ export function PlayerHand() {
     setStagedIndices(prev => {
       const pos = prev.indexOf(handIndex)
       if (pos !== -1) {
-        // Already staged — remove it
         return [...prev.slice(0, pos), ...prev.slice(pos + 1)]
       } else {
-        // Not staged — add it
         return [...prev, handIndex]
       }
     })
@@ -156,6 +172,41 @@ export function PlayerHand() {
     }
   }
 
+  function handleHint() {
+    if (!config || hintUsed || phase !== 'HUMAN_TURN') return
+
+    const vocab = getVocabulary(config.difficulty, config.dictionary)
+    const shuffledArray = [...vocab.array]
+    for (let i = shuffledArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]]
+    }
+
+    const hintWord = findAIMove(currentWord, hand, shuffledArray, vocab.set, config)
+
+    if (hintWord) {
+      // Auto-stage the tiles for the hint word
+      const hintLetters = hintWord.split('')
+      const newStagedIndices: number[] = []
+      const usedIndices = new Set<number>()
+
+      for (const letter of hintLetters) {
+        const tile = allTiles.find(t =>
+          t.letter === letter && !usedIndices.has(t.idx)
+        )
+        if (tile) {
+          newStagedIndices.push(tile.idx)
+          usedIndices.add(tile.idx)
+        }
+      }
+
+      setStagedIndices(newStagedIndices)
+      dispatch({ type: 'USE_HINT' })
+    } else {
+      setError('No valid words found — you may need to give up')
+    }
+  }
+
   // Hide during ROUND_END or GAME_OVER
   if (phase === 'ROUND_END' || phase === 'GAME_OVER') {
     return null
@@ -211,8 +262,8 @@ export function PlayerHand() {
 
       {/* Selectable tiles — community (yellow) + hand (concrete) */}
       <div className="grid grid-cols-5 sm:flex sm:flex-wrap gap-1 sm:gap-2 justify-center mt-4">
-        {remainingTiles.map(({ letter, idx, isCommunity }) => (
-          <div key={idx} style={scatterStyle(Math.abs(idx))}>
+        {remainingTiles.map(({ letter, idx, isCommunity }, i) => (
+          <div key={idx} style={entranceStyle(i)}>
             <TileCard
               letter={letter}
               color={isCommunity ? 'yellow' : 'concrete'}
@@ -223,14 +274,24 @@ export function PlayerHand() {
         ))}
       </div>
 
-      {/* Give Up link — only during HUMAN_TURN */}
+      {/* Action row: Hint + Give Up — only during HUMAN_TURN */}
       {phase === 'HUMAN_TURN' && (
-        <button
-          onClick={() => dispatch({ type: 'ELIMINATE_PLAYER', playerId: 'human' })}
-          className="text-charcoal/40 text-xs font-jost uppercase cursor-pointer hover:text-corbusier-red mt-4 bg-transparent border-none"
-        >
-          Give Up
-        </button>
+        <div className="flex items-center gap-6 mt-4">
+          {!hintUsed && (
+            <button
+              onClick={handleHint}
+              className="text-corbusier-blue text-xs font-jost uppercase cursor-pointer hover:text-corbusier-blue/70 bg-transparent border border-corbusier-blue/30 rounded px-3 py-1 transition-colors"
+            >
+              Show a Word
+            </button>
+          )}
+          <button
+            onClick={() => dispatch({ type: 'ELIMINATE_PLAYER', playerId: 'human' })}
+            className="text-charcoal/40 text-xs font-jost uppercase cursor-pointer hover:text-corbusier-red bg-transparent border-none transition-colors"
+          >
+            Give Up
+          </button>
+        </div>
       )}
     </div>
   )
