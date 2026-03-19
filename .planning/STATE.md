@@ -43,7 +43,7 @@ Last activity: 2026-03-18 — Milestone v1.1 started
 
 ### Pending Todos
 
-None yet.
+- Silent reconnect without user notification (ui)
 
 ### Blockers/Concerns
 
