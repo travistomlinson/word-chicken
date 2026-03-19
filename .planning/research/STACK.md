@@ -1,149 +1,347 @@
 # Stack Research
 
-**Domain:** Browser-based word game with AI opponents (single-player v1)
+**Domain:** UX/Design audit and fix pass — React + Tailwind v4 web game
 **Researched:** 2026-03-18
-**Confidence:** MEDIUM-HIGH — core framework choices are HIGH confidence; dictionary library choice is MEDIUM due to thin npm ecosystem for this niche
+**Confidence:** HIGH
 
-## Recommended Stack
+## Overview
 
-### Core Technologies
+This is a design-only milestone. The validated stack (React 18, Vite, Tailwind v4, Zustand, PeerJS, Vitest) stays unchanged. No new runtime dependencies are needed or wanted. This document catalogues the CSS techniques, Tailwind v4 utilities, and browser-native tooling needed to fix the known layout and accessibility issues without adding package weight.
 
-| Technology | Version | Purpose | Why Recommended |
-|------------|---------|---------|-----------------|
-| React | 19.x (19.0.4 current) | UI framework | The default for interactive browser apps in 2026. Server components and Actions API are irrelevant here — keep client-only. React's component model maps cleanly onto game UI: hand, board, turn indicator, score. |
-| TypeScript | 6.0 (released 2026-03-17) | Type safety | Game state (tiles, turns, word validity results, AI state) is complex enough that untyped JS creates debugging nightmares. TS 6.0 is the current stable; TS 5.9 is safe if upgrading feels risky. |
-| Vite | 8.x (8.0 current) | Build tool + dev server | Near-instant HMR critical for iterating on game feel. Vite 8 ships Rolldown (Rust bundler) — 10-30x faster builds. No config needed for React+TS template. |
-| Zustand | 5.x (5.0.12 current) | Game state management | Turn-based games need shared state (whose turn, current word, tile hands, scores, AI state). Zustand is hook-native, 20M weekly downloads, no boilerplate. Redux is overkill for a single-page game with no server sync. |
-| Tailwind CSS | 4.x (4.1 current) | Styling | Game UI is mostly custom layout (tile grids, letter tiles, score panels). Tailwind's utility classes make responsive tile-based layouts faster than hand-written CSS. v4 uses Rust engine — 5x faster builds, CSS-native config. |
+---
 
-### Supporting Libraries
+## Recommended Stack (No Changes — Techniques Only)
 
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| pf-sowpods | latest (~0.x) | SOWPODS word list + trie validation | Client-side word checking without API calls. Contains 267,751 words with built-in `verify()` trie lookup. Use when SOWPODS (international) is the chosen dictionary. |
-| scrabble-dict | 1.0.2 | TWL dictionary, browser-compatible | Use instead of pf-sowpods when TWL06 (North American Scrabble) is preferred. Includes base64+pako compression for smaller bundle. |
-| Vitest | 4.x | Unit testing | Testing game logic (word validator, AI move selection, tile distribution, scoring). Browser Mode is stable in v4. Critical for testing AI difficulty behavior deterministically. |
-| @testing-library/react | latest | Component testing | Testing UI interactions (tile selection, word submission, turn flow). Pair with Vitest. |
-| framer-motion | 11.x | Tile animations | Tile draw animations, letter placement transitions, elimination effects. Optional but raises polish significantly for a word game where tile manipulation is the core interaction. |
+### Core Technologies (Existing — Confirmed Adequate)
 
-### Development Tools
+| Technology | Version | Purpose | Why Adequate for Design Pass |
+|------------|---------|---------|------------------------------|
+| Tailwind v4 | 4.x | Utility CSS | Ships `h-dvh`, `min-h-dvh`, `h-svh`, `min-h-svh`, `overscroll-none` built-in — no config needed |
+| React 18 | 18.x | UI rendering | No changes needed; all layout fixes are pure CSS |
+| Vite | 5.x | Build | No changes needed |
 
-| Tool | Purpose | Notes |
-|------|---------|-------|
-| Vite react-ts template | Scaffolding | `npm create vite@latest word-chicken -- --template react-ts` generates correct tsconfig, vite.config.ts, and index.html without manual wiring. |
-| ESLint (flat config) | Code quality | Use `eslint.config.js` (flat config, now default). Add `typescript-eslint` and `eslint-plugin-react-hooks`. |
-| Prettier | Formatting | Set once, forget. Consistent formatting across game logic files. |
+---
 
-## Installation
+## Viewport Height: The Core Fix
 
-```bash
-# Scaffold with Vite react-ts template
-npm create vite@latest word-chicken -- --template react-ts
-cd word-chicken
+### Problem in This Codebase
 
-# State management
-npm install zustand
+`App.tsx`, `ConfigScreen.tsx`, `LobbyScreen.tsx`, and `GameScreen.tsx` all use `min-h-screen`, which maps to `min-height: 100vh`. On mobile browsers, `100vh` is calculated against the *large* viewport (browser UI hidden). On initial page load — when the address bar is fully visible — `100vh` exceeds the actual visible area. The result: content that should fill the screen appears small and tucked at the bottom, and buttons below the fold fall off-screen.
 
-# Styling
-npm install -D tailwindcss @tailwindcss/vite
+### The Fix: Replace `min-h-screen` with `min-h-dvh`
 
-# Dictionary — choose one:
-npm install pf-sowpods          # SOWPODS (267,751 words, international)
-# OR
-npm install scrabble-dict       # TWL (178,691 words, North American)
+Three modern viewport height units solve this with no JavaScript:
 
-# Testing
-npm install -D vitest @vitest/browser playwright
-npm install -D @testing-library/react @testing-library/user-event
+| Unit | Meaning | Use When |
+|------|---------|----------|
+| `dvh` | Dynamic — adjusts in real-time as browser chrome shows/hides | Game screens where content must fill visible area at all times |
+| `svh` | Small — always equals height with browser UI fully visible | Static shells, loading states — never overflows on first paint |
+| `lvh` | Large — equals height when browser UI is hidden | Never use as `min-height` on page containers |
 
-# Optional: tile animations
-npm install framer-motion
+**Why `dvh` for game screens:** The game UI must respond correctly both when the browser chrome is visible (page load) and hidden (mid-scroll). `dvh` adapts to both states. `vh` only matches `lvh` — always too tall on initial load.
+
+**Why `svh` for the App wrapper:** The outermost wrapper that shows loading/error states never needs to be taller than the smallest viewport. `svh` guarantees no overflow on first paint, which is a strictly better behavior than `dvh` for static content.
+
+**Tailwind v4 classes (all built-in, zero configuration):**
+
+| Class | CSS Property | Replace |
+|-------|-------------|---------|
+| `min-h-dvh` | `min-height: 100dvh` | `min-h-screen` on game/config/lobby screens |
+| `h-dvh` | `height: 100dvh` | Full-screen overlays in GameScreen |
+| `min-h-svh` | `min-height: 100svh` | App wrapper loading/error states |
+| `h-svh` | `height: 100svh` | Fixed shells where content must never overflow |
+
+**Browser support (HIGH confidence):** `dvh`, `svh`, `lvh` reached Baseline Widely Available in June 2025 — Chrome 108+, Firefox 101+, Safari 15.4+, Edge 108+. Approximately 95% global coverage as of early 2026. No polyfill or fallback needed.
+
+### Specific Changes Required by File
+
+```
+App.tsx:          min-h-screen → min-h-svh (loading and error divs)
+                  min-h-screen → min-h-dvh (main game wrapper div)
+ConfigScreen.tsx: min-h-screen → min-h-dvh (outer div)
+LobbyScreen.tsx:  min-h-screen → min-h-dvh (outer div)
+GameScreen.tsx:   min-h-screen → min-h-dvh (flex col outer div)
+                  fixed inset-0 overlays → add h-dvh (reconnecting/disconnect modals)
 ```
 
-## Alternatives Considered
+---
 
-| Recommended | Alternative | When to Use Alternative |
-|-------------|-------------|-------------------------|
-| Zustand | Redux Toolkit | If game later grows to multiplayer with server sync, complex middleware, or time-travel debugging needs (undo system) |
-| Zustand | React Context | Only if state is truly local and contained — game state crosses too many components for Context to be practical |
-| Vite | Next.js | If you need SSR, SEO, or server-rendered pages — Word Chicken is a pure client-side game, Next.js adds unnecessary server complexity |
-| Vite | Create React App | CRA is deprecated and unmaintained as of 2023. Never use it for new projects. |
-| pf-sowpods | Dictionary API (e.g., Merriam-Webster) | If you want human-readable definitions to show players. Adds network dependency, API cost, latency. Not worth it for pure validation. |
-| Tailwind | CSS Modules | If the team has strong CSS background and dislikes utility classes. CSS Modules are fine but require more context-switching for tile layout work. |
-| Vitest | Jest | Jest is viable but requires more config for ESM and Vite integration. Vitest is zero-config with Vite. |
+## Safe Area Insets (iOS Notch / Dynamic Island)
+
+### Problem
+
+The game has no `viewport-fit=cover` or `env(safe-area-inset-*)` handling. On iPhones with a notch or Dynamic Island, the home indicator gesture zone at the bottom clips interactive elements — specifically the PlayerHand action buttons (Submit Word, Show a Word, Give Up) which are positioned at the bottom of the flex layout.
+
+### The Fix: Two-Step Approach
+
+**Step 1 — Update `index.html` viewport meta tag:**
+
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+```
+
+`viewport-fit=cover` tells the browser to extend the app into the notch/gesture area (instead of letterboxing). This is required before `env(safe-area-inset-*)` values become non-zero.
+
+**Step 2 — Add safe area padding to bottom interactive zones:**
+
+Use Tailwind arbitrary value syntax to pass the CSS `env()` function through directly:
+
+```html
+<!-- On the PlayerHand action row (Give Up / Show a Word) -->
+<div class="flex items-center gap-6 mt-4 pb-[env(safe-area-inset-bottom,0px)]">
+
+<!-- On the GameScreen outer container -->
+<div class="flex flex-col min-h-dvh bg-... p-2 sm:p-4 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))]">
+```
+
+Alternatively, add a CSS custom property in `@theme` (already the project pattern):
+
+```css
+/* src/index.css — inside @theme block */
+@theme {
+  /* ...existing colors... */
+  --spacing-safe-b: env(safe-area-inset-bottom, 0px);
+}
+```
+
+Then use `pb-safe-b` as a utility class (Tailwind v4 auto-generates utilities from `@theme` spacing entries).
+
+**Browser support (HIGH confidence):** `env(safe-area-inset-*)` is fully supported in all iOS Safari 11.2+ and all modern Android browsers. MDN-documented web standard.
+
+---
+
+## Touch Target Sizes
+
+### Current State
+
+`TileCard.tsx` already applies `min-w-[44px] min-h-[44px]` — the tiles themselves meet requirements. The problem is secondary interactive elements:
+
+| Element | Estimated Touch Area | Issue |
+|---------|---------------------|-------|
+| "Give Up" button | ~24px tall (text-xs, no padding) | Fails WCAG 2.5.5, Apple HIG |
+| "Show a Word" hint button | ~30px tall (py-1, px-3) | Below 44px minimum |
+| "Quit" (GameScreen top bar) | ~24px (text-xs, absolute positioned) | Fails |
+| Dark mode toggle | ~40px (p-2 + 20px SVG) | Borderline — add 2px padding |
+
+### WCAG Requirements
+
+| Standard | Minimum | Level |
+|----------|---------|-------|
+| WCAG 2.5.8 (WCAG 2.2) | 24×24 CSS px | AA |
+| WCAG 2.5.5 | 44×44 CSS px | AAA (recommended practice) |
+| Apple HIG | 44×44 pt | Platform guideline |
+| Google Material | 48×48 dp | Platform guideline |
+
+**Recommendation:** Target 44×44 for all interactive elements. The visual size of buttons can remain small (text-xs is fine), but padding must expand the hit area:
+
+```html
+<!-- Before: text-xs, no padding — ~24px touch area -->
+<button class="text-ink/40 text-xs font-jost uppercase">Give Up</button>
+
+<!-- After: add py-2 px-3 to expand touch area to 44px+ -->
+<button class="text-ink/40 text-xs font-jost uppercase py-2 px-3 min-h-[44px]">Give Up</button>
+```
+
+---
+
+## Color Contrast: Corbusier Palette Audit
+
+### Current Palette (from `src/index.css`)
+
+| Token | Hex | Role |
+|-------|-----|------|
+| `corbusier-red` | `#d0021b` | Primary CTA buttons, error states |
+| `corbusier-blue` | `#003f91` | Secondary CTA, active/hover states |
+| `corbusier-yellow` | `#f5a623` | Accent, PvP lobby, ChickenOMeter |
+| `surface` | `#f2f0eb` | Light mode background |
+| `card` | `#ffffff` | Light mode card surface |
+| `ink` | `#3a3a3a` | Light mode text |
+| `surface` (dark) | `#1c1c24` | Dark mode background |
+| `card` (dark) | `#2a2a34` | Dark mode card surface |
+| `ink` (dark) | `#e0ddd8` | Dark mode text |
+
+### Contrast Risk Areas (Require Manual Verification)
+
+| Color Pair | Combination | Risk Level | Rationale |
+|------------|-------------|------------|-----------|
+| White on `#f5a623` (yellow buttons) | ConfigScreen "Play a Friend", LobbyScreen "Join" | CRITICAL FAIL | Yellow + white is notoriously low contrast. Estimated ~1.9:1 — fails WCAG AA by a wide margin |
+| `#f5a623` on `#f2f0eb` (yellow on cream surface) | Any yellow text/accent on light background | HIGH RISK | Yellow on near-white almost certainly fails 4.5:1 |
+| White on `#d0021b` (red buttons) | "Play vs AI", Submit button | MEDIUM — verify | Pure red #FF0000 fails at 4:1; `#d0021b` is darker red, likely passes ~4.5:1 — must confirm |
+| White on `#003f91` (blue buttons) | "Create Game", "Reconnect" buttons | LIKELY PASS | Dark navy; white text typically yields 7:1+ — verify |
+| `#3a3a3a` on `#f2f0eb` | Body text on surface | PASS | Dark grey on warm cream — estimated ~10:1 |
+| `#e0ddd8` on `#1c1c24` | Dark mode body text | LIKELY PASS | Verify, but light text on very dark background typically passes |
+| `#3a3a3a`/60% opacity (ink/60) | Muted text throughout | CHECK | Opacity-based text colors reduce contrast — `text-ink/60` on `#f2f0eb` background may fail 4.5:1 |
+
+**Yellow is the critical problem.** The `corbusier-yellow` (#f5a623) buttons with white text (ConfigScreen, LobbyScreen) will fail WCAG AA. Options:
+1. Replace white text with dark ink on yellow buttons (`text-charcoal` / `text-ink`)
+2. Darken the yellow to a value that achieves 4.5:1 with white (approximately `#b07700` or similar)
+3. Replace yellow buttons with the blue variant (yellow becomes decoration-only, never a button background with white text)
+
+### WCAG AA Requirements
+
+- Normal text (< 18px or < 14px bold): **4.5:1 minimum contrast ratio**
+- Large text (>= 18px or >= 14px bold): **3:1 minimum**
+- UI components and icons: **3:1 minimum**
+- Opacity-based colors: contrast is calculated against actual rendered color, not the base token
+
+### Tooling (Zero Install Required)
+
+| Tool | How to Use | What It Checks |
+|------|-----------|----------------|
+| Chrome DevTools Color Picker | Inspect element → Styles panel → click color swatch | Shows contrast ratio and WCAG AA/AAA pass/fail inline |
+| Chrome Lighthouse | DevTools → Lighthouse tab → Accessibility category | Full page audit, flags all failing combinations with element references |
+| Firefox DevTools Inspector | Inspect element → color swatch in Rules panel | Same contrast ratio display as Chrome |
+| webaim.org/resources/contrastchecker | Enter hex values in browser (no account needed) | Precise ratio calculation + AA/AAA verdict |
+
+No npm package, no browser extension, no CI integration needed for this audit pass. DevTools-native workflow is sufficient.
+
+---
+
+## Responsive Layout Patterns
+
+### Current Breakpoint Usage
+
+The app uses Tailwind's mobile-first pattern correctly in principle. The key pattern already in `PlayerHand.tsx`:
+
+```html
+<!-- Mobile: 3/4/3 keyboard rows (correct) -->
+<div class="sm:hidden flex flex-col items-center gap-1">...</div>
+<!-- Desktop: flex wrap (correct) -->
+<div class="hidden sm:flex sm:flex-wrap gap-2">...</div>
+```
+
+The `sm:` prefix means "640px and above" — correct dividing line between phone and tablet/desktop.
+
+### Tailwind v4 Default Breakpoints
+
+| Prefix | Min Width | Use For |
+|--------|-----------|---------|
+| (none) | 0px | Mobile (phone portrait) — mobile-first |
+| `sm:` | 640px | Tablet and above |
+| `md:` | 768px | Wide tablet and above |
+| `lg:` | 1024px | Desktop |
+
+**Critical concept:** `sm:` does not mean "small screens." It means "at 640px and above." Mobile styles must be unprefixed. This is already applied correctly in the codebase.
+
+### v4 Pattern: Max-Range Targeting
+
+Tailwind v4 adds cleaner mobile-only targeting:
+
+```html
+<!-- Applies only below 640px (mobile only) — cleaner than v3 workarounds -->
+<div class="max-sm:px-2 max-sm:text-sm">...</div>
+
+<!-- Applies only between sm and md (tablet range) -->
+<div class="sm:max-md:flex-row">...</div>
+```
+
+Use `max-sm:` where you want to cap behavior to mobile only, instead of writing both `sm:hidden` and a separate mobile version.
+
+### Pattern: Flex Column Full-Height Layout (GameScreen Fix)
+
+The GameScreen layout issue — content sitting small at the bottom — comes from `min-h-screen` combined with `flex-1` not distributing space correctly when the viewport height is miscalculated. The fix combines `min-h-dvh` with correct flex distribution:
+
+```html
+<!-- GameScreen outer container -->
+<div class="flex flex-col min-h-dvh bg-... p-2 sm:p-4">
+  <!-- Top bar: fixed height, never shrinks -->
+  <div class="flex-shrink-0 relative flex items-center justify-center mb-3">...</div>
+
+  <!-- Middle content: grows to fill available space -->
+  <div class="flex-1 flex flex-col">...</div>
+
+  <!-- Bottom action zone: fixed height, sticks to bottom -->
+  <div class="flex-shrink-0 pb-[env(safe-area-inset-bottom,0px)]">...</div>
+</div>
+```
+
+The `flex-1` section correctly fills the remaining viewport height once `min-h-dvh` is set, because `dvh` accounts for the actual visible viewport.
+
+### Pattern: Overscroll Behavior (iOS Bounce Prevention)
+
+iOS Safari allows elastic "bounce" scrolling past the page boundary. On a full-height game layout, this creates visual glitches (background flickers, layout jumps). Prevent it with:
+
+```html
+<div class="overscroll-none flex flex-col min-h-dvh">...</div>
+```
+
+`overscroll-none` maps to `overscroll-behavior: none` — Tailwind v4 built-in, no config needed. Apply to the GameScreen outer container.
+
+---
+
+## Supporting Libraries
+
+**None required.** All techniques are expressible with:
+
+- Native CSS properties (`dvh`, `svh`, `env()`, `overscroll-behavior`)
+- Tailwind v4 built-in utilities (`min-h-dvh`, `h-svh`, `overscroll-none`, `max-sm:*`, breakpoint range variants)
+- Browser DevTools and webaim.org for contrast auditing
+
+---
 
 ## What NOT to Use
 
 | Avoid | Why | Use Instead |
 |-------|-----|-------------|
-| Create React App (CRA) | Officially deprecated in 2023. Webpack-based, slow, no maintenance. | Vite 8 with react-ts template |
-| jQuery | No place in a React component tree. Mixing imperative DOM manipulation with React causes subtle bugs. | React state + refs where DOM access is needed |
-| Server-side dictionary APIs (Merriam-Webster, Free Dictionary API) | Network latency makes word validation feel sluggish mid-turn. Offline play is broken. API rate limits or costs. | Bundle pf-sowpods or scrabble-dict client-side |
-| Canvas/WebGL (Pixi.js, Phaser) | Word Chicken is a UI-driven card/tile game, not a canvas game. DOM-based React is easier to style, accessible, and sufficient for tile manipulation. | React + Tailwind |
-| MobX | Adds observable complexity for a game that doesn't need reactive class-based models. Zustand's functional approach is simpler. | Zustand |
-| Redux (bare) | Without Redux Toolkit, Redux requires 3x the boilerplate for the same result. | Zustand (preferred) or Redux Toolkit |
+| `min-h-screen` / `h-screen` on mobile page containers | Maps to `100vh` — sized against large viewport (browser UI hidden), causing layout overflow on initial mobile load | `min-h-dvh` on game screens, `min-h-svh` on static shells |
+| `h-lvh` as `min-height` on containers | Always equals the largest possible viewport — guaranteed overflow on initial load when browser chrome is visible | `h-dvh` or `h-svh` depending on scroll behavior needed |
+| White text on `corbusier-yellow` (#f5a623) | Fails WCAG AA (~1.9:1 contrast ratio — need 4.5:1) | Use dark `text-ink` / `text-charcoal` on yellow, or restrict yellow to decorative elements only |
+| npm packages for contrast checking | Adds runtime weight; DevTools does the job natively for an audit | Chrome DevTools color picker + Lighthouse + webaim.org |
+| `-webkit-overflow-scrolling: touch` | Deprecated property; modern iOS uses standard momentum scroll natively | Remove if present; no replacement needed |
+| JavaScript `window.innerHeight` in React state for layout calculations | Creates re-renders on every scroll as browser chrome animates; causes jank | `dvh` CSS unit — browser handles viewport changes with no JS involvement |
+| Global `overflow: hidden` on `body` or `html` to "fix" scroll issues | Prevents scrolling on iOS without `touch-action` handling; breaks modal scrolling | Use `overscroll-none` on specific containers |
 
-## Stack Patterns by Variant
+---
 
-**If TWL is chosen over SOWPODS:**
-- Use `scrabble-dict` instead of `pf-sowpods`
-- TWL has ~89,000 fewer words — AI will have fewer valid moves, which actually makes difficulty tuning easier
-- TWL is more familiar to North American players; SOWPODS allows more obscure words
+## Stack Patterns by Screen
 
-**If multiplayer is added later (v2):**
-- Add a Node.js/Express or Hono backend for WebSocket-based turn sync
-- Migrate game state from Zustand to a server-authoritative model
-- Zustand remains valid on the client for local UI state
-- Consider Partykit or Cloudflare Durable Objects for lightweight multiplayer without a full server
+**GameScreen (full-height flex layout, interactive tiles at bottom):**
+- `min-h-dvh` on outer container (replaces `min-h-screen`)
+- `flex flex-col` with `flex-1` on the PlayerHand zone
+- `overscroll-none` on outer container to prevent iOS bounce
+- `pb-[env(safe-area-inset-bottom,0px)]` on the bottom action row
 
-**For AI difficulty implementation:**
-- Build AI as a pure TypeScript module (no library needed)
-- Easy: pick shortest valid extension from common words only (top 5,000 word frequency list)
-- Medium: random valid word from full dictionary that extends current word
-- Hard: pick the extension that leaves fewest opponent extensions (game-tree look-ahead, 1-2 depth)
-- Pre-build a trie from the word list at game startup — O(1) prefix checks during AI search
+**ConfigScreen / LobbyScreen (scrollable content screens):**
+- `min-h-dvh` on outer container
+- Content scrolls naturally if it overflows — do not set fixed height
+- `pb-[env(safe-area-inset-bottom,0px)]` on the last button section
 
-**If tile animation feels like scope creep:**
-- Skip `framer-motion` in v1
-- Plain CSS transitions on tile movement are sufficient for MVP
-- Add framer-motion in a polish pass when core game loop is solid
+**App.tsx loading/error states (static screens):**
+- `min-h-svh` (conservative — never overflows on first paint)
+
+**Fixed-position overlays (reconnecting/disconnect modals in GameScreen):**
+- `fixed inset-0 h-dvh` — `inset-0` alone does not correct for dynamic viewport; add `h-dvh` explicitly
+- `flex items-center justify-center` for centering
+
+---
 
 ## Version Compatibility
 
-| Package A | Compatible With | Notes |
-|-----------|-----------------|-------|
-| React 19.x | Vite 8.x | First-class support via `@vitejs/plugin-react` |
-| React 19.x | framer-motion 11.x | framer-motion 11 added React 19 support explicitly |
-| TypeScript 6.0 | Vite 8.x | Vite 8 ships with TS 6 support |
-| Zustand 5.x | React 19.x | Zustand 5 targets React 18+ hooks API, compatible with 19 |
-| Tailwind 4.x | Vite 8.x | Use `@tailwindcss/vite` plugin — replaces PostCSS approach |
-| Vitest 4.x | Vite 8.x | Same config file, zero friction |
+| Feature | Tailwind v4 Status | Notes |
+|---------|-------------------|-------|
+| `min-h-dvh`, `h-dvh`, `h-svh`, `min-h-svh` | Built-in default | No `@theme` config required |
+| `overscroll-none` | Built-in default | Maps to `overscroll-behavior: none` |
+| `max-sm:` range variants | Built-in v4 | Replaces v3 workarounds; `max-sm:hidden` is the mobile-only pattern |
+| `pb-[env(safe-area-inset-bottom,0px)]` | Works as arbitrary value | Tailwind passes arbitrary CSS expressions through unchanged |
+| `@custom-variant dark` | Already in use | In `src/index.css` — no changes needed |
+| `@theme { --color-* }` custom colors | Already in use | Existing setup is correct for v4 |
 
-## Dictionary Size Considerations
-
-The word list is the largest bundle concern for this project.
-
-| Dictionary | Words | Raw size | Compressed (gzip) | Approach |
-|------------|-------|----------|-------------------|---------|
-| SOWPODS (pf-sowpods) | 267,751 | ~2.7 MB | ~750 KB | Load once at app start; build trie in memory |
-| TWL06 (scrabble-dict) | 178,691 | ~1.9 MB | ~400 KB | Compressed with pako internally |
-| Custom word frequency list | ~5,000 | <50 KB | <15 KB | Supplementary list for AI difficulty filtering |
-
-TWL is the better default for v1 — smaller bundle, still comprehensive, more familiar to English-speaking players. If SOWPODS is chosen, lazy-load it after the game UI renders to avoid blocking the initial paint.
+---
 
 ## Sources
 
-- [React versions](https://react.dev/versions) — confirmed 19.0.4 current stable
-- [Vite blog: announcing vite8](https://vite.dev/blog/announcing-vite8) — Vite 8 with Rolldown confirmed current
-- [TypeScript 5.9 docs](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-9.html) — TS 6.0 confirmed released 2026-03-17
-- [Tailwind v4.0 announcement](https://tailwindcss.com/blog/tailwindcss-v4) — v4 stable confirmed
-- [Zustand npm](https://www.npmjs.com/package/zustand) — 5.0.12 current, 20M weekly downloads confirmed
-- [Vitest browser mode](https://vitest.dev/guide/browser/) — v4 browser mode stable confirmed
-- [pf-sowpods GitHub](https://github.com/pillowfication/pf-sowpods) — SOWPODS trie structure confirmed, 267,751 words
-- [scrabble-dict GitHub](https://github.com/siddharthvader/scrabble-dict) — TWL, TypeScript, browser-compatible confirmed
-- [John Resig trie performance](https://johnresig.com/blog/javascript-trie-performance-analysis/) — trie approach for JS dictionary lookups (MEDIUM confidence — older post but algorithm still valid)
-- [Zustand vs Redux 2025](https://dev.to/themachinepulse/do-you-need-state-management-in-2025-react-context-vs-zustand-vs-jotai-vs-redux-1ho) — community consensus on Zustand for game-scale state (MEDIUM confidence — community article)
+- [Tailwind CSS Height Docs (v4)](https://tailwindcss.com/docs/height) — confirmed `h-dvh`, `h-svh`, `h-lvh` built-in, HIGH confidence
+- [Tailwind CSS Min-Height Docs](https://tailwindcss.com/docs/min-height) — confirmed `min-h-dvh`, `min-h-svh` built-in, HIGH confidence
+- [Tailwind CSS Responsive Design (v4)](https://tailwindcss.com/docs/responsive-design) — breakpoints unchanged from v3, `max-sm:` variant confirmed, HIGH confidence
+- [Tailwind CSS v3.4 Release Notes](https://tailwindcss.com/blog/tailwindcss-v3-4) — origin of dvh/svh/lvh classes, carried into v4
+- [web.dev: Large, small, and dynamic viewport units](https://web.dev/blog/viewport-units) — authoritative semantics for dvh/svh/lvh, Baseline Widely Available June 2025
+- [MDN: CSS env()](https://developer.mozilla.org/en-US/docs/Web/CSS/env) — safe-area-inset documentation and browser support
+- [WCAG 2.1 SC 1.4.3: Contrast Minimum](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html) — 4.5:1 normal text, 3:1 large text/UI, HIGH confidence
+- [WCAG 2.5.8: Target Size Minimum](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html) — 24×24 px AA, 44×44 px recommended
+- [MDN: overscroll-behavior](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/overscroll-behavior) — iOS bounce prevention
+- [Chrome DevTools Accessibility Reference](https://developer.chrome.com/docs/devtools/accessibility/reference) — contrast ratio in color picker confirmed
+- [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/) — reference tool for manual hex verification
 
 ---
-*Stack research for: browser-based word game with AI opponents*
+*Stack research for: Word Chicken v1.1 UX/Design Audit*
 *Researched: 2026-03-18*

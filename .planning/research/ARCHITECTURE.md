@@ -1,390 +1,483 @@
 # Architecture Research
 
-**Domain:** Browser-based tile word game (single-player vs AI)
+**Domain:** UX/design audit — Tailwind v4 + React SPA (Word Chicken v1.1)
 **Researched:** 2026-03-18
-**Confidence:** MEDIUM-HIGH
+**Confidence:** HIGH — based on direct codebase reading + official Tailwind v4 docs
 
-## Standard Architecture
+---
 
-### System Overview
-
-Word Chicken is a pure client-side SPA. No backend is needed for v1 — all game logic, dictionary lookup, and AI computation runs in the browser.
+## System Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        Presentation Layer                        │
-├──────────────┬──────────────┬──────────────┬────────────────────┤
-│  GameBoard   │  PlayerHand  │  ScorePanel  │  ConfigScreen      │
-│  (word tiles)│  (9 tiles)   │  (per-round) │  (rules toggles)   │
-└──────┬───────┴──────┬───────┴──────┬───────┴─────────┬──────────┘
-       │              │              │                 │
-┌──────┴──────────────┴──────────────┴─────────────────┴──────────┐
-│                       Game State Layer                           │
-│  ┌───────────────┐  ┌────────────────┐  ┌─────────────────────┐  │
-│  │  GameReducer  │  │  RoundManager  │  │   ScoreCalculator   │  │
-│  │  (FSM phases) │  │  (turn order,  │  │   (length, rarity)  │  │
-│  │               │  │   elimination) │  │                     │  │
-│  └───────────────┘  └────────────────┘  └─────────────────────┘  │
+│                     App (root shell)                             │
+│  bg-surface min-h-screen font-jost [dark class toggle]          │
 ├─────────────────────────────────────────────────────────────────┤
-│                       Domain Logic Layer                         │
-│  ┌───────────────┐  ┌────────────────┐  ┌─────────────────────┐  │
-│  │  WordValidator │  │  TileBag       │  │   AIEngine          │  │
-│  │  (Set lookup) │  │  (distribution,│  │   (Easy/Med/Hard)   │  │
-│  │               │  │   draw, return)│  │                     │  │
-│  └───────────────┘  └────────────────┘  └─────────────────────┘  │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐   │
+│  │ ConfigScreen │  │ LobbyScreen  │  │     GameScreen        │   │
+│  │ min-h-screen │  │ min-h-screen │  │  flex flex-col        │   │
+│  │ scrollable   │  │ scrollable   │  │  min-h-screen         │   │
+│  └──────────────┘  └──────────────┘  └──────────────────────┘   │
+│                                             │                    │
+│                          ┌──────────────────┼──────────────┐    │
+│                    ┌─────────┐       ┌──────────┐   ┌────────┐  │
+│                    │ Top bar │       │ Middle   │   │ Overlay│  │
+│                    │ flex-   │       │ flex-1   │   │ Cards  │  │
+│                    │ shrink-0│       │ gap-4    │   │(fixed) │  │
+│                    └─────────┘       └──────────┘   └────────┘  │
+│                                          │                       │
+│                          ┌───────────────┼──────────────┐        │
+│                    ┌──────────┐  ┌────────────┐  ┌──────────┐   │
+│                    │WordHist. │  │ PlayerHand │  │Chicken-O-│   │
+│                    │sm:block  │  │ flex-1     │  │Meter     │   │
+│                    │hidden    │  │ justify-end│  │flex-shrink│  │
+│                    └──────────┘  └────────────┘  └──────────┘   │
 ├─────────────────────────────────────────────────────────────────┤
-│                       Data / Asset Layer                         │
-│  ┌───────────────┐  ┌────────────────┐  ┌─────────────────────┐  │
-│  │  WordList     │  │  TileConfig    │  │   RulesConfig       │  │
-│  │  (TWL/SOWPODS │  │  (Bananagrams  │  │   (plurals toggle,  │  │
-│  │   as JS Set)  │  │   distribution)│  │    distribution)    │  │
-│  └───────────────┘  └────────────────┘  └─────────────────────┘  │
+│                       Zustand Stores                             │
+│  ┌──────────┐  ┌──────────┐  ┌──────────────┐  ┌────────────┐  │
+│  │ appSlice │  │gameSlice │  │multiplayer   │  │dictionary  │  │
+│  │(screen,  │  │(gameState│  │(role, code,  │  │(words Set, │  │
+│  │ darkMode)│  │ dispatch)│  │ status)      │  │ status)    │  │
+│  └──────────┘  └──────────┘  └──────────────┘  └────────────┘  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Component Responsibilities
+---
 
-| Component | Responsibility | Communicates With |
-|-----------|----------------|-------------------|
-| GameBoard | Renders the growing word as placed tiles; accepts tile drop or click-to-append input | PlayerHand (tile source), GameReducer (dispatches play) |
-| PlayerHand | Displays the human player's 9 tiles; manages selection/ordering before submission | GameBoard (tile target), TileBag (draw after play) |
-| ScorePanel | Shows per-round and cumulative score for each player | ScoreCalculator (subscribes to round-end events) |
-| ConfigScreen | Pre-game rules toggles (plurals, tile distribution mode) | RulesConfig (writes), GameReducer (initialises game) |
-| GameReducer | Central FSM — owns phase transitions: Config → Dealing → Turn → Validation → Elimination → RoundEnd → GameOver | All other components read state from here |
-| RoundManager | Tracks whose turn it is, manages elimination list, detects last-player-standing | GameReducer (dispatches events) |
-| ScoreCalculator | Pure function: word string + tile rarity config → numeric score | Called at round end by RoundManager |
-| WordValidator | Checks if a submitted string exists in the word list; enforces plural rule | Pure function; used by GameReducer on submission |
-| TileBag | Initialises letter distribution, deals starting hands, handles draws after a play | Called by RoundManager at round start and after each valid play |
-| AIEngine | Given current word + AI hand + difficulty, selects a valid extension or signals "can't play" | GameReducer (turn dispatch), WordValidator (verify candidates) |
-| WordList | Bundled TWL/SOWPODS word set loaded once at startup; exposes `has(word)` | WordValidator only |
-| TileConfig | Bananagrams-style letter counts and weights; configurable alternative distributions | TileBag |
-| RulesConfig | Persists current game configuration (plurals allowed, distribution style) | ConfigScreen writes; GameReducer + WordValidator read |
+## Component Responsibilities
 
-## Recommended Project Structure
+| Component | Responsibility | Layout Role | Change Classification |
+|-----------|---------------|-------------|----------------------|
+| `App` | Dark mode class, screen routing, session restore | Root shell: `min-h-screen bg-surface` | **Structural** — switch to `h-svh flex flex-col` |
+| `GameScreen` | Game orchestration, phase routing, multiplayer overlays | Full-screen flex column | **Structural** — inherit height from App, add `min-h-0` |
+| `ConfigScreen` | Game config form, start buttons | Full-screen scrollable page | **Structural** — switch to `flex-1 overflow-y-auto` |
+| `LobbyScreen` | P2P lobby creation/join, connection status | Full-screen scrollable page | **Structural** — switch to `flex-1 overflow-y-auto` |
+| `TurnIndicator` | Whose-turn badge (top bar center) | Inline flex, absolute siblings | **Class tweak** — spacing/size audit |
+| `SharedWordDisplay` | Current word as yellow tile row | Flex row, wraps on overflow | **Class tweak** — padding/rounding audit |
+| `ScorePanel` | You vs AI/Them score comparison | Inline flex row | **Class tweak** — visual hierarchy |
+| `WordHistory` | Per-turn word list | `hidden sm:block`, fixed `w-32` | **Class tweak** — max-height |
+| `PlayerHand` | Tile selection, staging, submit, hint/give-up | `flex-1 flex-col justify-end pb-8` | **Structural** — fix justify-end on short viewports |
+| `StagingArea` | Staged tiles + submit button | Stacked flex column inside PlayerHand | **Class tweak** — submit button prominence |
+| `TileCard` | Individual tile button | Fixed size, `min-w-[44px] min-h-[44px]` | **Token fix** — yellow contrast |
+| `ChickenOMeter` | Tension bar + word length label | `h-48 sm:h-64`, fixed width | **Token fix** — hardcoded hex gradient |
+| `RoundEndCard` | Round result overlay (fixed inset-0) | Modal | **Class tweak** — short-viewport scroll |
+| `GameOverScreen` | Game result overlay (fixed inset-0) | Modal | **Class tweak** — same |
+| `HowToPlayModal` | Rules overlay (fixed inset-0) | Modal | **Class tweak** — animation, rounding |
 
-```
-src/
-├── engine/               # Pure domain logic — no React, no DOM
-│   ├── wordValidator.ts  # WordList.has() wrapper + plural/rules checks
-│   ├── tileBag.ts        # Letter distribution, draw, shuffle
-│   ├── scoreCalculator.ts# Scoring formula (length, rarity)
-│   ├── roundManager.ts   # Turn order, elimination, round-end detection
-│   └── ai/
-│       ├── aiEngine.ts   # Dispatcher: picks strategy by difficulty
-│       ├── easyAI.ts     # Short, common-word heuristic
-│       ├── mediumAI.ts   # Scored word search within hand permutations
-│       └── hardAI.ts     # Optimal extension search (trie or sorted set)
-├── state/
-│   ├── gameReducer.ts    # FSM reducer: action → new GameState
-│   ├── gameActions.ts    # Action type definitions
-│   ├── gameTypes.ts      # GameState, PlayerState, TurnPhase enums
-│   └── GameContext.tsx   # React context + useGameDispatch / useGameState
-├── data/
-│   ├── wordlist.ts       # Imports/parses bundled word file → Set<string>
-│   ├── tileConfig.ts     # Letter counts and point values
-│   └── defaultRules.ts   # Default RulesConfig values
-├── components/
-│   ├── GameBoard.tsx     # Rendered word as tile row
-│   ├── PlayerHand.tsx    # Human's 9 tiles with selection state
-│   ├── OpponentHand.tsx  # AI tile count indicator (no peek)
-│   ├── ScorePanel.tsx    # Score display per player
-│   ├── ConfigScreen.tsx  # Pre-game configuration UI
-│   └── ui/               # Shared: Tile, Button, Modal, etc.
-├── hooks/
-│   ├── useGameState.ts   # Thin wrapper over GameContext
-│   ├── useTurn.ts        # Encapsulates submit/pass logic
-│   └── useAI.ts          # Triggers AI turn with requestAnimationFrame pacing
-└── App.tsx               # Route: Config → Game → GameOver
+---
+
+## Current Layout Architecture: Diagnosed Problems
+
+### Problem 1: Double min-h-screen, viewport not inherited
+
+Both `App` and every screen (`ConfigScreen`, `LobbyScreen`, `GameScreen`) declare `min-h-screen`. `App` uses `min-h-screen` but does not pass height to children. Screens declare their own `min-h-screen`, so they always expand to at least the large viewport height — but on mobile, browser chrome (address bar) reduces visible space below 100vh. Content clusters at top or gets clipped below chrome.
+
+**Current (broken on mobile):**
+```tsx
+// App.tsx — does not give height to children
+<div className="bg-surface min-h-screen font-jost">
+  <GameScreen />
+</div>
+
+// GameScreen.tsx — declares its own full height independently
+<div className="flex flex-col min-h-screen bg-gradient-to-b ... p-2 sm:p-4">
 ```
 
-### Structure Rationale
+**Fixed pattern:**
+```tsx
+// App.tsx — owns the viewport
+<div className={`h-svh flex flex-col bg-surface font-jost overflow-hidden ${darkMode ? 'dark' : ''}`}>
+  <GameScreen />
+</div>
 
-- **engine/**: Pure TypeScript with zero UI dependencies. Can be unit-tested without a DOM. The AI lives here because it is deterministic logic, not view logic.
-- **state/**: All mutable game state lives in one reducer. Components never mutate state directly — they dispatch actions. This matches the write-only DOM pattern: state drives the UI, UI never reads state from DOM.
-- **data/**: Assets (word list, tile config) are separated so they can be swapped without touching game logic. The word list is imported once and shared as a singleton module.
-- **components/**: Thin — they read from context and dispatch actions. No game logic lives in components.
-- **hooks/**: Bridge between React and the engine. `useAI` uses `requestAnimationFrame` to avoid blocking the render thread during AI computation.
+// GameScreen.tsx — fills the space App provides
+<div className="flex flex-col flex-1 overflow-hidden bg-gradient-to-b ... p-2 sm:p-4">
+```
 
-## Architectural Patterns
+### Problem 2: flex-1 middle section missing min-h-0
 
-### Pattern 1: Finite State Machine for Game Phase
+`GameScreen` has a `flex flex-1 gap-4` container holding WordHistory, PlayerHand, and ChickenOMeter. This is correct, but without `min-h-0`, flex children cannot shrink below their content size. On short viewports (iPhone SE: 667px height), the PlayerHand's tiles overflow instead of fitting within available space.
 
-**What:** The game progresses through discrete phases (Config, Dealing, HumanTurn, AITurn, Validating, Eliminated, RoundEnd, GameOver). A reducer function maps `(state, action) → nextState`, making illegal transitions impossible.
+**Current:**
+```tsx
+<div className="flex flex-1 gap-4">
+```
 
-**When to use:** Any turn-based game with clear phase boundaries. Prevents bugs where UI is shown in the wrong phase (e.g., tile submission accepted during AI turn).
+**Fixed:**
+```tsx
+<div className="flex flex-1 min-h-0 gap-4">
+```
 
-**Trade-offs:** Verbose action definitions upfront; pays off immediately when adding new features because invalid states are unreachable.
+`min-h-0` is also needed on `PlayerHand`'s inner column (`flex flex-col flex-1 items-center justify-end`) to allow it to scroll or constrain its content.
 
-**Example:**
-```typescript
-type TurnPhase =
-  | 'config'
-  | 'dealing'
-  | 'humanTurn'
-  | 'aiTurn'
-  | 'validating'
-  | 'roundEnd'
-  | 'gameOver';
+### Problem 3: PlayerHand uses justify-end which pushes content to viewport bottom
 
-function gameReducer(state: GameState, action: GameAction): GameState {
-  switch (state.phase) {
-    case 'humanTurn':
-      if (action.type === 'SUBMIT_WORD') {
-        const valid = wordValidator.check(action.word, state.rules);
-        return valid
-          ? { ...state, phase: 'aiTurn', currentWord: action.word }
-          : { ...state, phase: 'eliminated', eliminatedPlayer: 'human' };
-      }
-      return state;
-    // ... other phases
-  }
+`PlayerHand` renders inside a `flex-1 flex-col items-center justify-end pb-8` wrapper inside `GameScreen`. This means tiles always pin to the bottom edge of the available space. On desktop this is fine; on a short mobile viewport the staging area + tiles + action buttons stack vertically and can exceed the available height with no scrolling.
+
+The fix depends on audit of the actual total height of the PlayerHand content stack (StagingArea + tile rows + action buttons). Options:
+1. Change `justify-end` to `justify-center` if content is shorter than available space
+2. Add `overflow-y-auto` on PlayerHand's wrapper to allow scrolling when tight
+
+### Problem 4: Yellow tile contrast fails WCAG AA
+
+`TileCard` with `color="yellow"` renders `bg-corbusier-yellow text-white`. Corbusier yellow (`#f5a623`) with white text has a contrast ratio of approximately 2.1:1 — well below WCAG AA (4.5:1 for normal text, 3:1 for large/bold). The Medium difficulty button in ConfigScreen has the same issue.
+
+The fix is to change yellow-tile text to dark ink (`text-charcoal` or `text-ink`). Yellow is light enough that dark text reads well against it.
+
+**Current:**
+```tsx
+yellow: 'bg-corbusier-yellow text-white shadow-md shadow-corbusier-yellow/30',
+```
+
+**Fixed:**
+```tsx
+yellow: 'bg-corbusier-yellow text-charcoal shadow-md shadow-corbusier-yellow/30',
+```
+
+`--color-charcoal: #3a3a3a` is already in `@theme`, giving a contrast ratio of approximately 7.5:1.
+
+### Problem 5: ChickenOMeter gradient bypasses the token system
+
+The gradient is hardcoded as an inline `style={}`:
+```tsx
+style={{ background: 'linear-gradient(to top, #003f91, #f5a623, #d0021b)' }}
+```
+
+These hex values correspond to `corbusier-blue`, `corbusier-yellow`, and `corbusier-red`, but they are disconnected from the token system. In dark mode the mask color is `bg-surface/90` which correctly uses the token, but the underlying gradient hex remains static. This also makes the gradient impossible to change from CSS alone.
+
+**Fix:** Move the gradient to a CSS class in `index.css` using token references:
+```css
+.chicken-gradient {
+  background: linear-gradient(
+    to top,
+    var(--color-corbusier-blue),
+    var(--color-corbusier-yellow),
+    var(--color-corbusier-red)
+  );
 }
 ```
 
-### Pattern 2: Bundled Word List as Singleton Set
+### Problem 6: Low-opacity text tokens in dark mode may fail contrast
 
-**What:** Load TWL/SOWPODS once at module initialisation into a JavaScript `Set<string>`. All lookups are O(1). No network calls, no async delay during play.
+`text-ink/30`, `text-ink/40`, and `text-ink/50` are used throughout for secondary labels. In dark mode, `--color-ink` is `#e0ddd8`. At 30% opacity on `#1c1c24` (surface), the effective color is approximately `#4b4b52` — contrast ratio against surface is roughly 2.1:1. At 40% it is approximately 2.8:1. Both fail WCAG AA.
 
-**When to use:** Any word game requiring fast, offline-capable validation. A Set of ~180,000 words uses roughly 6–10 MB of memory, acceptable for a modern browser tab.
+These labels (History header, round number, "vs" separator, helper text) are intentionally de-emphasized, but should remain at least 3:1 for readability. Increase minimums: `text-ink/30` → `text-ink/50`, `text-ink/40` → `text-ink/60` throughout. In dark mode this gives approximately 3.5:1 and 4.7:1 respectively.
 
-**Trade-offs:** Initial bundle parse time (< 1 second on modern hardware); must be loaded before the first game starts. Lazy-loading behind a spinner at app start is the standard solution.
+---
 
-**Example:**
-```typescript
-// data/wordlist.ts — loaded once, imported by wordValidator
-import rawWords from './twl06.txt?raw'; // Vite raw import
+## Recommended Architecture for Design Fixes
 
-const WORD_SET: Set<string> = new Set(
-  rawWords.split('\n').map(w => w.trim().toUpperCase())
-);
+### Pattern 1: Viewport-filling root shell with h-svh
 
-export function isValidWord(word: string): boolean {
-  return WORD_SET.has(word.toUpperCase());
+**What:** Replace `min-h-screen` on `App` with `h-svh flex flex-col overflow-hidden`. Screens inherit the full viewport height via `flex-1`.
+
+**When to use:** Any full-screen app where page-level scrolling is not the intended UX. All three Word Chicken screens expect to fill the viewport.
+
+**Why svh over dvh:** `100svh` (small viewport height) resolves to the viewport with browser chrome visible — the smallest stable size. `100dvh` recalculates continuously as the toolbar appears/disappears, causing layout jank on iOS Safari. For a game UI, stable layout beats dynamic sizing. Both are Baseline Widely Available as of June 2025 (HIGH confidence — MDN, CanIUse).
+
+**Trade-offs:**
+- Pro: Eliminates double min-h-screen; stable across mobile Chrome/Safari
+- Con: On desktop, if the game content is very short, `h-svh` can leave empty space at the bottom — acceptable for a game UI; screens should fill the space
+
+**Example — App.tsx:**
+```tsx
+<div className={`h-svh flex flex-col bg-surface font-jost overflow-hidden ${darkMode ? 'dark' : ''}`}>
+  {screen === 'config' && <ConfigScreen />}
+  {screen === 'lobby' && <LobbyScreen />}
+  {screen === 'game' && <GameScreen />}
+</div>
+```
+
+**Example — GameScreen.tsx:**
+```tsx
+<div className="flex flex-col flex-1 overflow-hidden bg-gradient-to-b from-surface to-surface/80 p-2 sm:p-4">
+  {/* fixed-height top bar */}
+  <div className="flex-shrink-0 relative flex items-center justify-center mb-3">
+    ...
+  </div>
+
+  {/* flex-1 middle — min-h-0 required for children to shrink */}
+  <div className="flex flex-1 min-h-0 gap-4">
+    ...
+  </div>
+</div>
+```
+
+**Example — ConfigScreen.tsx / LobbyScreen.tsx:**
+```tsx
+<div className="flex-1 overflow-y-auto">
+  <div className="max-w-md mx-auto p-4">
+    ...
+  </div>
+</div>
+```
+
+### Pattern 2: Semantic token layering in @theme + .dark override
+
+**What:** `@theme` defines utility-generating tokens with light mode defaults. The `.dark {}` selector block overrides only the CSS variable values at runtime. Brand colors are static and live only in `@theme`.
+
+**Confirmed behavior (HIGH confidence — official docs):**
+- `@theme` variables must be top-level; they cannot be conditional or nested
+- `@theme` creates utility classes (`--color-surface` → `bg-surface`, `text-surface`, etc.)
+- Dark mode token overrides go in a plain `.dark {}` selector block, NOT inside `@theme`
+- `@custom-variant dark (&:where(.dark, .dark *))` in `index.css` is the correct v4 class-based dark mode pattern — already correctly implemented
+
+**Current token structure — sound, no architectural change needed:**
+```css
+@theme {
+  /* Brand colors — static, no dark override */
+  --color-corbusier-red: #d0021b;
+  --color-corbusier-blue: #003f91;
+  --color-corbusier-yellow: #f5a623;
+
+  /* Semantic tokens — light defaults */
+  --color-surface: #f2f0eb;
+  --color-card: #ffffff;
+  --color-ink: #3a3a3a;
+  --color-charcoal: #3a3a3a;
+}
+
+.dark {
+  /* Override semantic tokens only */
+  --color-surface: #1c1c24;
+  --color-card: #2a2a34;
+  --color-ink: #e0ddd8;
 }
 ```
 
-### Pattern 3: AI Candidate Search via Hand Permutations
+**Additions to consider:**
+```css
+@theme {
+  /* Add if multiple inset wells need a subtle background */
+  --color-surface-subtle: #e8e4dd;
+}
 
-**What:** The AI engine generates candidate words by checking all subsets/arrangements of its hand tiles against the current word (append one tile, rearrange). It filters candidates through the WordValidator and ranks them by difficulty heuristic.
-
-**When to use:** Word extension games where legal moves are constrained by the player's current hand. The hand size (9 tiles) keeps the search space manageable — permutation count is bounded.
-
-**Trade-offs:** Hard difficulty may need pruning to avoid frame drops. For Easy AI, a curated short-word frequency list avoids exhaustive search entirely.
-
-**Example:**
-```typescript
-function findAIMove(
-  currentWord: string,
-  hand: Tile[],
-  difficulty: 'easy' | 'medium' | 'hard'
-): string | null {
-  const candidates: string[] = [];
-  for (const tile of hand) {
-    const extended = currentWord + tile.letter; // append
-    const allArrangements = getPermutations([...currentWord, ...hand.map(t => t.letter)]);
-    for (const arrangement of allArrangements) {
-      if (isValidWord(arrangement) && isAnagramOf(arrangement, extended)) {
-        candidates.push(arrangement);
-      }
-    }
-  }
-  return rankByDifficulty(candidates, difficulty)[0] ?? null;
+.dark {
+  --color-surface-subtle: #23232e;
 }
 ```
 
-## Data Flow
+### Pattern 3: Single breakpoint discipline (sm: only)
 
-### Turn Flow (Human)
+**What:** Use `sm:` (640px) as the single meaningful breakpoint. Design mobile-first at 375px; apply `sm:` adjustments for tablet/desktop at 640px+. Do not introduce `md:` or `lg:`.
 
-```
-User selects tiles and clicks Submit
-    ↓
-useTurn.submit(arrangedWord)
-    ↓
-Dispatch: SUBMIT_WORD { word, playedTiles }
-    ↓
-gameReducer → WordValidator.check(word, rules)
-    ↓ valid                      ↓ invalid
-State: aiTurn                State: eliminated (human)
-CurrentWord updated          Human removed from round
-TileBag.draw() → replenish
-    ↓
-GameBoard re-renders new word
-AIEngine picks move on next tick
-```
+**When to use:** This game has exactly two layout modes:
+- Mobile (< 640px): 3/4/3 tile rows, WordHistory hidden, compact spacing
+- Desktop (≥ 640px): flex-wrap tiles, WordHistory visible, larger spacing
 
-### Turn Flow (AI)
+A third breakpoint creates a half-broken intermediate state with no clear design intent.
 
-```
-State enters 'aiTurn'
-    ↓
-useAI hook detects phase change
-    ↓
-requestAnimationFrame → aiEngine.pickMove(state)
-    ↓ found move              ↓ no move
-Dispatch: AI_SUBMIT_WORD    Dispatch: AI_CANNOT_PLAY
-State: humanTurn            State: eliminated (AI)
-CurrentWord updated         Round may end if last player
-```
+**Current breakpoint inventory — assessment:**
 
-### Round Start Data Flow
+| Location | Pattern | Assessment |
+|----------|---------|------------|
+| `GameScreen p-2 sm:p-4` | Responsive padding | Good |
+| `WordHistory hidden sm:block` | Mobile hide | Good |
+| `ChickenOMeter h-48 sm:h-64` | Height scale | Good |
+| `ScorePanel gap-6 sm:gap-10` | Responsive gap | Good |
+| `ScorePanel text-xl sm:text-2xl` | Font scale | Good |
+| `PlayerHand sm:hidden / hidden sm:flex` | Two tile layouts | Good |
+| `ConfigScreen text-4xl sm:text-5xl` | Title scale | Good |
+| `LobbyScreen text-3xl sm:text-4xl` | Title scale | Good |
+| `PlayerHand justify-end pb-8` (no breakpoint) | No mobile adaptation | Problem — audit needed |
+| `StagingArea` button sizing (no breakpoint) | No mobile adaptation | Minor — audit size |
 
-```
-RoundEnd or GameStart
-    ↓
-Dispatch: START_ROUND
-    ↓
-TileBag.reset() → shuffle full distribution
-TileBag.deal(9) → human hand
-TileBag.deal(9) × N → AI hands
-RoundManager picks starting player (last round winner or random)
-Starting player must play 3-letter seed word from their hand
-    ↓
-State: humanTurn (or aiTurn if AI starts)
-```
+### Pattern 4: Dark mode contrast audit by component
 
-### State Management Shape
+**Systematic approach:** Check each color combination against WCAG AA (4.5:1 text, 3:1 large/UI).
+
+**Identified failures and fixes:**
+
+| Element | Context | Current | Issue | Fix |
+|---------|---------|---------|-------|-----|
+| Yellow tile letter | `TileCard color="yellow"` | `#f5a623` bg, `white` text | ~2.1:1, fails AA | Change to `text-charcoal` (#3a3a3a) → ~7.5:1 |
+| Medium difficulty button | ConfigScreen | `bg-corbusier-yellow text-white` | Same as above | Change to `text-charcoal` |
+| Secondary labels dark mode | All | `text-ink/30` on `#1c1c24` | ~2.1:1, fails AA | Raise to `text-ink/50` minimum |
+| Tertiary labels dark mode | All | `text-ink/40` on `#1c1c24` | ~2.8:1, fails AA | Raise to `text-ink/60` |
+| ChickenOMeter gradient | ChickenOMeter | Hardcoded hex | No dark adaptation | Move to CSS class using var(--color-*) |
+| Blue tile letter | `TileCard color="blue"` | `#003f91` bg, `white` text | ~8.6:1, passes | No change |
+| Red tile letter | `TileCard color="red"` | `#d0021b` bg, `white` text | ~5.1:1, passes AA | No change |
+
+---
+
+## Data Flow (Design-Relevant)
+
+### Dark mode cascade
 
 ```
-GameState {
-  phase: TurnPhase
-  rules: RulesConfig
-  currentWord: string
-  players: PlayerState[]     // human first, then AIs
-  activePlayerIndex: number
-  round: number
-  tileBag: TileBag
-  scores: Record<PlayerId, number>
-  roundHistory: RoundResult[]
-}
-
-Components subscribe via useGameState()
-    ↓ (read)
-Components dispatch via useGameDispatch()
-    ↓ (write)
-gameReducer produces new GameState
-    ↓
-React re-renders changed subtrees
+appSlice.darkMode (boolean)
+    ↓ (read in App)
+<div className={`... ${darkMode ? 'dark' : ''}`}>
+    ↓ (CSS cascade via @custom-variant dark)
+.dark { --color-surface: ...; --color-card: ...; --color-ink: ...; }
+    ↓ (all components using bg-surface, bg-card, text-ink update automatically)
+No component code changes needed for dark mode to work
 ```
 
-## Scaling Considerations
+**Important:** The `dark` class is applied to the root `div` in `App`, not on `<html>`. This works correctly with `@custom-variant dark (&:where(.dark, .dark *))` — all descendants pick up the overrides. This is the correct Tailwind v4 class-based pattern.
 
-This is a pure client-side game. "Scaling" means performance in the browser, not server load.
+### Viewport height cascade
 
-| Concern | At launch (v1) | If multiplayer added later |
-|---------|----------------|---------------------------|
-| Word lookup | O(1) Set.has() — no concern | Same; each client holds the Set |
-| AI computation | Bounded by hand size (9 tiles); < 50ms on Easy/Medium | Per-client; no server compute needed |
-| Hard AI search | May need Web Worker if permutation space causes jank | Web Worker isolation still applies |
-| State size | Tiny — one game, no history server | Needs backend + WebSocket for sync |
-| Bundle size | Word list is the main cost (~2–4 MB raw text) | Gzip on CDN; 300–600 KB over wire |
+```
+App: h-svh flex flex-col
+    ↓ (height is definite — 100svh)
+GameScreen: flex-1 (expands to fill App's height)
+    ↓ (height is definite — remaining after App's own content)
+Middle section: flex-1 min-h-0 (expands to fill GameScreen's remaining space)
+    ↓ (height is definite — min-h-0 allows children to shrink)
+PlayerHand: flex-1 flex-col (fills left column of middle section)
+    ↓ (constrained — will not overflow parent)
+```
 
-### Scaling Priorities
+**The `min-h-0` is load-bearing.** Without it, `flex-1` containers in a flex column do not constrain their children — children overflow instead of fitting within bounds.
 
-1. **First bottleneck — Hard AI jank:** Move `aiEngine.pickMove()` into a Web Worker so it doesn't block the UI thread. Communicate via `postMessage`. This is the most likely v1 performance concern.
-2. **Second bottleneck — Word list parse time:** If startup is slow, lazy-load the word list file and show a loading state. Parsing into a Set is fast once the file is fetched; the bottleneck is file size.
+### Responsive layout (breakpoints)
+
+```
+Browser at < 640px:
+  PlayerHand renders sm:hidden div (3/4/3 tile rows)
+  WordHistory: hidden
+  ChickenOMeter: h-48
+
+Browser at >= 640px:
+  PlayerHand renders hidden sm:flex div (flex-wrap tiles)
+  WordHistory: block (w-32 sidebar)
+  ChickenOMeter: h-64
+```
+
+No React state involved — pure CSS. Breakpoint behavior is not affected by any proposed changes; the `sm:` threshold stays at 640px.
+
+---
+
+## Build Order for Design Fixes
+
+Dependencies flow downward: shell must be correct before screens can inherit height. Structural changes must precede class tweaks to the same component.
+
+```
+Step 1: App.tsx — viewport shell
+  min-h-screen → h-svh flex flex-col overflow-hidden
+  [All screens now inherit correct height]
+
+Step 2: GameScreen.tsx — remove min-h-screen, add flex-1 + overflow-hidden
+  Add min-h-0 to middle flex container
+  [PlayerHand now has a bounded, correct parent]
+
+Step 3: PlayerHand.tsx — audit justify-end pb-8 on short viewports
+  Consider overflow-y-auto on the column if content can exceed bounds
+
+Step 4: ConfigScreen.tsx + LobbyScreen.tsx — structural
+  min-h-screen → flex-1 overflow-y-auto
+  [Screens scroll within the fixed shell]
+
+Step 5: index.css — token and contrast fixes
+  Raise text-ink/30 minimum to text-ink/50 sitewide
+  Add .chicken-gradient CSS class
+  Consider --color-surface-subtle token if needed
+
+Step 6: TileCard.tsx — yellow contrast
+  colorClasses.yellow: text-white → text-charcoal
+  [Affects PlayerHand, StagingArea, SharedWordDisplay simultaneously]
+
+Step 7: ChickenOMeter.tsx — remove hardcoded gradient hex
+  Apply .chicken-gradient class from index.css
+
+Step 8: Screen-specific polish (any order)
+  ConfigScreen: spacing, button sizing, HowToPlay modal polish
+  LobbyScreen: lobby code display, input sizing
+  RoundEndCard + GameOverScreen: short-viewport scroll audit
+  ScorePanel: leading-score visual hierarchy
+  SharedWordDisplay: padding/rounding
+  StagingArea: submit button size
+  TurnIndicator: spacing
+  WordHistory: max-h on desktop
+```
+
+**Cross-cutting vs screen-specific:**
+
+| Change | Cross-cutting | Screen-specific |
+|--------|--------------|-----------------|
+| `h-svh` shell | Yes (App.tsx) | — |
+| `flex-1 overflow-y-auto` screens | Yes (same pattern) | ConfigScreen, LobbyScreen |
+| `min-h-0` flex containers | Yes (pattern) | GameScreen, PlayerHand |
+| Yellow tile text color | Yes (TileCard, ConfigScreen button) | — |
+| Opacity floor (`/50` min) | Yes (global) | — |
+| Chicken gradient class | No | ChickenOMeter only |
+| Overlay scroll audit | No | RoundEndCard, GameOverScreen |
+
+---
 
 ## Anti-Patterns
 
-### Anti-Pattern 1: Game Logic in Components
+### Anti-Pattern 1: Re-declaring min-h-screen on every screen
 
-**What people do:** Put word validation, AI move selection, or elimination checks directly inside React components or event handlers.
+**What people do:** Each screen declares `min-h-screen` to ensure it fills the viewport.
+**Why it's wrong:** Creates double-height intent; does not propagate flex growth; uses the large viewport height on mobile, so content sits small at the top with empty space below, or gets clipped under chrome.
+**Do this instead:** `App` owns the viewport with `h-svh`. Screens grow to fill it via `flex-1`. Each screen is responsible only for its internal layout, not for claiming the viewport.
 
-**Why it's wrong:** Logic becomes untestable (requires DOM/React renderer), duplicated across components, and tightly coupled to UI decisions. A bug in scoring logic requires hunting through JSX.
+### Anti-Pattern 2: Adding dark: variants to every utility class
 
-**Do this instead:** All game logic in `engine/` as pure TypeScript functions. Components dispatch actions and render state — nothing more.
+**What people do:** Add `dark:bg-gray-800 dark:text-white` to each element when making something dark-mode aware.
+**Why it's wrong:** Scattered; hard to audit; breaks when new components are added that forget the `dark:` prefix.
+**Do this instead:** Use semantic tokens (`bg-surface`, `bg-card`, `text-ink`). The `.dark` block in `index.css` handles all semantic color changes in one place. Only truly brand-specific colors that need dark variants (unlikely) should use `dark:` prefixes.
 
-### Anti-Pattern 2: API-Based Dictionary Validation
+### Anti-Pattern 3: Hardcoding color values in style= attributes
 
-**What people do:** Call a third-party word validation API (e.g., Merriam-Webster, Datamuse) on every submission.
+**What people do:** `style={{ background: 'linear-gradient(to top, #003f91, #f5a623, #d0021b)' }}`
+**Why it's wrong:** Bypasses the token system; does not respond to dark mode; cannot be audited centrally.
+**Do this instead:** Define a CSS class in `index.css` that uses `var(--color-corbusier-*)` tokens. Apply the class with `className`. The gradient values then update automatically if tokens ever change.
 
-**Why it's wrong:** Adds network latency to every turn, creates hard dependency on uptime, introduces per-query cost, and breaks offline play. For a word game, 200ms+ latency on validation feels broken.
+### Anti-Pattern 4: Missing min-h-0 on flex scroll containers
 
-**Do this instead:** Bundle the word list with the app. TWL06 is ~180K words; compressed it adds ~1.5 MB to the bundle — acceptable. Load once, validate in microseconds.
+**What people do:** Create `flex flex-col flex-1` containers expecting children to fit or scroll, but omit `min-h-0`.
+**Why it's wrong:** Flex items default to `min-height: auto`, meaning they cannot shrink below their content size regardless of the available space. The container overflows instead of constraining children.
+**Do this instead:** Any `flex-1` column container that must constrain its children needs `min-h-0` alongside `flex-1`. This is especially important in the GameScreen middle section and PlayerHand column.
 
-### Anti-Pattern 3: Mutable Game State
+### Anti-Pattern 5: Intermediate breakpoints for a two-state layout
 
-**What people do:** Mutate player hands, the current word, or the tile bag in place (e.g., `player.hand.splice(...)`).
+**What people do:** Add `md:` and `lg:` breakpoints for intermediate states between mobile and desktop.
+**Why it's wrong:** Word Chicken has exactly two valid layout states. A third breakpoint creates a middle state that was never designed, producing half-broken tile layouts or partially-visible sidebars.
+**Do this instead:** Commit to `sm:` (640px) as the single breakpoint. Design for 375px (mobile) and 768px+ (desktop) as the only two cases that need dedicated attention.
 
-**Why it's wrong:** Makes undo/replay impossible, causes subtle React re-render bugs (reference equality checks fail to detect changes), and makes AI "what-if" simulation dangerous (AI explores moves that contaminate real state).
-
-**Do this instead:** Immutable state updates via reducer. AI simulation clones state before exploration. Undo is a free side effect.
-
-### Anti-Pattern 4: Encoding Q as Two Characters in Logic
-
-**What people do:** Represent the "Q=Qu" tile as the string "QU" throughout the codebase, causing length-counting, display, and permutation logic to diverge.
-
-**Why it's wrong:** A 4-letter word using Q is stored as 5 characters, breaking all length comparisons, scoring, and word validation (dictionary entries use standard spelling).
-
-**Do this instead:** Store the tile as the single character `'Q'` everywhere in game state. The display layer renders it as "Qu". The word validator strips/expands Q→QU only at validation time, consistently in one place.
+---
 
 ## Integration Points
 
-### External Dependencies
+### Internal Boundaries
 
-| Dependency | Integration Pattern | Notes |
-|------------|---------------------|-------|
-| TWL06 / SOWPODS word list | Bundled as static asset; Vite `?raw` import or public folder fetch | Free to distribute TWL06; SOWPODS license is more restrictive — verify |
-| Bananagrams tile distribution | Hard-coded config object (not a library) | Counts: A×13, B×3, C×3, etc. |
-| Web Worker (Hard AI) | `new Worker('ai.worker.ts')` with `postMessage` protocol | Optional for v1; add when jank is observed |
+| Boundary | Communication | Design Relevance |
+|----------|---------------|-----------------|
+| `App` → all screens | Conditional render, `className` wraps all content | Dark class and viewport sizing live here — must be correct first |
+| `App` → screen height | No explicit prop; CSS inheritance via flex | `h-svh flex flex-col` on App + `flex-1` on screens is the contract |
+| `GameScreen` → `PlayerHand` | No layout props; PlayerHand manages its own classes | GameScreen's flex container dimensions directly constrain PlayerHand |
+| `GameScreen` → `ChickenOMeter` | `wordLength` prop | Layout: `flex-shrink-0` in right column; height is self-contained |
+| `index.css @theme` → all components | CSS cascade via Tailwind utility classes | Any `@theme` or `.dark {}` change affects every component using those tokens |
+| `TileCard.colorClasses` → consumers | Three components: PlayerHand, StagingArea, SharedWordDisplay | Color change in TileCard is cross-cutting — affects all tile rendering |
 
-### Internal Module Boundaries
+---
 
-| Boundary | Communication | Notes |
-|----------|---------------|-------|
-| Components → State | React context dispatch (actions only) | Components never call engine functions directly |
-| State → Engine | Reducer calls pure functions synchronously | gameReducer imports from engine/; engine has no React imports |
-| AI → WordValidator | Direct function call within engine/ | AI is in engine/ so this is an intra-layer call |
-| AI (Hard) → Main Thread | Web Worker postMessage if extracted | Protocol: `{ type: 'PICK_MOVE', state }` → `{ type: 'MOVE_RESULT', word }` |
-| Data (WordList) → Engine | Module singleton — imported at startup | Never re-initialised; safe to import in engine/ and tests |
+## Tailwind v4 @theme — Verified Behaviors
 
-## Build Order Implications
+Verified against official docs (tailwindcss.com/docs/theme, tailwindcss.com/docs/dark-mode) — HIGH confidence.
 
-Dependencies flow upward: data layer must exist before engine, engine before state, state before components.
+- `@theme` variables must be top-level; they cannot be nested in selectors or media queries
+- `@theme` variables generate utility classes (`--color-surface` → `bg-surface`, `text-surface`, `fill-surface`, etc.)
+- To override tokens for dark mode: use a plain `.dark {}` selector block — NOT inside `@theme`
+- `@custom-variant dark (&:where(.dark, .dark *))` is the correct v4 class-based dark mode pattern — already correctly implemented in `index.css`
+- `@theme { --color-*: initial; }` resets entire color namespace (not needed for this audit)
+- CSS variables defined in `@theme` are native CSS custom properties and can be used in `var(--color-*)` arbitrary CSS
 
-```
-Phase 1: Data layer
-  → wordlist.ts (Set<string>)
-  → tileConfig.ts
-  → defaultRules.ts
-
-Phase 2: Engine (pure logic, fully testable immediately)
-  → wordValidator.ts
-  → tileBag.ts
-  → scoreCalculator.ts
-  → roundManager.ts
-
-Phase 3: AI Engine
-  → easyAI.ts (simplest — short common words)
-  → mediumAI.ts
-  → hardAI.ts (most complex — defer if needed)
-
-Phase 4: State layer
-  → gameTypes.ts + gameActions.ts
-  → gameReducer.ts (integrates all engine modules)
-  → GameContext.tsx
-
-Phase 5: UI Components
-  → ConfigScreen (no game logic — just config)
-  → GameBoard + PlayerHand (core interaction)
-  → ScorePanel + OpponentHand (display only)
-
-Phase 6: Polish
-  → Animations (tile placement, elimination)
-  → Web Worker for Hard AI (if jank observed)
-```
+---
 
 ## Sources
 
-- Game Programming Patterns — State Pattern: https://gameprogrammingpatterns.com/state.html
-- Game Programming Patterns — Game Loop: https://gameprogrammingpatterns.com/game-loop.html
-- Board Game Logic in React (Medium): https://medium.com/@tylercmasterson/board-game-logic-in-react-199d6983fc23
-- Building a Scrabble-like Word Game in React (freeCodeCamp): https://www.freecodecamp.org/news/how-i-built-a-react-game-with-react-dnd-and-react-flip-move-26300156a825/
-- Word lists for computer word games: https://www.kith.org/words/2022/03/19/word-lists-for-writing-computer-word-games/
-- JavaScript Trie Performance Analysis (John Resig): https://johnresig.com/blog/javascript-trie-performance-analysis/
-- Finite State Machines in Game Development (Game Developer): https://www.gamedeveloper.com/programming/designing-a-simple-game-ai-using-finite-state-machines
-- Blossom Word Game Technical Architecture: https://zprostudio.com/blossom-word-game/
+- Official Tailwind v4 theme docs: https://tailwindcss.com/docs/theme
+- Official Tailwind v4 dark mode docs: https://tailwindcss.com/docs/dark-mode
+- Tailwind v4 dark mode token discussion: https://github.com/tailwindlabs/tailwindcss/discussions/15083
+- Tailwind v4 theming best practices: https://github.com/tailwindlabs/tailwindcss/discussions/18471
+- Viewport units (svh/dvh/lvh) explained: https://www.bram.us/2021/07/08/the-large-small-and-dynamic-viewports/
+- dvh jank on iOS Safari: https://iifx.dev/en/articles/460170745/fixing-ios-safari-s-shifting-ui-with-dvh
+- svh vs dvh practical guide: https://medium.com/@tharunbalaji110/understanding-mobile-viewport-units-a-complete-guide-to-svh-lvh-and-dvh-0c905d96e21a
 
 ---
-*Architecture research for: browser-based tile word game (Word Chicken)*
+*Architecture research for: Word Chicken v1.1 UX/design audit*
 *Researched: 2026-03-18*

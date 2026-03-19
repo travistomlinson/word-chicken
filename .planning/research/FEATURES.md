@@ -1,8 +1,16 @@
-# Feature Research
+# Feature Research: Mobile Game UX/Design Patterns
 
-**Domain:** Browser-based single-player tile word game with AI opponents and elimination mechanics
+**Domain:** Mobile-first word/tile game — UX audit and design fix pass (v1.1)
 **Researched:** 2026-03-18
-**Confidence:** MEDIUM — Word game conventions are well-established; novel mechanic (letter-by-letter cooperative extension with elimination) has no direct comparators.
+**Confidence:** HIGH (viewport/touch targets — standards-backed), MEDIUM (game hierarchy patterns — reference game analysis + community best practices)
+
+---
+
+## Context: What This Research Answers
+
+This is a **design audit milestone**, not a feature-building milestone. "Features" here means **UX design patterns** — what well-designed mobile word and card games do that users expect, what separates polished from rough, and what looks tempting but creates problems. Research is specifically scoped to: viewport filling, element hierarchy, button/action placement, tile sizing, score display, and game state transitions.
+
+The existing app already has all game mechanics. The question is: **how should these be designed on mobile?**
 
 ---
 
@@ -10,229 +18,218 @@
 
 ### Table Stakes (Users Expect These)
 
-Features users assume exist. Missing these = product feels incomplete or broken.
+Features users assume exist. Missing these = product feels broken or amateurish on mobile.
 
-| Feature | Why Expected | Complexity | Notes |
-|---------|--------------|------------|-------|
-| Real-time word validation with visual feedback | Every word game since Wordle (2021) provides instant valid/invalid response. Absence feels broken. | LOW | Shake animation on invalid word; green highlight on valid. Bundled dictionary (TWL/SOWPODS) loaded client-side — no round-trip latency. |
-| Clear current word display | Players must see the shared word state at all times. Confusion about what the current word is = immediate frustration. | LOW | Show letter sequence prominently; tiles in play must be visually distinct from hand tiles. |
-| Hand tile display | Core game surface. Players need to see their 9 tiles. | LOW | Tiles displayed in rack; must support click/tap to select and play. |
-| Letter-by-letter turn indication | Players must know whose turn it is and what phase (extend, validate, etc.) | LOW | Clear turn indicator; AI "thinking" state needed so player knows game is processing. |
-| Invalid word rejection with explanation | Players need to know WHY a submission failed (not a word vs. can't be formed from hand). | LOW-MEDIUM | Two error classes: "not a valid word" vs. "letters not available in your hand." |
-| Round start / round end state | Clear moment when a round begins (3-letter seed word) and ends (player eliminated). | LOW | Transition screens/animations communicate state changes. |
-| Score display | Word game players expect a running score. | LOW | Score per word (length + rarity) and cumulative round score visible. |
-| Game over screen | Final state with win/loss, score summary. | LOW | Necessary closure; feels unfinished without. |
-| Keyboard input support | Desktop browser users expect to type letters, not click tiles. | MEDIUM | Map keyboard keys to tile selection; requires focus management logic. |
-| "How to Play" explanation | Novel mechanic (letter extension + elimination) is not self-evident. First-time players will be lost. | MEDIUM | Modal or dedicated rules screen; not a full tutorial but a rules summary. |
-| Responsive layout | 67% of browser game sessions in 2025 are on mobile. Tile-based games need touch-first design. | MEDIUM | Tap tiles to select/play; drag optional but not required. |
-| Difficulty selection before game | Players expect to choose challenge level before committing to a session. | LOW | Easy/Medium/Hard selector on pre-game screen. |
-| Configurable rules pre-game | The game has meaningful rule variants (plurals toggle, tile distribution). Must surface before play, not buried in settings. | LOW-MEDIUM | Pre-game config screen. Defaults must be sane (plurals off, Bananagrams distribution). |
+| Feature | Why Expected | Complexity | Current State | Fix Notes |
+|---------|--------------|------------|---------------|-----------|
+| Viewport fills the screen with no wasted space | Mobile games occupy the full available screen — no dead space, no address bar overflow creating a gap at bottom. All successful mobile web games (Wordle, NYT Games, etc.) fill the viewport. | LOW | **Broken.** All three screen containers use `min-h-screen` (100vh), which overestimates viewport height on mobile because 100vh is calculated against the large viewport (address bar hidden) but the address bar is visible on load. Content floats at the bottom of a taller-than-visible container. | Replace `min-h-screen` with `min-h-[100dvh]` on GameScreen, ConfigScreen, LobbyScreen. Use `flex flex-col` so inner sections can `flex-1` to fill available height. |
+| No content clipped by device edges | Game elements are never cut off by notches, home indicators, or device bezels. | LOW | **At risk.** No `env(safe-area-inset-*)` padding used anywhere. p-2 on GameScreen may be insufficient on notched iPhones (iPhone 14+ have 34px bottom home indicator area). | Add `pb-[env(safe-area-inset-bottom)]` to GameScreen. Add `pt-[env(safe-area-inset-top)]` where header content is near the top edge. |
+| Primary actions land in thumb reach | Bottom third of the screen is where thumbs naturally rest. Every successful mobile word game puts Submit / Play at the bottom. Wordle's keyboard is in the bottom 40% of the screen. Words With Friends: same. | LOW | **Partially broken.** The PlayerHand is anchored with `justify-end pb-8` inside a `flex-1` area — directionally correct but the `pb-8` (32px) is a fixed offset, not a true bottom-anchor. On short screens the Submit button may be mid-screen. | GameScreen middle section needs `flex-1 flex flex-col`. PlayerHand should be at the bottom of that flex column without relying on a fixed pb value. |
+| Touch targets minimum 44px on all interactive elements | Apple HIG: 44pt minimum. Material Design: 48dp minimum. WCAG 2.5.5 AAA: 44x44px. Users miss smaller targets, leading to frustration and mis-taps. | LOW | **Partially met.** TileCard already has `min-w-[44px] min-h-[44px]` — correct. But secondary actions (Quit, Give Up, Hint/Show a Word, Back, Copy Code, How to Play link) are text-only elements with ~24-32px effective hit areas. | Add `min-h-[44px] px-3 py-2` or equivalent to all secondary action buttons. The "Quit" button in the top bar is a small text link — needs padding expansion or a larger hit area via `p-3`. |
+| Unambiguous turn state | Player knows at a glance whether to act or wait. The turn indicator must be visible without hunting. | LOW | **Needs work.** TurnIndicator is a small centered element in the top bar, flanked by the round number and Quit link. On a 375px screen with all three items sharing a 30px-tall row, none has visual dominance. | Turn state should be the most visually prominent element on screen during a player's turn. Consider color-fill treatment (colored background bar rather than text-only). |
+| Legible score at a glance | Score visible throughout play without hunting. Reference: Scrabble GO shows opponent score always alongside own score, with current score larger than cumulative. | LOW | **Needs hierarchy.** ScorePanel shows roundScores and totalScores but both are equal visual weight. During a round, round score is what players actively care about. | Round score: larger type. Total score: smaller, secondary position. Label "You" vs opponent name clearly. |
+| Error feedback on invalid word | Shake + message is the established convention (Wordle set this in 2021 — it is now the expected pattern). | LOW | **Already correct.** Shake animation + red error text above Submit. This is well-implemented. | No change needed. |
+| Round end feels like a distinct event | Transition between round-in-play and round-over should feel like a meaningful moment, not a content replacement. Wordle's results modal, NYT Connections' reveal — fullscreen overlays signal state changes. | MEDIUM | **Needs improvement.** RoundEndCard renders inline within the GameScreen flex layout, not as an overlay. GameOverScreen uses an overlay approach. The inconsistency makes round end feel less significant. | RoundEndCard should use the same overlay pattern as GameOverScreen: fixed inset-0 backdrop with centered card. |
+| Dark mode with real contrast | Dark mode where text is actually readable — not just a darkened surface with unchanged overlays. WCAG AA requires 4.5:1 for normal text. | MEDIUM | **Partially broken.** Dark tokens exist but opacity-aliased text colors (`text-ink/30`, `text-ink/40`) compute to approximately 3.5:1 on dark surface — fails AA for normal text. Corbusier red as text on dark surface is approximately 4.1:1 — marginal fail. | Audit all text/background pairs in dark mode. Replace opacity-aliased colors with explicit hex tokens for secondary text in dark mode. |
+| Software keyboard doesn't break lobby layout | When the device keyboard appears (triggered by the join code input field in LobbyScreen), the layout should not collapse or push content off screen. | LOW | **Unknown — likely at risk.** LobbyScreen uses `min-h-screen` full-height layout. A keyboard appearing on an iPhone reduces visible height by ~40%. The join code input and join button may scroll off screen. | Use `min-h-fit` or `height: auto` for the lobby layout, or add `inputmode="text"` and `autocomplete="one-time-code"` to minimize keyboard disruption. |
 
 ---
 
 ### Differentiators (Competitive Advantage)
 
-Features that set this product apart. These align with the core value: escalating tension of "can I extend this word?"
+Patterns that elevate the existing design beyond baseline. These align with Word Chicken's core value: escalating tension.
 
-| Feature | Value Proposition | Complexity | Notes |
-|---------|-------------------|------------|-------|
-| AI opponent personality / voice | AI that "thinks out loud" (e.g., "Hmm, going with STRAINER...") makes the game feel competitive rather than mechanical. Creates emotional stakes. | MEDIUM | Text-based flavor only; no TTS needed. Difficulty-correlated vocabulary: Easy AI uses common words, Hard AI uses obscure optimal plays. |
-| Tension ramp visualization | Visual cue showing how long/difficult the current word is becoming — a "chicken-o-meter" or word pressure indicator. | MEDIUM | Tracks word length, letter rarity, time-to-play. Amplifies the core "chicken moment." |
-| Word history display | Show the sequence of letters added each turn (who played what). Post-elimination replay of how the word grew. | LOW-MEDIUM | Creates narrative arc for each round. Players can analyze what broke the losing player. |
-| Rarity-weighted scoring with bonuses | Score goes beyond word length. Using rare letters (Q, Z, X, J) or finding obscure words earns bonuses. Creates strategy: play safe common words or swing for score. | MEDIUM | Scrabble letter values are well-established; adapt for word-length multipliers on top. |
-| Q = "Qu" tile mechanic | Unique tile convention (from Bananagrams) that eliminates the "I have Q but no U" death scenario. Makes tile distribution cleaner and play more fluid. | LOW | Dictionary must accommodate Qu- words correctly. Requires tile rendering to show "Qu" as single unit. |
-| New hand each round | Unlike Scrabble where tiles accumulate strategy, fresh hands each round means each round is a self-contained puzzle. Reduces runaway leader effect. | LOW | Already in spec; worth calling out as a differentiator vs. hand-persistence games. |
-| No max word length elimination | The word just keeps growing until someone breaks. Creates genuine escalating dread absent from capped-length games. | LOW | Spec already defines this; implement without artificial cap. |
-| Pre-game rules configuration | Casual players toggle plurals on; competitive players prefer them off. Tile distribution options let players tune difficulty independently of AI skill. | LOW-MEDIUM | Differentiates from rigid-rules word games; increases replayability. |
+| Feature | Value Proposition | Complexity | Current State | Notes |
+|---------|-------------------|------------|---------------|-------|
+| Chicken-O-Meter as visceral tension indicator | Most word games use score as the only pressure indicator. A fill gauge that physically "rises" as the word grows externalizes emotional stakes. No comparable game has this. | LOW (design work) | **Exists but undersized.** Current: `h-48 sm:h-64 w-5` — a 5px-wide needle on the right edge of the screen. The meter is present but not prominent enough to read as a tension indicator. | Widen to w-8 or w-10 (32-40px). On mobile, consider horizontal bar variant under the SharedWordDisplay instead of right-sidebar. Increase pulse animation aggressiveness in danger zone (>66% fill). |
+| Tile color language for community vs. hand | Yellow tiles = letters from the shared word (community). Blue tiles = newly staged from hand. Concrete = available in hand. This color system teaches tile ownership without instructions. | LOW | **Exists and mostly works.** Risk: staged tiles in the hand become opacity-50 concrete, which breaks the color signal — they look identical to unstaged tiles but dimmer, not like "taken" tiles. | Staged tiles in the hand should have a clearer "taken" visual: consider `opacity-30` + `line-through` treatment, or a small checkmark overlay, or simply remove them from the hand view and show them only in the staging area. |
+| Tile entrance animations per round | Tiles sliding in on each new round signals a distinct game moment, creating rhythm and anticipation. | LOW | **Exists and works.** `entranceStyle` with opacity + translateY + stagger. | Keep as-is. Could extend the stagger timing (current: 40ms per tile) to 60ms for a more dramatic cascade effect. |
+| Elimination scatter animation | When you're eliminated, tiles scatter and fly off screen — a theatrical moment that makes losing feel memorable rather than just sad. | LOW | **Exists and works.** CSS transform scatter with rotation. | Keep as-is. This is a genuine differentiator. |
+| Opponent thinking animation | Prevents confusion during AI/opponent turn — cycling random letters on TileCard components is more evocative than a generic spinner. | LOW | **Exists and works.** | Keep as-is. More creative than standard loading patterns. |
+| Corbusier palette as brand identity | Red/blue/yellow in a game context is immediately distinctive. Most word games are grey and green (Wordle) or blue and white (Scrabble GO). | LOW (design work) | **Established but needs dark mode care.** In dark mode, the palette should not simply be layered on a dark surface — Corbusier red (#d0021b) and yellow (#f5a623) need to work with the dark surface (#1c1c24) without losing their identity. | In dark mode: keep red and blue at full saturation (they work on dark). Yellow (#f5a623) on dark surface as a background color is fine; avoid yellow as small text on dark — contrast fails. |
 
 ---
 
 ### Anti-Features (Commonly Requested, Often Problematic)
 
-Features that seem like good additions but introduce disproportionate complexity or undermine the core experience.
-
 | Feature | Why Requested | Why Problematic | Alternative |
 |---------|---------------|-----------------|-------------|
-| Online multiplayer (v1) | "Real games are played against humans." | Requires server infrastructure, latency handling, matchmaking, session persistence, disconnect handling, lobby state — all orthogonal to proving the core mechanic. Networking doubles scope. | Ship AI-only v1. Validate mechanic first. Add multiplayer in v2 once the game loop is proven fun. |
-| User accounts / login (v1) | Persistent stats, leaderboards, identity. | Auth is 2-3x the complexity of the feature set it enables in v1. No social graph to compete against = leaderboards are meaningless. | Play-immediately with no login. Use localStorage for session stats. Add accounts when there's a reason (multiplayer, social). |
-| Real-time chat with AI | Conversational AI opponent feels alive. | LLM integration introduces latency, cost, content moderation surface, and prompt injection risk. Flavor text from a lookup table gives 80% of the value at 0% of the complexity. | Pre-scripted AI commentary keyed to game events (word played, player eliminated, hard word found). |
-| Drag-and-drop tile placement | Feels tactile and satisfying. | Accessible drag-and-drop requires full ARIA implementation, keyboard fallback, and touch gesture handling across device classes. Adds significant complexity for unclear incremental value over tap-to-select. | Tap/click to select a tile, tap target to place it. Simpler, accessible, works everywhere. |
-| Achievements / badges system | Rewards mastery, increases retention. | Achievements require persistent state, achievement definitions, unlock detection logic, and UI surface. Valuable, but not core to the chicken mechanic. | Defer to v1.x. Track session stats locally; surface a simple end-screen "best word" stat first. |
-| Timer / countdown per turn | Creates urgency. | Timers penalize players who look up words or pause; discourages deliberate play. For single-player vs AI, there's no clock-abuse risk. Urgency already comes from the elimination mechanic. | Let the escalating word length create pressure naturally. Add optional timer as a rule toggle in v2 if playtesting shows sessions feel too slow. |
-| Multiple simultaneous AI opponents | More players = more interesting dynamics. | 3-4 player balance has not been validated (PROJECT.md notes physical playtesting was only 2-player). AI decision complexity multiplies with player count. | Start with 1 human vs 1 AI. Add 2nd AI opponent in v1.x after 1v1 balance is validated. |
-| Sound effects on every action | Polished feel, audio feedback. | Audio implementation (Web Audio API, asset loading, user preferences, mute state) is a non-trivial surface for a first-pass. | Defer sound to v1.x. Focus on visual feedback first. Add audio as an enhancement layer once game loop is stable. |
+| Scroll-based layout for the game screen | "More space for tiles / word history" | Scroll breaks the "game as arena" mental model. A game board should feel contained. Scrolling during your turn means losing context of the shared word and score. Word history is already correctly hidden on mobile. | Use `flex-1` on the center section to fill available height naturally. Hide low-priority elements (word history) on mobile before introducing scroll. |
+| Word history visible on mobile | Power users want to see every word played | Takes ~30% of horizontal real estate on a 375px phone. The critical info for decision-making is only the current word, not the full history. | Keep history hidden on mobile (already done). A tap-to-expand drawer could be added later if player demand is validated. Do not add for v1.1. |
+| Bottom navigation bar | "Easy way to switch between sections" | There are only 3 screens and they form a linear flow (config → lobby/game). Nav bars imply parallel sibling destinations, not a linear funnel. A nav bar on the game screen would be confusing. | One-directional flow: config → game. Back/quit is sufficient. |
+| Animated transitions between screens | "Feels more like a native app" | React state-based screen swaps don't have shared element context. Slide/fade transitions add 200-400ms of perceived latency and require layout preservation during the transition. The within-screen animations (tile entrance, scatter) are already polished. | Rely on within-screen state transitions. Screen switches can be instant — the in-game animations carry all the polish. |
+| Floating action button (FAB) for Submit | "Always accessible, ergonomic" | FAB patterns are for context-free actions that don't have a natural position (e.g., compose email). Submit is tightly coupled to the staging area — it should be adjacent to what you're submitting, not floating independently. | Keep Submit paired with the staging area; move the entire interaction zone (staging + tiles + submit) lower toward the thumb zone rather than detaching the button. |
+| Haptic feedback on tile taps | "Makes tiles feel physical and satisfying" | Web Vibration API: Android-only in practice, off by default in many browsers, unsupported in Safari/iOS entirely. Creates false expectation of polish that only half the users experience. | Lean into the visual micro-interactions already present (tile scale on hover, bounce on tap, `hover:scale-110` in TileCard). These work everywhere. |
+| Swipe gestures for staging tiles | "Natural mobile interaction" | Swipe conflicts with browser scroll and requires careful gesture disambiguation. Tap-to-select is cleaner and more accessible — it works with assistive technology, doesn't conflict with scroll, and has no ambiguous direction. | Keep tap-to-stage. It is the correct mobile primitive for this interaction. |
 
 ---
 
 ## Feature Dependencies
 
 ```
-[Word Validation Engine]
-    └──required by──> [Turn Submission]
-    └──required by──> [AI Opponent Logic]
-    └──required by──> [Invalid Word Rejection Feedback]
+Viewport fix (100dvh + flex-col)
+    └──enables──> Reliable flex-1 height expansion
+                      └──enables──> True bottom-anchor for PlayerHand
+                                        └──enables──> Submit button consistently in thumb zone
 
-[Tile Distribution System]
-    └──required by──> [Hand Dealing]
-                          └──required by──> [New Hand Each Round]
-                          └──required by──> [9-Tile Hand Display]
+Safe area padding
+    └──required for──> No bottom content clipping on iPhone
+    └──required for──> No top clipping on notched devices
 
-[Game State Machine]
-    └──required by──> [Round Start / Seed Word]
-    └──required by──> [Turn Sequencing (human → AI → human)]
-    └──required by──> [Elimination Logic]
-    └──required by──> [Round End / Game Over]
+Color contrast audit
+    └──unblocks──> Dark mode is trustworthy
+    └──unblocks──> Corbusier palette is accessible in both modes
 
-[Scoring Engine]
-    └──required by──> [Score Display]
-    └──required by──> [End-of-Round Summary]
-    └──required by──> [Rarity Bonus Calculation]
-        └──requires──> [Letter Rarity Values]
-
-[AI Opponent Logic]
-    └──requires──> [Word Validation Engine]
-    └──requires──> [Game State Machine]
-    └──enhanced by──> [AI Flavor Text / Commentary]
-
-[Pre-game Config Screen]
-    └──feeds into──> [Game State Machine] (rule flags)
-    └──feeds into──> [Tile Distribution System] (distribution mode)
-    └──feeds into──> [AI Opponent Logic] (difficulty level)
-
-[Word History Display]
-    └──requires──> [Game State Machine] (turn log)
-
-[Q="Qu" Tile]
-    └──requires──> [Word Validation Engine] (must handle Qu- prefix)
-    └──requires──> [Tile Rendering] (show "Qu" as single tile visually)
+Round end overlay pattern
+    └──depends on──> No layout changes to GameScreen (fix viewport first)
 ```
 
 ### Dependency Notes
 
-- **Word Validation Engine is foundational**: Every interactive feature depends on it. Must be implemented first and tested thoroughly. TWL/SOWPODS dictionary must be loaded before game loop starts.
-- **Game State Machine is the backbone**: Round lifecycle (seed word → turns → elimination → new round) must be modeled explicitly. All display and AI features consume state from it.
-- **AI Opponent Logic requires both**: It needs to know what words are valid AND what the current game state is. AI difficulty is a parameter of the AI logic, not a separate system.
-- **Pre-game Config feeds three systems**: Config choices must be resolved before game initialization. Config screen is upstream of everything.
-- **Q="Qu" is cross-cutting**: Affects tile rendering, tile distribution count, and dictionary lookup. Must be decided before any of those systems are built.
-- **Word History enhances but is not required**: The game loop functions without it; add to the turn log data structure early so UI can surface it later without refactoring.
+- **Viewport fix must come first.** Every other layout measurement — button position, tile sizing, safe area — is verified against the corrected viewport. Fixing individual component positions without fixing the container baseline will produce inconsistent results across device sizes.
+- **Submit position depends on viewport fix.** The current `pb-8` anchor inside `flex-1 justify-end` only works correctly once the flex container reliably fills the viewport. Fix container first, then validate button position.
+- **Dark mode contrast is independent.** Color tokens are in `index.css`. This work can be done in parallel with layout work.
+- **RoundEndCard overlay is safe to do after viewport fix.** It's a self-contained component change that doesn't affect GameScreen layout.
 
 ---
 
-## MVP Definition
+## MVP for This Audit (v1.1 Scope)
 
-### Launch With (v1)
+### Fix Now — Core Breakage (Must Ship)
 
-Minimum viable product — validates the core "word chicken" mechanic end-to-end.
+- [ ] **Viewport 100dvh** — Replace `min-h-screen` with `min-h-[100dvh]` on GameScreen, ConfigScreen, LobbyScreen. This is the root cause of the "content at bottom" bug reported in playtesting. Trivial code change, high impact.
+- [ ] **GameScreen flex layout restructure** — GameScreen needs `flex flex-col h-[100dvh]` with top bar fixed-height, center section `flex-1`, so PlayerHand genuinely anchors to the bottom third of the screen.
+- [ ] **Safe area bottom padding** — `pb-[env(safe-area-inset-bottom)]` on GameScreen container. Prevents Submit button hiding behind home indicator on iPhone 14+.
+- [ ] **Secondary button touch targets** — Quit (top bar), Give Up, Show a Word (Hint), Back (LobbyScreen), Copy Code, How to Play link all need minimum 44px tap area via explicit padding. Currently too small for reliable one-thumb tapping.
+- [ ] **Dark mode contrast audit and fix** — Verify all text/background pairs. Expected failures: `ink/30`-`ink/50` opacity tokens on dark surface for normal-weight text; Corbusier red as text color on dark; yellow as text color on dark. Fix by adding explicit dark-mode token values instead of relying solely on opacity.
 
-- [ ] **Word Validation Engine** — bundled TWL dictionary, client-side, fast lookup. Without this nothing works.
-- [ ] **Tile Distribution + Hand Dealing** — Bananagrams distribution default, 9 tiles per hand, new hand each round.
-- [ ] **Q="Qu" tile** — single tile, renders as "Qu," validates Qu- prefix words.
-- [ ] **Game State Machine** — round lifecycle: seed word → turns → elimination → next round → game over.
-- [ ] **Turn submission with validation feedback** — valid word advances; invalid word rejected with shake animation and error type.
-- [ ] **1v1 AI opponent** — Easy/Medium/Hard difficulty; AI selects words from its vocabulary tier using available letters.
-- [ ] **Current word display** — prominent, updated each turn, shows full letter sequence.
-- [ ] **Hand tile display** — 9 tiles visible, click/tap to play; replenished to 9 after each turn.
-- [ ] **Plurals toggle** — off by default, configurable pre-game.
-- [ ] **No max word length** — natural elimination when player cannot extend.
-- [ ] **Score display** — word length + letter rarity, running total per round.
-- [ ] **Game over screen** — win/loss, score summary, "play again."
-- [ ] **How to Play modal** — rules explanation for first-time players.
-- [ ] **Pre-game config screen** — difficulty, plurals toggle, tile distribution mode.
-- [ ] **Keyboard input support** — desktop users type to select tiles.
+### Fix Now — Polish (Should Ship in v1.1)
 
-### Add After Validation (v1.x)
+- [ ] **Turn indicator visual weight** — The top bar (round label + turn indicator + quit) currently has no visual hierarchy. Turn state should dominate. Options: colored left border on turn indicator, background fill that changes per player, or heavier typography. The fix is low-effort (CSS changes) and meaningfully improves game clarity.
+- [ ] **Score panel hierarchy** — Round score: larger type, primary position. Total score: smaller, secondary. Opponent name visible. Currently both score values are equal weight.
+- [ ] **RoundEndCard as overlay** — Match the GameOverScreen overlay pattern (fixed inset-0, backdrop, centered card with scale-in animation). Currently inline. 30 minutes of work, meaningful state transition improvement.
+- [ ] **Chicken-O-Meter sizing** — Current width (w-5 = 20px) is too narrow to read as a meaningful tension indicator. Widen to w-8 or w-10. On small screens, consider horizontal bar below SharedWordDisplay instead of right sidebar. This component is a differentiator — it should be visible and dramatic.
+- [ ] **Staged tile "taken" signal in hand** — Staged tiles appear as greyed-out concrete tiles in the hand, identical to unstaged tiles but at 50% opacity. The visual distinction is too subtle. Consider stronger dimming (`opacity-20`), a visual overlay, or simply removing them from the hand display while staged (show them only in StagingArea).
 
-Add once core game loop is confirmed fun and balanced.
+### Defer to v1.2+
 
-- [ ] **AI flavor text / commentary** — pre-scripted per game event; increases opponent personality. Trigger: player feedback that AI feels mechanical.
-- [ ] **Tension ramp visualization** — chicken-o-meter keyed to word length and rarity. Trigger: playtesting shows players don't feel escalating pressure.
-- [ ] **Word history display** — turn-by-turn breakdown of who played what. Trigger: players ask "how did that word get so long?"
-- [ ] **Sound effects** — audio feedback for valid/invalid words, elimination events. Trigger: visual-only feels flat after repeated play.
-- [ ] **2nd AI opponent** — 3-player game mode (1 human vs 2 AI). Trigger: 1v1 balance is proven and players want more chaos.
-- [ ] **Achievements / session stats** — "longest word this session," "rarest letter used." Trigger: players wanting to measure improvement.
-
-### Future Consideration (v2+)
-
-Defer until product-market fit is established.
-
-- [ ] **Online multiplayer** — Requires server infrastructure, real-time sync, matchmaking. Defer until the mechanic is validated as fun and worth the investment.
-- [ ] **User accounts** — Only meaningful once there's a social or persistence reason. Multiplayer is the trigger.
-- [ ] **Leaderboards** — Meaningless without accounts or social graph.
-- [ ] **Mobile native app** — Web-first is the right call for v1; native app adds deployment/update complexity. Revisit if PWA metrics suggest strong mobile usage.
-- [ ] **Pass-and-play local multiplayer** — Possible without networking, but requires device-sharing UX design. Low priority vs. polishing single-player.
+- [ ] **Lobby keyboard-aware layout** — Minor edge case. Only affects users joining by code on a small phone. Validate whether this is a real friction point before investing.
+- [ ] **Animated screen transitions** — Nice-to-have. Only worthwhile once layout is stable. No value until core layout is correct.
+- [ ] **Word history mobile drawer** — Validate player demand. Most mobile players don't miss it; the hidden-on-mobile behavior is already correct.
+- [ ] **Tile size scaling in PlayerHand** — SharedWordDisplay already handles size scaling (lg/md/sm by word length). Hand tiles are fixed md (40px). Responsive tile sizing in hand could help at 14+ letter words but is not an immediate issue.
 
 ---
 
 ## Feature Prioritization Matrix
 
-| Feature | User Value | Implementation Cost | Priority |
-|---------|------------|---------------------|----------|
-| Word Validation Engine | HIGH | MEDIUM | P1 |
-| Game State Machine | HIGH | HIGH | P1 |
-| Tile Distribution + Hand Dealing | HIGH | MEDIUM | P1 |
-| Turn Submission + Validation Feedback | HIGH | LOW | P1 |
-| 1v1 AI Opponent (Easy/Medium/Hard) | HIGH | HIGH | P1 |
-| Current Word Display | HIGH | LOW | P1 |
-| Hand Tile Display | HIGH | LOW | P1 |
-| Q="Qu" Tile | HIGH | LOW | P1 |
-| No Max Word Length Elimination | HIGH | LOW | P1 |
-| Pre-game Config Screen | MEDIUM | LOW | P1 |
-| Score Display | MEDIUM | LOW | P1 |
-| Game Over Screen | MEDIUM | LOW | P1 |
-| How to Play Modal | MEDIUM | LOW | P1 |
-| Keyboard Input Support | MEDIUM | MEDIUM | P1 |
-| Plurals Toggle | MEDIUM | LOW | P1 |
-| AI Flavor Text | MEDIUM | LOW | P2 |
-| Tension Ramp Visualization | HIGH | MEDIUM | P2 |
-| Word History Display | MEDIUM | LOW | P2 |
-| Sound Effects | MEDIUM | MEDIUM | P2 |
-| 2nd AI Opponent | LOW | MEDIUM | P2 |
-| Achievements / Session Stats | LOW | MEDIUM | P3 |
-| Online Multiplayer | HIGH | VERY HIGH | P3 |
-| User Accounts | LOW | HIGH | P3 |
+| UX Fix | User Impact | Implementation Cost | Priority |
+|--------|-------------|---------------------|----------|
+| Viewport 100dvh fix | HIGH — root cause of layout bug | LOW — 3 class swaps | P1 |
+| GameScreen flex layout restructure | HIGH — enables correct thumb-zone positioning | MEDIUM — layout rework | P1 |
+| Safe area bottom padding | HIGH on notched iPhones | LOW — single class | P1 |
+| Secondary button touch targets | HIGH — accessibility + frustration | LOW — padding additions | P1 |
+| Dark mode contrast audit and fix | HIGH for dark mode users | MEDIUM — token work | P1 |
+| Turn indicator visual weight | MEDIUM — game state clarity | LOW — styling | P2 |
+| Score panel hierarchy | MEDIUM — readability | LOW — typography | P2 |
+| RoundEndCard as overlay | MEDIUM — transition polish | LOW — pattern already exists | P2 |
+| Chicken-O-Meter sizing | MEDIUM — key tension UI | LOW-MEDIUM — possible layout impact | P2 |
+| Staged tile "taken" signal | LOW-MEDIUM — subtle confusion | MEDIUM — rethink state rendering | P2 |
+| Lobby keyboard-aware layout | LOW | LOW | P3 |
+| Animated screen transitions | LOW | MEDIUM | P3 |
 
 **Priority key:**
-- P1: Must have for launch
-- P2: Should have, add when possible
-- P3: Nice to have, future consideration
+- P1: Core breakage or accessibility failure — must ship for v1.1
+- P2: Polish and hierarchy — should ship in v1.1 alongside P1 fixes
+- P3: Nice to have — validate need before building
 
 ---
 
-## Competitor Feature Analysis
+## Reference Game Analysis
 
-No direct competitor exists with Word Chicken's exact mechanic (collaborative word extension with elimination). Nearest analogs:
+### Wordle (NYT, 2021-present)
 
-| Feature | Wordle | Scrabble GO | Bananagrams (browser) | Word Chicken Approach |
-|---------|--------|-------------|----------------------|----------------------|
-| Word validation | Instant, client-side | Server-side (latency) | Client-side | Client-side bundled dictionary — no latency |
-| Tile mechanic | None (guess rows) | Board placement | Freestyle grid | Single shared word, one letter per turn |
-| AI opponent | None | Bot opponents | None | Three difficulty tiers; vocabulary-scoped |
-| Player count | 1 | 2–4 | 2–8 | 1v1 AI for v1 |
-| Scoring | None (win/lose) | Letter value × board multiplier | Fastest finisher wins | Word length + letter rarity; eliminates runaway-leader scoring |
-| Account required | Optional | Required | Required | No — play immediately |
-| Round structure | Fixed 6 guesses | Turn-based, no rounds | Single race | Discrete rounds; new hand each round |
-| Elimination | None | None | First-to-finish | Core mechanic — can't extend = eliminated |
-| Config / rules | None | Fixed | Fixed | Pre-game configurable (plurals, distribution, difficulty) |
+**Layout structure:** Vertical split — tile grid occupies top 55-60% of viewport; custom keyboard occupies bottom 40-45%. Keyboard = thumb zone = interaction zone. Grid = read-only display zone. Clear separation of "what you're building" (top) vs "how you act" (bottom).
 
-**Key insight:** Word Chicken's differentiating surface is the elimination mechanic + no-cap word growth + per-round fresh hands. No existing browser game has this combination. The closest genre is party/social word games (Letter Jam, Ghost word game), but those are not browser-native. The "play immediately, no account" model follows Wordle's successful no-friction pattern.
+**Relevance to Word Chicken:** The same principle should apply. SharedWordDisplay (top, read-only) + ScorePanel (middle) + PlayerHand with staging and Submit (bottom, interactive). The current GameScreen is directionally correct but doesn't guarantee the interaction zone reaches the thumb zone.
+
+**Tile sizing:** Wordle tiles are approximately 62x62px on mobile for a 5-tile row. Word Chicken tiles are 40-44px for potentially 15 tiles in a row (hand + community). Smaller tiles are appropriate given the quantity — the current size is defensible. The issue is not tile size but layout position.
+
+**State feedback:** Shake animation on invalid word (exactly what Word Chicken does). Toast-style error message. Color-coded tiles for state. Word Chicken's implementation matches this pattern correctly.
+
+**Accessibility:** High-contrast mode available. Wordle noted this as important for colorblind users — relevant because Corbusier red and yellow may be indistinguishable for certain types of color vision deficiency. Consider a future audit of the tile color set for color blindness, though this is out of scope for v1.1.
+
+### Scrabble GO / Words With Friends
+
+**Score display:** Opponent score always visible alongside own. The leading player's score is visually larger. Current score and round context are distinguished from cumulative total. This matches what Word Chicken should do with `roundScores` vs `totalScores`.
+
+**Turn indicator:** The entire UI shifts color toward the active player during their turn — not just a text label. This is the reference for why Word Chicken's current small text turn indicator is insufficient.
+
+**Thinking state:** "Opponent is playing..." banner across the top during the opponent's turn. Word Chicken's cycling random-letter animation is more creative and game-appropriate — no change needed, but the existence of a clear "wait state" signal is table stakes.
+
+---
+
+## Specific Mobile UX Standards Applied to Word Chicken
+
+### Viewport Units (HIGH confidence — MDN/W3C verified)
+
+| Unit | Behavior | Use Case |
+|------|----------|----------|
+| `100vh` | Calculates against large viewport (address bar hidden) — overestimates on mobile load | Avoid for full-screen game containers |
+| `100dvh` | Dynamically adjusts as browser chrome shows/hides — correct for game containers | Use on GameScreen, ConfigScreen, LobbyScreen containers |
+| `100svh` | Always uses smallest viewport (address bar visible) — stable, never overflows | Alternative to dvh; slightly safer on older mobile browsers |
+
+**Recommendation:** Use `100dvh` (dynamically tracks viewport). Browser support: Baseline Widely Available as of June 2025 — safe to use without fallback for this project's audience.
+
+### Touch Target Sizes (HIGH confidence — Apple HIG + Material Design + WCAG)
+
+| Element Type | Minimum Size | Current State | Fix |
+|--------------|-------------|---------------|-----|
+| Primary action button | 48x48px | Submit button: ~40px height | Add `py-3` minimum |
+| Tile cards | 44x44px | `min-w-[44px] min-h-[44px]` — correct | No change |
+| Secondary text buttons | 44x44px | Quit, Give Up, Hint: ~24px effective | Add explicit padding wrappers |
+| Toggle switches | 44x44px | Dark mode toggle: 44px tap area via p-2 | Verify |
+| Back/navigation | 44x44px | Back button in LobbyScreen: 48px height — correct | No change |
+
+### Color Contrast in Dark Mode (HIGH confidence — WCAG 2.1 + WebAIM)
+
+| Color Pair | Computed Ratio | WCAG AA (4.5:1 for text) | Status |
+|------------|----------------|--------------------------|--------|
+| ink (#e0ddd8) on dark surface (#1c1c24) | ~12:1 | Pass | Good |
+| ink/50 on dark surface | ~5:1 | Pass (borderline) | Verify |
+| ink/40 on dark surface | ~4:1 | **Fail for normal text** | Fix |
+| ink/30 on dark surface | ~3:1 | **Fail for normal text** | Fix |
+| Corbusier red (#d0021b) on dark surface | ~4.1:1 | **Marginal fail** | Fix if used as text |
+| Corbusier yellow (#f5a623) on dark surface | ~2.8:1 | **Fail** | Never use as text on dark |
+| White text on Corbusier red | ~4.6:1 | Pass (barely) | OK |
+| White text on Corbusier blue (#003f91) | ~9.5:1 | Pass | Good |
+| White text on Corbusier yellow | ~2.3:1 | **Fail** | Fix — use dark text on yellow |
+
+**Action:** In dark mode, secondary text currently uses `text-ink/30`–`text-ink/50` (opacity aliases). These fail AA. Replace with explicit dark-mode hex values (e.g., `dark:text-ink/60` bumped to a contrast-verified level, or add `.dark` variants with explicit color values in index.css).
+
+### Thumb Zone (MEDIUM confidence — Smashing Magazine research + Steven Hoober study)
+
+For a 375x812px phone (iPhone 14):
+- **Bottom ~320px (39% of screen):** Easy thumb reach — place tiles, Submit button, Give Up/Hint
+- **Middle ~330px (41% of screen):** Moderate reach — score display, shared word, staging area
+- **Top ~160px (20% of screen):** Hard reach — round number, quit button, turn indicator
+
+The current layout's intent (tiles at bottom, shared word at top) is correct in principle. The bug is that `flex-1` with `justify-end pb-8` doesn't reliably push the tile hand into the bottom 320px on all device heights. A restructured flex layout will solve this.
 
 ---
 
 ## Sources
 
-- [Word Game Statistics 2026: Market Size, Users | Crosswordle Blog](https://crosswordle.com/blog/word-game-state-of-play-2025)
-- [Why Browser Games Are Dominating Social Gaming in 2026](https://doodleduel.ai/blog/why-browser-games-are-dominating-2026)
-- [Game Accessibility Guidelines — Full List](https://gameaccessibilityguidelines.com/full-list/)
-- [Why Wordle Works: A UX Breakdown](https://medium.com/design-bootcamp/why-wordle-works-a-ux-breakdown-485b1dbba30b)
-- [The Complete Game UX Guide 2025](https://game-ace.com/blog/the-complete-game-ux-guide/)
-- [Scrabble Letter Distributions — Wikipedia](https://en.wikipedia.org/wiki/Scrabble_letter_distributions)
-- [AI in Game Difficulty Adjustment — Fintelics / Medium](https://fintelics.medium.com/ai-in-game-difficulty-adjustment-adapting-challenges-to-player-skill-levels-b7f7767c96b)
-- [How to Avoid Scope Creep in Game Development — Codecks](https://www.codecks.io/blog/2025/how-to-avoid-scope-creep-in-game-development/)
-- [How to Stop Feature Creep from Killing Your Game — Codecks](https://www.codecks.io/blog/2025/how-to-stop-feature-creep-from-killing-your-game-with-hovgaard-games/)
-- [Best Practices in Video Game UI for Game Onboarding — Inworld AI](https://inworld.ai/blog/best-practices-in-video-game-ui-for-game-onboarding)
-- [The Road to Accessible Drag and Drop — TPGi](https://www.tpgi.com/the-road-to-accessible-drag-and-drop-part-1/)
-- [Bananagrams vs Scrabble — ScrabbleWordFinder.org](https://scrabblewordfinder.org/bananagrams-vs-scrabble)
+- [CSS viewport units (dvh/svh/lvh) — LogRocket](https://blog.logrocket.com/improving-mobile-design-latest-css-viewport-units/) — HIGH confidence
+- [dvh Baseline Widely Available — MDN/Can I Use](https://caniuse.com/viewport-unit-variants) — HIGH confidence
+- [Touch target sizes — Smashing Magazine](https://www.smashingmagazine.com/2023/04/accessible-tap-target-sizes-rage-taps-clicks/) — HIGH confidence
+- [Thumb zone — Smashing Magazine](https://www.smashingmagazine.com/2016/09/the-thumb-zone-designing-for-mobile-users/) — HIGH confidence
+- [WCAG contrast — WebAIM](https://webaim.org/articles/contrast/) — HIGH confidence
+- [Wordle design analysis — Webflow Blog](https://webflow.com/blog/wordle-design) — MEDIUM confidence
+- [Wordle UX patterns — KobeDigital](https://kobedigital.com/ux-tips-from-wordle/) — MEDIUM confidence
+- [Mobile game UI patterns — 24-players.com](https://24-players.com/advanced-ui-ux-design-for-mobile-game-interfaces/) — MEDIUM confidence
+- [Modal vs fullscreen overlays — LogRocket](https://blog.logrocket.com/ux-design/modal-ux-design-patterns-examples-best-practices/) — MEDIUM confidence
+- [Accessible touch target sizes — Deque/Axe](https://docs.deque.com/devtools-mobile/2025.7.2/en/ios-touch-target-size/) — HIGH confidence
 
 ---
-*Feature research for: Browser-based single-player word game with AI opponents and elimination mechanics*
+*Feature research for: Word Chicken v1.1 — mobile word game UX audit (viewport, hierarchy, touch targets, color, transitions)*
 *Researched: 2026-03-18*
