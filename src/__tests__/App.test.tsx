@@ -49,4 +49,41 @@ describe('App', () => {
     render(<App />)
     expect(screen.getByText('Failed to load dictionary.')).toBeInTheDocument()
   })
+
+  it('loading state uses min-h-svh viewport unit', () => {
+    useDictionaryStore.setState({ words: new Set(), status: 'loading' })
+    render(<App />)
+    const text = screen.getByText('Loading dictionary...')
+    const container = text.closest('div')
+    expect(container).toHaveClass('min-h-svh')
+    expect(container).not.toHaveClass('min-h-screen')
+  })
+
+  it('error state uses min-h-svh viewport unit', () => {
+    useDictionaryStore.setState({ words: new Set(), status: 'error' })
+    render(<App />)
+    const text = screen.getByText('Failed to load dictionary.')
+    const container = text.closest('div')
+    expect(container).toHaveClass('min-h-svh')
+    expect(container).not.toHaveClass('min-h-screen')
+  })
+
+  it('main wrapper uses min-h-dvh viewport unit', () => {
+    useDictionaryStore.setState({ words: new Set(['test']), status: 'ready' })
+    render(<App />)
+    const text = screen.getByText('Word Chicken')
+    // Walk up to find the wrapper div that has the min-h class
+    let el: HTMLElement | null = text as HTMLElement
+    let wrapper: HTMLElement | null = null
+    while (el) {
+      if (el.classList && (el.classList.contains('min-h-dvh') || el.classList.contains('min-h-screen'))) {
+        wrapper = el
+        break
+      }
+      el = el.parentElement
+    }
+    expect(wrapper).not.toBeNull()
+    expect(wrapper).toHaveClass('min-h-dvh')
+    expect(wrapper).not.toHaveClass('min-h-screen')
+  })
 })
