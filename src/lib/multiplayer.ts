@@ -22,6 +22,7 @@ export type MultiplayerMessage =
   | { type: 'action'; action: RemoteGameAction }
   | { type: 'start-game' }
   | { type: 'opponent-quit' }
+  | { type: 'request-state' }
 
 /** GameState without the dictionary Set (can't serialize Sets) */
 export type SerializedGameState = Omit<GameState, 'config'> & {
@@ -124,6 +125,71 @@ export function connectToHostPeer(
   onError: (err: Error) => void,
 ): void {
   destroyPeer()
+  const peer = new Peer()
+  _peer = peer
+
+  peer.on('open', () => {
+    const hostPeerId = lobbyCodeToPeerId(lobbyCode)
+    const conn = peer.connect(hostPeerId, { reliable: true })
+
+    conn.on('open', () => {
+      wireConnection(conn)
+      onConnection()
+    })
+
+    conn.on('error', (err) => {
+      onError(err as unknown as Error)
+    })
+  })
+
+  peer.on('error', (err) => {
+    onError(err as unknown as Error)
+  })
+}
+
+/** Reconnect as host — recreate same peer ID and wait for guest */
+export function reconnectAsHost(
+  lobbyCode: string,
+  onConnection: () => void,
+  onError: (err: Error) => void,
+): void {
+  // Clean up old connection but don't clear handlers
+  _conn?.close()
+  _conn = null
+  _peer?.destroy()
+  _peer = null
+
+  const peerId = lobbyCodeToPeerId(lobbyCode)
+  const peer = new Peer(peerId)
+  _peer = peer
+
+  peer.on('open', () => {
+    // Host is listening again
+  })
+
+  peer.on('connection', (conn) => {
+    conn.on('open', () => {
+      wireConnection(conn)
+      onConnection()
+    })
+  })
+
+  peer.on('error', (err) => {
+    onError(err as unknown as Error)
+  })
+}
+
+/** Reconnect as guest — connect to same host peer */
+export function reconnectAsGuest(
+  lobbyCode: string,
+  onConnection: () => void,
+  onError: (err: Error) => void,
+): void {
+  _conn?.close()
+  _conn = null
+  _peer?.destroy()
+  _peer = null
+
   const peer = new Peer()
   _peer = peer
 

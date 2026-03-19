@@ -4,7 +4,8 @@ import { useAppStore } from '../store/appSlice'
 import { useMultiplayerStore } from '../store/multiplayerSlice'
 import { useAI } from '../hooks/useAI'
 import { useMultiplayer, sendQuitMessage } from '../hooks/useMultiplayer'
-import { destroyPeer } from '../lib/multiplayer'
+import { destroyPeer, reconnectAsHost, reconnectAsGuest, sendMessage, serializeGameState } from '../lib/multiplayer'
+import { clearSession } from '../lib/sessionPersistence'
 import { SharedWordDisplay } from '../components/SharedWordDisplay'
 import { ChickenOMeter } from '../components/ChickenOMeter'
 import { TurnIndicator } from '../components/TurnIndicator'
@@ -53,27 +54,102 @@ export function GameScreen() {
     return <div />
   }
 
-  // Show disconnect overlay in multiplayer
-  if (gameMode === 'pvp' && connectionStatus === 'disconnected' && mpErrorMessage) {
+  // Show reconnecting overlay
+  if (gameMode === 'pvp' && connectionStatus === 'reconnecting') {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-        <div className="bg-white max-w-sm w-full mx-4 p-8 rounded-2xl text-center shadow-2xl">
-          <div className="w-16 h-1 bg-corbusier-red rounded-full mx-auto mb-4" />
-          <h2 className="font-jost font-bold text-xl uppercase tracking-wider text-charcoal mb-2">
-            Disconnected
+        <div className="bg-card max-w-sm w-full mx-4 p-8 rounded-2xl text-center shadow-2xl">
+          <div className="w-16 h-1 bg-corbusier-yellow rounded-full mx-auto mb-4" />
+          <h2 className="font-jost font-bold text-xl uppercase tracking-wider text-ink mb-2">
+            Reconnecting
           </h2>
-          <p className="font-jost text-charcoal/60 text-sm mb-6">{mpErrorMessage}</p>
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <span className="inline-block w-2 h-2 rounded-full bg-corbusier-yellow animate-pulse" />
+            <span className="font-jost text-ink/50 text-sm">Waiting for opponent...</span>
+          </div>
           <button
             onClick={() => {
               destroyPeer()
+              clearSession()
               dispatch({ type: 'RESET_GAME' })
               useMultiplayerStore.getState().reset()
               setScreen('config')
             }}
-            className="bg-corbusier-blue text-white font-jost font-bold uppercase px-6 py-3 rounded-lg w-full cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all"
+            className="bg-card text-ink border-2 border-ink/10 font-jost font-bold uppercase px-6 py-3 rounded-lg w-full cursor-pointer hover:border-ink/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
           >
             Back to Menu
           </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Show disconnect overlay in multiplayer
+  if (gameMode === 'pvp' && connectionStatus === 'disconnected' && mpErrorMessage) {
+    const lobbyCode = useMultiplayerStore.getState().lobbyCode
+    const role = useMultiplayerStore.getState().role
+    const isQuit = mpErrorMessage === 'Opponent quit the game'
+
+    function handleReconnect() {
+      if (!lobbyCode || !role) return
+      useMultiplayerStore.getState().setConnectionStatus('reconnecting')
+      useMultiplayerStore.getState().setErrorMessage(null)
+
+      const onConnected = () => {
+        useMultiplayerStore.getState().setConnectionStatus('connected')
+        useMultiplayerStore.getState().setErrorMessage(null)
+        if (role === 'host') {
+          const gs = useGameStore.getState().gameState
+          if (gs) {
+            sendMessage({ type: 'game-state', state: serializeGameState(gs) })
+          }
+        } else {
+          sendMessage({ type: 'request-state' })
+        }
+      }
+
+      const onError = () => {
+        useMultiplayerStore.getState().setConnectionStatus('disconnected')
+        useMultiplayerStore.getState().setErrorMessage('Could not reconnect')
+      }
+
+      if (role === 'host') {
+        reconnectAsHost(lobbyCode, onConnected, onError)
+      } else {
+        reconnectAsGuest(lobbyCode, onConnected, onError)
+      }
+    }
+
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className="bg-card max-w-sm w-full mx-4 p-8 rounded-2xl text-center shadow-2xl">
+          <div className="w-16 h-1 bg-corbusier-red rounded-full mx-auto mb-4" />
+          <h2 className="font-jost font-bold text-xl uppercase tracking-wider text-ink mb-2">
+            Disconnected
+          </h2>
+          <p className="font-jost text-ink/60 text-sm mb-6">{mpErrorMessage}</p>
+          <div className="flex flex-col gap-3">
+            {!isQuit && lobbyCode && (
+              <button
+                onClick={handleReconnect}
+                className="bg-corbusier-blue text-white font-jost font-bold uppercase px-6 py-3 rounded-lg w-full cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all"
+              >
+                Reconnect
+              </button>
+            )}
+            <button
+              onClick={() => {
+                destroyPeer()
+                clearSession()
+                dispatch({ type: 'RESET_GAME' })
+                useMultiplayerStore.getState().reset()
+                setScreen('config')
+              }}
+              className={`${isQuit ? 'bg-corbusier-blue text-white' : 'bg-card text-ink border-2 border-ink/10 hover:border-ink/30'} font-jost font-bold uppercase px-6 py-3 rounded-lg w-full cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all`}
+            >
+              Back to Menu
+            </button>
+          </div>
         </div>
       </div>
     )
@@ -96,16 +172,16 @@ export function GameScreen() {
     phase === 'SETUP' || phase === 'HUMAN_TURN' || phase === 'AI_THINKING'
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-concrete to-concrete/80 p-2 sm:p-4">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-surface to-surface/80 p-2 sm:p-4">
       {/* Top bar: turn indicator + round + quit */}
       <div className="relative flex items-center justify-center mb-3">
-        <span className="absolute left-0 text-charcoal/30 text-[10px] uppercase font-jost tracking-wider">
+        <span className="absolute left-0 text-ink/30 text-[10px] uppercase font-jost tracking-wider">
           R{round.roundNumber}
         </span>
         <TurnIndicator phase={phase} currentPlayerId={round.currentPlayerId} />
         <button
           onClick={handleQuit}
-          className="absolute right-0 text-charcoal/40 text-xs uppercase font-jost hover:text-corbusier-red transition-colors cursor-pointer"
+          className="absolute right-0 text-ink/40 text-xs uppercase font-jost hover:text-corbusier-red transition-colors cursor-pointer"
         >
           Quit
         </button>

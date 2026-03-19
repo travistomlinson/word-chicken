@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import type { GameMode } from '../types/game'
 
-export type ConnectionStatus = 'disconnected' | 'waiting' | 'connecting' | 'connected' | 'error'
+export type ConnectionStatus = 'disconnected' | 'waiting' | 'connecting' | 'connected' | 'reconnecting' | 'error'
 export type LobbyRole = 'host' | 'guest'
 
 interface MultiplayerState {
