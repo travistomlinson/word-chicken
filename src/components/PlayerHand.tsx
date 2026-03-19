@@ -223,7 +223,7 @@ export function PlayerHand() {
 
   function handleGiveUp() {
     if (gameMode === 'pvp' && role === 'guest') {
-      sendAction({ type: 'ELIMINATE_PLAYER', playerId: myId })
+      sendRemoteAction({ type: 'ELIMINATE_PLAYER', playerId: myId })
     } else {
       dispatch({ type: 'ELIMINATE_PLAYER', playerId: myId })
     }
@@ -259,7 +259,7 @@ export function PlayerHand() {
 
       setStagedIndices(newStagedIndices)
       if (gameMode === 'pvp' && role === 'guest') {
-        sendAction({ type: 'USE_HINT' })
+        sendRemoteAction({ type: 'USE_HINT' })
       } else {
         dispatch({ type: 'USE_HINT' })
       }
