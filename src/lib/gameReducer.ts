@@ -186,12 +186,17 @@ export function gameReducer(state: GameState, action: GameAction): GameState | n
       const nextPlayerId = advanceTurn(tempRound)
       const newPhase = nextIsAI ? 'AI_THINKING' : 'HUMAN_TURN'
 
+      const startingWordScore = scoreWord(upper)
+
       return {
         ...state,
         phase: newPhase,
         round: {
           ...tempRound,
           currentPlayerId: nextPlayerId,
+          turnHistory: [
+            { playerId: action.playerId, word: upper, score: startingWordScore },
+          ],
         },
       }
     }

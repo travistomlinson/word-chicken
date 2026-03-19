@@ -9,6 +9,24 @@ import type React from 'react'
 
 const LETTERS = 'ABCDEFGHIJKLMNOPRSTUW'
 
+/** Split tiles into keyboard-style rows (3/4/3 for 10, 3/3/3 for 9, etc.) */
+function splitIntoRows<T>(items: T[]): T[][] {
+  const n = items.length
+  if (n <= 3) return [items]
+  if (n <= 4) return [items]
+  if (n <= 7) {
+    const half = Math.ceil(n / 2)
+    return [items.slice(0, half), items.slice(half)]
+  }
+  // For 8+: use 3/middle/3 pattern
+  const middle = n - 6
+  return [
+    items.slice(0, 3),
+    items.slice(3, 3 + middle),
+    items.slice(3 + middle),
+  ]
+}
+
 export function PlayerHand() {
   const phase = useGameStore(s => s.gameState?.phase)
   const hand = useGameStore(s => s.gameState?.round.players['human']?.hand ?? [])
@@ -130,7 +148,6 @@ export function PlayerHand() {
     const tile = allTiles.find(t => t.idx === i)
     return tile?.letter ?? ''
   })
-  const remainingTiles = allTiles.filter(({ idx }) => !stagedIndices.includes(idx))
 
   function triggerShake(errorMessage: string) {
     setError(errorMessage)
@@ -230,15 +247,21 @@ export function PlayerHand() {
         </div>
 
         {/* Human hand — visible but disabled during AI turn */}
-        <div className="grid grid-cols-5 sm:flex sm:flex-wrap gap-1 sm:gap-2 justify-center opacity-50">
+        <div className="sm:hidden flex flex-col items-center gap-1 opacity-50">
+          {splitIntoRows(hand.map((letter, idx) => ({ letter, idx }))).map((row, rowIdx) => (
+            <div key={rowIdx} className="flex gap-1 justify-center">
+              {row.map(({ letter, idx }) => (
+                <div key={idx} style={scatterStyle(idx)}>
+                  <TileCard letter={letter} color="concrete" size="md" disabled />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+        <div className="hidden sm:flex sm:flex-wrap gap-2 justify-center opacity-50">
           {hand.map((letter, idx) => (
             <div key={idx} style={scatterStyle(idx)}>
-              <TileCard
-                letter={letter}
-                color="concrete"
-                size="md"
-                disabled
-              />
+              <TileCard letter={letter} color="concrete" size="md" disabled />
             </div>
           ))}
         </div>
@@ -261,17 +284,42 @@ export function PlayerHand() {
       />
 
       {/* Selectable tiles — community (yellow) + hand (concrete) */}
-      <div className="grid grid-cols-5 sm:flex sm:flex-wrap gap-1 sm:gap-2 justify-center mt-4">
-        {remainingTiles.map(({ letter, idx, isCommunity }, i) => (
-          <div key={idx} style={entranceStyle(i)}>
-            <TileCard
-              letter={letter}
-              color={isCommunity ? 'yellow' : 'concrete'}
-              size="md"
-              onClick={() => handleTileClick(idx)}
-            />
+      {/* Mobile: keyboard-style 3/4/3 rows. Desktop: flex wrap */}
+      <div className="sm:hidden flex flex-col items-center gap-1 mt-4">
+        {splitIntoRows(allTiles).map((row, rowIdx) => (
+          <div key={rowIdx} className="flex gap-1 justify-center">
+            {row.map(({ letter, idx, isCommunity }) => {
+              const isStaged = stagedIndices.includes(idx)
+              return (
+                <div key={idx} style={entranceStyle(idx)}>
+                  <TileCard
+                    letter={letter}
+                    color={isStaged ? 'concrete' : isCommunity ? 'yellow' : 'concrete'}
+                    size="md"
+                    onClick={() => handleTileClick(idx)}
+                    disabled={isStaged}
+                  />
+                </div>
+              )
+            })}
           </div>
         ))}
+      </div>
+      <div className="hidden sm:flex sm:flex-wrap gap-2 justify-center mt-4">
+        {allTiles.map(({ letter, idx, isCommunity }, i) => {
+          const isStaged = stagedIndices.includes(idx)
+          return (
+            <div key={idx} style={entranceStyle(i)}>
+              <TileCard
+                letter={letter}
+                color={isStaged ? 'concrete' : isCommunity ? 'yellow' : 'concrete'}
+                size="md"
+                onClick={() => handleTileClick(idx)}
+                disabled={isStaged}
+              />
+            </div>
+          )
+        })}
       </div>
 
       {/* Action row: Hint + Give Up — only during HUMAN_TURN */}
