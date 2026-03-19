@@ -92,9 +92,11 @@ Plans:
   2. During an active game on a 375px-wide phone, no scrolling is required to reach any game element — all content fits in the visible area
   3. Config and Lobby screens scroll smoothly when content is taller than the viewport, with no hard clip at the bottom
   4. In dark mode on iOS Safari, overscrolling past the top or bottom of the page does not reveal a white background surface
-**Plans**: TBD
+**Plans**: 2 plans
 
-Plans: TBD
+Plans:
+- [ ] 05-01-PLAN.md — Replace min-h-screen with dvh/svh on App shell, ConfigScreen, and LobbyScreen
+- [ ] 05-02-PLAN.md — GameScreen viewport fix, dark mode overscroll bleed fix, viewport-fit=cover prerequisite
 
 #### Phase 6: Mobile Layout and Touch Audit
 **Goal**: Every interactive element is reachable by thumb and nothing is obscured by device hardware affordances
@@ -147,7 +149,7 @@ Phases execute in numeric order: 5 → 6 → 7 → 8
 | 2. Core Engine | v1.0 | 3/3 | Complete | 2026-03-18 |
 | 3. AI and State Machine | v1.0 | 2/2 | Complete | 2026-03-18 |
 | 4. Game UI | v1.0 | 4/4 | Complete | 2026-03-18 |
-| 5. Viewport Foundation | v1.1 | 0/TBD | Not started | - |
+| 5. Viewport Foundation | v1.1 | 0/2 | Not started | - |
 | 6. Mobile Layout and Touch Audit | v1.1 | 0/TBD | Not started | - |
 | 7. Color and Contrast Audit | v1.1 | 0/TBD | Not started | - |
 | 8. Visual Polish and Hierarchy | v1.1 | 0/TBD | Not started | - |
