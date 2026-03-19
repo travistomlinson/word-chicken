@@ -21,6 +21,7 @@ const BASE_CONFIG: GameConfig = {
   banPluralS: false,
   tileDistribution: 'bananagrams',
   dictionary: MOCK_DICT,
+  gameMode: 'ai',
 }
 
 // Helper: build a base GameState manually (bypasses createInitialGameState for controlled tests)
@@ -397,9 +398,8 @@ describe('NEXT_ROUND', () => {
 describe('RESET_GAME', () => {
   it('returns null (initial state signals store to clear)', () => {
     const state = makeGameState()
-    const action: GameAction = { type: 'RESET_GAME' }
-    const next = reduce(state, action)
-    expect(next).toBeNull()
+    const result = gameReducer(state, { type: 'RESET_GAME' })
+    expect(result).toBeNull()
   })
 })
 

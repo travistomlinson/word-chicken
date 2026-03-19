@@ -14,6 +14,7 @@
     "node": ">=20"
   },
   "dependencies": {
+    "peerjs": "^1.5.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwindcss": "^4.0.0",

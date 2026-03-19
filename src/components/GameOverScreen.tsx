@@ -1,5 +1,7 @@
 import { useGameStore } from '../store/gameSlice'
 import { useAppStore } from '../store/appSlice'
+import { useMultiplayerStore } from '../store/multiplayerSlice'
+import { useMultiplayer } from '../hooks/useMultiplayer'
 
 export function GameOverScreen() {
   const totalScores = useGameStore(s => s.gameState!.totalScores)
@@ -8,10 +10,20 @@ export function GameOverScreen() {
   const dispatch = useGameStore(s => s.dispatch)
   const setScreen = useAppStore(s => s.setScreen)
 
-  const humanWon = totalScores['human'] >= totalScores['ai']
-  const resultText = humanWon ? 'VICTORY' : 'DEFEAT'
-  const resultColor = humanWon ? 'text-corbusier-blue' : 'text-corbusier-red'
-  const accentBg = humanWon ? 'bg-corbusier-blue' : 'bg-corbusier-red'
+  const gameMode = useMultiplayerStore(s => s.gameMode)
+  const localPlayerId = useMultiplayerStore(s => s.localPlayerId)
+  const role = useMultiplayerStore(s => s.role)
+  const { sendQuit } = useMultiplayer()
+
+  const opponentId = localPlayerId === 'human' ? 'ai' : 'human'
+  const opponentLabel = gameMode === 'pvp' ? 'Opponent' : 'AI'
+
+  const myScore = totalScores[localPlayerId] ?? 0
+  const opponentScore = totalScores[opponentId] ?? 0
+  const iWon = myScore >= opponentScore
+  const resultText = iWon ? 'VICTORY' : 'DEFEAT'
+  const resultColor = iWon ? 'text-corbusier-blue' : 'text-corbusier-red'
+  const accentBg = iWon ? 'bg-corbusier-blue' : 'bg-corbusier-red'
 
   const longestWord = round.turnHistory.reduce(
     (longest, entry) => entry.word.length > longest.length ? entry.word : longest,
@@ -19,10 +31,17 @@ export function GameOverScreen() {
   )
 
   function handleRematch() {
-    dispatch({ type: 'START_GAME', config })
+    // Only host can start rematch in multiplayer
+    if (gameMode !== 'pvp' || role === 'host') {
+      dispatch({ type: 'START_GAME', config })
+    }
   }
 
   function handleNewGame() {
+    if (gameMode === 'pvp') {
+      sendQuit()
+      useMultiplayerStore.getState().reset()
+    }
     dispatch({ type: 'RESET_GAME' })
     setScreen('config')
   }
@@ -42,15 +61,15 @@ export function GameOverScreen() {
         <div className="flex justify-around items-end mb-6">
           <div className="text-center">
             <p className="text-xs uppercase tracking-wider text-charcoal/50 mb-1">You</p>
-            <p className={`font-bold transition-all ${humanWon ? 'text-4xl text-corbusier-blue' : 'text-2xl text-charcoal'}`}>
-              {totalScores['human'] ?? 0}
+            <p className={`font-bold transition-all ${iWon ? 'text-4xl text-corbusier-blue' : 'text-2xl text-charcoal'}`}>
+              {myScore}
             </p>
           </div>
           <div className="text-charcoal/20 text-2xl font-bold">vs</div>
           <div className="text-center">
-            <p className="text-xs uppercase tracking-wider text-charcoal/50 mb-1">AI</p>
-            <p className={`font-bold transition-all ${!humanWon ? 'text-4xl text-corbusier-red' : 'text-2xl text-charcoal'}`}>
-              {totalScores['ai'] ?? 0}
+            <p className="text-xs uppercase tracking-wider text-charcoal/50 mb-1">{opponentLabel}</p>
+            <p className={`font-bold transition-all ${!iWon ? 'text-4xl text-corbusier-red' : 'text-2xl text-charcoal'}`}>
+              {opponentScore}
             </p>
           </div>
         </div>

@@ -3,6 +3,7 @@ import { useAppStore } from './store/appSlice'
 import { useDictionaryStore } from './store/dictionarySlice'
 import { ConfigScreen } from './screens/ConfigScreen'
 import { GameScreen } from './screens/GameScreen'
+import { LobbyScreen } from './screens/LobbyScreen'
 
 function App() {
   const screen = useAppStore((s) => s.screen)
@@ -30,7 +31,9 @@ function App() {
 
   return (
     <div className="bg-concrete min-h-screen font-jost">
-      {screen === 'config' ? <ConfigScreen /> : <GameScreen />}
+      {screen === 'config' && <ConfigScreen />}
+      {screen === 'lobby' && <LobbyScreen />}
+      {screen === 'game' && <GameScreen />}
     </div>
   )
 }

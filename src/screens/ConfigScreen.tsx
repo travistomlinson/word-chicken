@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAppStore } from '../store/appSlice'
 import { useGameStore } from '../store/gameSlice'
 import { useDictionaryStore } from '../store/dictionarySlice'
+import { useMultiplayerStore } from '../store/multiplayerSlice'
 import { HowToPlayModal } from '../components/HowToPlayModal'
 import type { TileDistribution } from '../lib/tileBag'
 
@@ -53,6 +54,8 @@ const difficultyOptions: Array<{
 export function ConfigScreen() {
   const setScreen = useAppStore((s) => s.setScreen)
   const dispatch = useGameStore((s) => s.dispatch)
+  const mpSetGameMode = useMultiplayerStore((s) => s.setGameMode)
+  const mpSetRole = useMultiplayerStore((s) => s.setRole)
 
   const [config, setConfig] = useState<StoredConfig>(loadConfig)
   const [modalOpen, setModalOpen] = useState(false)
@@ -65,6 +68,8 @@ export function ConfigScreen() {
 
   function handleStartGame() {
     const dictionary = useDictionaryStore.getState().words
+    mpSetGameMode('ai')
+    mpSetRole(null)
     dispatch({
       type: 'START_GAME',
       config: {
@@ -72,9 +77,15 @@ export function ConfigScreen() {
         banPluralS: config.banPluralS,
         tileDistribution: config.tileDistribution,
         dictionary,
+        gameMode: 'ai',
       },
     })
     setScreen('game')
+  }
+
+  function handlePlayFriend() {
+    mpSetGameMode('pvp')
+    setScreen('lobby')
   }
 
   return (
@@ -165,12 +176,18 @@ export function ConfigScreen() {
           </div>
         </div>
 
-        {/* Start Game */}
+        {/* Start Game buttons */}
         <button
           onClick={handleStartGame}
           className="w-full bg-corbusier-red text-white font-jost font-bold uppercase text-lg py-4 rounded-lg mt-8 shadow-lg shadow-corbusier-red/20 hover:shadow-xl hover:shadow-corbusier-red/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer"
         >
-          Start Game
+          Play vs AI
+        </button>
+        <button
+          onClick={handlePlayFriend}
+          className="w-full bg-corbusier-yellow text-white font-jost font-bold uppercase text-lg py-4 rounded-lg mt-3 shadow-lg shadow-corbusier-yellow/20 hover:shadow-xl hover:shadow-corbusier-yellow/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer"
+        >
+          Play a Friend
         </button>
       </div>
 

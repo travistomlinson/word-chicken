@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-type Screen = 'config' | 'game'
+type Screen = 'config' | 'game' | 'lobby'
 
 interface AppState {
   screen: Screen

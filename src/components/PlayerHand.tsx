@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useGameStore } from '../store/gameSlice'
+import { useMultiplayerStore } from '../store/multiplayerSlice'
+import { useMultiplayer } from '../hooks/useMultiplayer'
 import { validateTurn } from '../lib/wordValidator'
 import { validateStartingWord } from '../lib/roundManager'
 import { findAIMove, getVocabulary } from '../lib/aiEngine'
@@ -29,13 +31,22 @@ function splitIntoRows<T>(items: T[]): T[][] {
 
 export function PlayerHand() {
   const phase = useGameStore(s => s.gameState?.phase)
-  const hand = useGameStore(s => s.gameState?.round.players['human']?.hand ?? [])
   const currentWord = useGameStore(s => s.gameState?.round.currentWord ?? '')
   const roundNumber = useGameStore(s => s.gameState?.round.roundNumber)
+  const currentPlayerId = useGameStore(s => s.gameState?.round.currentPlayerId)
   const config = useGameStore(s => s.gameState?.config)
   const dispatch = useGameStore(s => s.dispatch)
-  const humanPlayer = useGameStore(s => s.gameState?.round.players['human'])
   const hintUsed = useGameStore(s => s.gameState?.hintUsed ?? false)
+
+  const gameMode = useMultiplayerStore(s => s.gameMode)
+  const localPlayerId = useMultiplayerStore(s => s.localPlayerId)
+  const role = useMultiplayerStore(s => s.role)
+  const { sendAction } = useMultiplayer()
+
+  // In multiplayer, the local player's data key depends on role
+  const myId = gameMode === 'pvp' ? localPlayerId : 'human'
+  const hand = useGameStore(s => s.gameState?.round.players[myId]?.hand ?? [])
+  const myPlayer = useGameStore(s => s.gameState?.round.players[myId])
 
   const [stagedIndices, setStagedIndices] = useState<number[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -44,13 +55,21 @@ export function PlayerHand() {
   // Tile scatter elimination animation state
   const [eliminating, setEliminating] = useState(false)
   const wasActive = useRef(true)
-  const isActive = humanPlayer?.isActive ?? true
+  const isActive = myPlayer?.isActive ?? true
 
-  // AI thinking animation state
+  // AI/Opponent thinking animation state
   const [displayLetters, setDisplayLetters] = useState<string[]>(['?', '?', '?', '?'])
 
   // Tile entrance animation
   const [entered, setEntered] = useState(false)
+
+  // Determine if it's my turn
+  const isMyTurn = (phase === 'SETUP' && currentPlayerId === myId)
+    || (phase === 'HUMAN_TURN' && myId === 'human')
+    || (phase === 'AI_THINKING' && myId === 'ai')
+
+  // In multiplayer, determine opponent's turn phase
+  const isOpponentTurn = gameMode === 'pvp' && !isMyTurn && (phase === 'HUMAN_TURN' || phase === 'AI_THINKING' || (phase === 'SETUP' && currentPlayerId !== myId))
 
   // Reset staged tiles on phase/round change
   useEffect(() => {
@@ -61,7 +80,7 @@ export function PlayerHand() {
     return () => clearTimeout(timer)
   }, [roundNumber, phase])
 
-  // Scatter animation when human player is eliminated
+  // Scatter animation when local player is eliminated
   useEffect(() => {
     if (wasActive.current && !isActive) {
       setEliminating(true)
@@ -71,9 +90,12 @@ export function PlayerHand() {
     wasActive.current = isActive
   }, [isActive])
 
-  // AI thinking animation
+  // Opponent thinking animation
   useEffect(() => {
-    if (phase !== 'AI_THINKING') return
+    if (!isOpponentTurn && phase !== 'AI_THINKING') return
+    if (gameMode === 'pvp' && !isOpponentTurn) return
+    if (gameMode === 'ai' && phase !== 'AI_THINKING') return
+
     const tileCount = Math.max(3, currentWord.length + 1)
     setDisplayLetters(Array(Math.min(tileCount, 8)).fill('?'))
 
@@ -83,7 +105,7 @@ export function PlayerHand() {
       ))
     }, 80)
     return () => clearInterval(interval)
-  }, [phase, currentWord.length])
+  }, [phase, currentWord.length, isOpponentTurn, gameMode])
 
   // Scatter style for elimination animation
   function scatterStyle(index: number): React.CSSProperties {
@@ -131,10 +153,11 @@ export function PlayerHand() {
     setError(null)
   }
 
-  // During HUMAN_TURN, merge current word letters (community tiles) into selectable pool.
+  // During the player's turn (extending word), merge current word letters into selectable pool.
   // Community tiles use negative indices to distinguish from hand tiles.
+  const showCommunityTiles = isMyTurn && phase !== 'SETUP'
   const communityTiles: { letter: string; idx: number; isCommunity: boolean }[] =
-    phase === 'HUMAN_TURN'
+    showCommunityTiles
       ? currentWord.split('').map((letter, i) => ({ letter, idx: -(i + 1), isCommunity: true }))
       : []
 
@@ -155,6 +178,16 @@ export function PlayerHand() {
     setTimeout(() => setShaking(false), 500)
   }
 
+  function dispatchAction(action: { type: 'SUBMIT_STARTING_WORD'; playerId: string; word: string } | { type: 'SUBMIT_WORD'; playerId: string; word: string }) {
+    if (gameMode === 'pvp' && role === 'guest') {
+      // Guest sends action to host
+      sendAction(action)
+    } else {
+      // Host or AI mode: dispatch locally
+      dispatch(action)
+    }
+  }
+
   function handleSubmit() {
     if (!config) return
     const word = stagedLetters.join('')
@@ -170,8 +203,8 @@ export function PlayerHand() {
         triggerShake(messages[result.reason] ?? 'Invalid word')
         return
       }
-      dispatch({ type: 'SUBMIT_STARTING_WORD', playerId: 'human', word })
-    } else if (phase === 'HUMAN_TURN') {
+      dispatchAction({ type: 'SUBMIT_STARTING_WORD', playerId: myId, word })
+    } else if (isMyTurn) {
       const result = validateTurn(word, currentWord, hand, config.dictionary, {
         banPluralS: config.banPluralS,
       })
@@ -185,12 +218,20 @@ export function PlayerHand() {
         triggerShake(messages[result.reason] ?? 'Invalid word')
         return
       }
-      dispatch({ type: 'SUBMIT_WORD', playerId: 'human', word })
+      dispatchAction({ type: 'SUBMIT_WORD', playerId: myId, word })
+    }
+  }
+
+  function handleGiveUp() {
+    if (gameMode === 'pvp' && role === 'guest') {
+      sendAction({ type: 'ELIMINATE_PLAYER', playerId: myId })
+    } else {
+      dispatch({ type: 'ELIMINATE_PLAYER', playerId: myId })
     }
   }
 
   function handleHint() {
-    if (!config || hintUsed || phase !== 'HUMAN_TURN') return
+    if (!config || hintUsed || !isMyTurn || phase === 'SETUP') return
 
     const vocab = getVocabulary(config.difficulty, config.dictionary)
     const shuffledArray = [...vocab.array]
@@ -218,7 +259,11 @@ export function PlayerHand() {
       }
 
       setStagedIndices(newStagedIndices)
-      dispatch({ type: 'USE_HINT' })
+      if (gameMode === 'pvp' && role === 'guest') {
+        sendAction({ type: 'USE_HINT' })
+      } else {
+        dispatch({ type: 'USE_HINT' })
+      }
     } else {
       setError('No valid words found — you may need to give up')
     }
@@ -229,8 +274,8 @@ export function PlayerHand() {
     return null
   }
 
-  // AI thinking animation
-  if (phase === 'AI_THINKING') {
+  // Opponent thinking animation (AI mode or PVP when it's opponent's turn)
+  if ((gameMode === 'ai' && phase === 'AI_THINKING') || isOpponentTurn) {
     return (
       <div className="flex flex-col items-center gap-4">
         {/* Cycling letter tiles */}
@@ -246,7 +291,7 @@ export function PlayerHand() {
           ))}
         </div>
 
-        {/* Human hand — visible but disabled during AI turn */}
+        {/* Player hand — visible but disabled during opponent's turn */}
         <div className="sm:hidden flex flex-col items-center gap-1 opacity-50">
           {splitIntoRows(hand.map((letter, idx) => ({ letter, idx }))).map((row, rowIdx) => (
             <div key={rowIdx} className="flex gap-1 justify-center">
@@ -269,7 +314,11 @@ export function PlayerHand() {
     )
   }
 
-  // Normal render: SETUP or HUMAN_TURN
+  // Normal render: SETUP (my turn) or my active turn
+  if (!isMyTurn) {
+    return null
+  }
+
   return (
     <div className="flex flex-col items-center w-full">
       <StagingArea
@@ -322,8 +371,8 @@ export function PlayerHand() {
         })}
       </div>
 
-      {/* Action row: Hint + Give Up — only during HUMAN_TURN */}
-      {phase === 'HUMAN_TURN' && (
+      {/* Action row: Hint + Give Up — only during active turn (not SETUP) */}
+      {isMyTurn && phase !== 'SETUP' && (
         <div className="flex items-center gap-6 mt-4">
           {!hintUsed && (
             <button
@@ -334,7 +383,7 @@ export function PlayerHand() {
             </button>
           )}
           <button
-            onClick={() => dispatch({ type: 'ELIMINATE_PLAYER', playerId: 'human' })}
+            onClick={handleGiveUp}
             className="text-charcoal/40 text-xs font-jost uppercase cursor-pointer hover:text-corbusier-red bg-transparent border-none transition-colors"
           >
             Give Up

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useGameStore } from '../store/gameSlice'
+import { useMultiplayerStore } from '../store/multiplayerSlice'
 
 export function RoundEndCard() {
   const round = useGameStore(s => s.gameState!.round)
@@ -7,19 +8,31 @@ export function RoundEndCard() {
   const roundScores = useGameStore(s => s.gameState!.roundScores)
   const dispatch = useGameStore(s => s.dispatch)
 
+  const gameMode = useMultiplayerStore(s => s.gameMode)
+  const localPlayerId = useMultiplayerStore(s => s.localPlayerId)
+  const role = useMultiplayerStore(s => s.role)
+
+  const opponentId = localPlayerId === 'human' ? 'ai' : 'human'
+
   const hasDispatchedEndRound = useRef(false)
 
   useEffect(() => {
     if (!hasDispatchedEndRound.current) {
-      dispatch({ type: 'END_ROUND' })
+      // Only host dispatches END_ROUND in multiplayer
+      if (gameMode !== 'pvp' || role === 'host') {
+        dispatch({ type: 'END_ROUND' })
+      }
       hasDispatchedEndRound.current = true
     }
-  }, [dispatch])
+  }, [dispatch, gameMode, role])
 
   const winnerId = round.activePlayers[0]
-  const winnerName = winnerId === 'human' ? 'You' : 'AI'
-  const winnerColor = winnerId === 'human' ? 'text-corbusier-blue' : 'text-corbusier-red'
-  const accentBg = winnerId === 'human' ? 'bg-corbusier-blue' : 'bg-corbusier-red'
+  const iWon = winnerId === localPlayerId
+  const winnerName = iWon ? 'You' : (gameMode === 'pvp' ? 'Opponent' : 'AI')
+  const winnerColor = iWon ? 'text-corbusier-blue' : 'text-corbusier-red'
+  const accentBg = iWon ? 'bg-corbusier-blue' : 'bg-corbusier-red'
+
+  const opponentLabel = gameMode === 'pvp' ? 'Them' : 'AI'
 
   const longestWord = round.turnHistory.reduce(
     (longest, entry) => entry.word.length > longest.length ? entry.word : longest,
@@ -28,7 +41,10 @@ export function RoundEndCard() {
 
   function handleNextRound() {
     hasDispatchedEndRound.current = false
-    dispatch({ type: 'NEXT_ROUND', winnerId })
+    // Only host dispatches in multiplayer
+    if (gameMode !== 'pvp' || role === 'host') {
+      dispatch({ type: 'NEXT_ROUND', winnerId })
+    }
   }
 
   return (
@@ -52,12 +68,12 @@ export function RoundEndCard() {
           <div className="mb-6 max-h-40 overflow-y-auto text-left">
             <p className="text-xs uppercase tracking-wider text-charcoal/40 mb-2 text-center">Word Chain</p>
             {round.turnHistory.map((entry, idx) => {
-              const isHuman = entry.playerId === 'human'
-              const borderColor = isHuman ? 'border-l-corbusier-blue' : 'border-l-corbusier-red'
+              const isMe = entry.playerId === localPlayerId
+              const borderColor = isMe ? 'border-l-corbusier-blue' : 'border-l-corbusier-red'
               return (
                 <div key={idx} className={`flex justify-between items-center text-sm font-jost py-1 px-2 border-l-2 ${borderColor}`}>
                   <span className="text-charcoal/50 text-xs">
-                    {isHuman ? 'You' : 'AI'}
+                    {isMe ? 'You' : opponentLabel}
                   </span>
                   <span className="font-bold uppercase tracking-wider">{entry.word}</span>
                   <span className="text-charcoal/50 text-xs">+{entry.score}</span>
@@ -79,11 +95,11 @@ export function RoundEndCard() {
             <div className="flex justify-around gap-6">
               <div className="text-center">
                 <p className="text-[10px] text-charcoal/40 uppercase">You</p>
-                <p className="text-2xl font-bold">{roundScores['human'] ?? 0}</p>
+                <p className="text-2xl font-bold">{roundScores[localPlayerId] ?? 0}</p>
               </div>
               <div className="text-center">
-                <p className="text-[10px] text-charcoal/40 uppercase">AI</p>
-                <p className="text-2xl font-bold">{roundScores['ai'] ?? 0}</p>
+                <p className="text-[10px] text-charcoal/40 uppercase">{opponentLabel}</p>
+                <p className="text-2xl font-bold">{roundScores[opponentId] ?? 0}</p>
               </div>
             </div>
           </div>
@@ -92,11 +108,11 @@ export function RoundEndCard() {
             <div className="flex justify-around gap-6">
               <div className="text-center">
                 <p className="text-[10px] text-charcoal/40 uppercase">You</p>
-                <p className="text-2xl font-bold">{totalScores['human'] ?? 0}</p>
+                <p className="text-2xl font-bold">{totalScores[localPlayerId] ?? 0}</p>
               </div>
               <div className="text-center">
-                <p className="text-[10px] text-charcoal/40 uppercase">AI</p>
-                <p className="text-2xl font-bold">{totalScores['ai'] ?? 0}</p>
+                <p className="text-[10px] text-charcoal/40 uppercase">{opponentLabel}</p>
+                <p className="text-2xl font-bold">{totalScores[opponentId] ?? 0}</p>
               </div>
             </div>
           </div>

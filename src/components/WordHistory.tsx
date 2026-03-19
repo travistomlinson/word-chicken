@@ -1,3 +1,5 @@
+import { useMultiplayerStore } from '../store/multiplayerSlice'
+
 interface TurnEntry {
   playerId: string
   word: string
@@ -9,16 +11,19 @@ interface WordHistoryProps {
 }
 
 export function WordHistory({ turnHistory }: WordHistoryProps) {
+  const gameMode = useMultiplayerStore(s => s.gameMode)
+  const localPlayerId = useMultiplayerStore(s => s.localPlayerId)
+
   if (turnHistory.length === 0) return null
 
   return (
     <div className="flex flex-col gap-0.5 max-h-48 overflow-y-auto">
       <p className="text-[10px] uppercase tracking-wider text-charcoal/30 font-jost mb-1">History</p>
       {turnHistory.map((entry, index) => {
-        const isHuman = entry.playerId === 'human'
-        const playerLabel = isHuman ? 'You' : 'AI'
-        const labelColor = isHuman ? 'text-corbusier-blue' : 'text-corbusier-red'
-        const borderColor = isHuman ? 'border-l-corbusier-blue' : 'border-l-corbusier-red'
+        const isMe = entry.playerId === localPlayerId
+        const playerLabel = isMe ? 'You' : (gameMode === 'pvp' ? 'Them' : 'AI')
+        const labelColor = isMe ? 'text-corbusier-blue' : 'text-corbusier-red'
+        const borderColor = isMe ? 'border-l-corbusier-blue' : 'border-l-corbusier-red'
 
         return (
           <div

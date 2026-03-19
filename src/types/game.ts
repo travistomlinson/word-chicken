@@ -42,11 +42,14 @@ export type RoundEndResult =
 
 export type TurnPhase = 'SETUP' | 'HUMAN_TURN' | 'AI_THINKING' | 'ROUND_END' | 'GAME_OVER'
 
+export type GameMode = 'ai' | 'pvp'
+
 export interface GameConfig {
   difficulty: 'easy' | 'medium' | 'hard'
   banPluralS: boolean
   tileDistribution: TileDistribution
   dictionary: Set<string>
+  gameMode: GameMode
 }
 
 export interface GameState {
@@ -68,3 +71,11 @@ export type GameAction =
   | { type: 'USE_HINT' }
   | { type: 'AI_TURN_START' }
   | { type: 'RESET_GAME' }
+  | { type: 'SET_STATE'; state: GameState }
+
+/** Actions that a remote player can send to the host */
+export type RemoteGameAction =
+  | { type: 'SUBMIT_STARTING_WORD'; playerId: string; word: string }
+  | { type: 'SUBMIT_WORD'; playerId: string; word: string }
+  | { type: 'ELIMINATE_PLAYER'; playerId: string }
+  | { type: 'USE_HINT' }

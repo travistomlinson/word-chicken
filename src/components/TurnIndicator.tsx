@@ -1,14 +1,30 @@
 import type { TurnPhase } from '../types/game'
+import { useMultiplayerStore } from '../store/multiplayerSlice'
 
 interface TurnIndicatorProps {
   phase: TurnPhase
   currentPlayerId: string
 }
 
-export function TurnIndicator({ phase, currentPlayerId: _currentPlayerId }: TurnIndicatorProps) {
+export function TurnIndicator({ phase, currentPlayerId }: TurnIndicatorProps) {
+  const gameMode = useMultiplayerStore(s => s.gameMode)
+  const localPlayerId = useMultiplayerStore(s => s.localPlayerId)
+
   const baseClass = 'font-jost uppercase tracking-wider text-sm py-2 text-center transition-all duration-300'
 
+  const isMyTurn = (phase === 'SETUP' && currentPlayerId === localPlayerId)
+    || (phase === 'HUMAN_TURN' && localPlayerId === 'human')
+    || (phase === 'AI_THINKING' && localPlayerId === 'ai')
+
   if (phase === 'SETUP') {
+    if (gameMode === 'pvp' && currentPlayerId !== localPlayerId) {
+      return (
+        <div className={`${baseClass} text-corbusier-red font-bold`}>
+          <span className="inline-block w-2 h-2 rounded-full bg-corbusier-red mr-2 animate-pulse" />
+          Opponent choosing starting word...
+        </div>
+      )
+    }
     return (
       <div className={`${baseClass} text-charcoal`}>
         Choose a starting word
@@ -16,7 +32,7 @@ export function TurnIndicator({ phase, currentPlayerId: _currentPlayerId }: Turn
     )
   }
 
-  if (phase === 'HUMAN_TURN') {
+  if (isMyTurn) {
     return (
       <div className={`${baseClass} text-corbusier-blue font-bold`}>
         <span className="inline-block w-2 h-2 rounded-full bg-corbusier-blue mr-2 animate-pulse" />
@@ -25,11 +41,12 @@ export function TurnIndicator({ phase, currentPlayerId: _currentPlayerId }: Turn
     )
   }
 
-  if (phase === 'AI_THINKING') {
+  if (phase === 'HUMAN_TURN' || phase === 'AI_THINKING') {
+    const label = gameMode === 'pvp' ? 'Opponent is thinking...' : 'AI is thinking...'
     return (
       <div className={`${baseClass} text-corbusier-red font-bold`}>
         <span className="inline-block w-2 h-2 rounded-full bg-corbusier-red mr-2 animate-pulse" />
-        AI is thinking...
+        {label}
       </div>
     )
   }

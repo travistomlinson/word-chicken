@@ -13,6 +13,12 @@ export const useGameStore = create<GameStore>()((set, get) => ({
   dispatch: (action: GameAction) => {
     const current = get().gameState
 
+    // SET_STATE replaces the entire game state (used by multiplayer guest)
+    if (action.type === 'SET_STATE') {
+      set({ gameState: action.state })
+      return
+    }
+
     // START_GAME initializes from config, ignoring current state
     if (action.type === 'START_GAME') {
       const newState = createInitialGameState(action.config)

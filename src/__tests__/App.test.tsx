@@ -18,13 +18,13 @@ describe('App', () => {
   it('renders ConfigScreen by default', () => {
     render(<App />)
     expect(screen.getByText('Word Chicken')).toBeInTheDocument()
-    expect(screen.getByText('Start Game')).toBeInTheDocument()
+    expect(screen.getByText('Play vs AI')).toBeInTheDocument()
   })
 
-  it('clicking "Start Game" switches to GameScreen', async () => {
+  it('clicking "Play vs AI" switches to GameScreen', async () => {
     const user = userEvent.setup()
     render(<App />)
-    await user.click(screen.getByText('Start Game'))
+    await user.click(screen.getByText('Play vs AI'))
     // GameScreen renders with SETUP phase — shows turn indicator and quit button
     expect(screen.getByText('Choose a starting word')).toBeInTheDocument()
     expect(screen.getByText('Quit')).toBeInTheDocument()

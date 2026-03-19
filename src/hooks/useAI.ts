@@ -25,6 +25,9 @@ export function useAI(): void {
 
     const { phase, round, config } = gameState
 
+    // Skip AI in PVP mode
+    if (config.gameMode === 'pvp') return
+
     // Guard: dictionary must be loaded
     if (config.dictionary.size === 0) return
 

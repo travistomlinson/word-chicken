@@ -105,13 +105,18 @@ function letterFrequency(word: string): Map<string, number> {
  */
 export function createInitialGameState(config: GameConfig): GameState {
   const playerIds = ['human', 'ai']
-  const playerNames: Record<string, string> = { human: 'Player', ai: 'AI' }
+  const playerNames: Record<string, string> = {
+    human: config.gameMode === 'pvp' ? 'Player 1' : 'Player',
+    ai: config.gameMode === 'pvp' ? 'Player 2' : 'AI',
+  }
+  // Randomize who goes first
+  const startingPlayer = Math.random() < 0.5 ? 'human' : 'ai'
   const round = createRoundState(
     playerIds,
     playerNames,
     config.tileDistribution as TileDistribution,
     1,
-    'human'
+    startingPlayer
   )
 
   return {
@@ -306,6 +311,10 @@ export function gameReducer(state: GameState, action: GameAction): GameState | n
 
     case 'RESET_GAME': {
       return null
+    }
+
+    case 'SET_STATE': {
+      return action.state
     }
 
     default: {
