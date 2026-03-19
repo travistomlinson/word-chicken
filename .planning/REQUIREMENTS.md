@@ -10,10 +10,10 @@ Requirements for the design audit and fix pass. Each maps to roadmap phases.
 ### Viewport & Layout
 
 - [ ] **VPRT-01**: App fills the visible viewport on mobile without overflow or wasted space on first load
-- [ ] **VPRT-02**: Game content does not require scrolling during active gameplay on any standard phone size (375px+)
+- [x] **VPRT-02**: Game content does not require scrolling during active gameplay on any standard phone size (375px+)
 - [ ] **VPRT-03**: Config and Lobby screens scroll gracefully when content exceeds viewport height
 - [ ] **VPRT-04**: No content is clipped by iPhone notch, Dynamic Island, or home indicator gesture zone
-- [ ] **VPRT-05**: Dark mode does not show white background bleed on iOS overscroll rubber-banding
+- [x] **VPRT-05**: Dark mode does not show white background bleed on iOS overscroll rubber-banding
 
 ### Touch & Interaction
 
@@ -66,10 +66,10 @@ Deferred to future release.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | VPRT-01 | Phase 5 | Pending |
-| VPRT-02 | Phase 5 | Pending |
+| VPRT-02 | Phase 5 | Complete |
 | VPRT-03 | Phase 5 | Pending |
 | VPRT-04 | Phase 6 | Pending |
-| VPRT-05 | Phase 5 | Pending |
+| VPRT-05 | Phase 5 | Complete |
 | TUCH-01 | Phase 6 | Pending |
 | TUCH-02 | Phase 6 | Pending |
 | TUCH-03 | Phase 6 | Pending |

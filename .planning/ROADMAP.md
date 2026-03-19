@@ -149,7 +149,7 @@ Phases execute in numeric order: 5 → 6 → 7 → 8
 | 2. Core Engine | v1.0 | 3/3 | Complete | 2026-03-18 |
 | 3. AI and State Machine | v1.0 | 2/2 | Complete | 2026-03-18 |
 | 4. Game UI | v1.0 | 4/4 | Complete | 2026-03-18 |
-| 5. Viewport Foundation | v1.1 | 0/2 | Not started | - |
+| 5. Viewport Foundation | 2/2 | Complete   | 2026-03-19 | - |
 | 6. Mobile Layout and Touch Audit | v1.1 | 0/TBD | Not started | - |
 | 7. Color and Contrast Audit | v1.1 | 0/TBD | Not started | - |
 | 8. Visual Polish and Hierarchy | v1.1 | 0/TBD | Not started | - |

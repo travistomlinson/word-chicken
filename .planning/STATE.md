@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Design Audit
-status: ready_to_plan
-stopped_at: null
-last_updated: "2026-03-18"
-last_activity: "2026-03-18 — Roadmap created for v1.1"
+status: planning
+stopped_at: Completed 05-02-PLAN.md (GameScreen viewport fixes)
+last_updated: "2026-03-19T15:15:50.382Z"
+last_activity: 2026-03-18 — v1.1 roadmap written, ready for Phase 5 planning
 progress:
-  total_phases: 4
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_phases: 8
+  completed_phases: 5
+  total_plans: 13
+  completed_plans: 13
   percent: 0
 ---
 
@@ -46,6 +46,8 @@ Progress: [░░░░░░░░░░] 0%
 | - | - | - | - |
 
 *Updated after each plan completion*
+| Phase 05-viewport-foundation P02 | 3m | 2 tasks | 4 files |
+| Phase 05-viewport-foundation P01 | 2 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -57,6 +59,7 @@ Progress: [░░░░░░░░░░] 0%
 - [Research v1.1]: Root cause of all mobile layout issues is `min-h-screen` (resolves to `100vh` = large viewport). Fix: `h-svh flex flex-col` on App root, `flex-1` screens.
 - [Research v1.1]: `viewport-fit=cover` must be in index.html before any `env(safe-area-inset-*)` CSS will return non-zero on real iOS.
 - [Research v1.1]: Use `svh` on App shell (not `dvh`) to avoid reflow jitter during gameplay on iOS Safari.
+- [Phase 05-viewport-foundation]: GameScreen uses min-h-dvh (not h-dvh) on outer container to avoid reflow jitter on iOS Safari; both fixed overlays use h-dvh; html:has(.dark) fixes dark mode overscroll bleed; viewport-fit=cover added as Phase 6 gate
 
 ### Pending Todos
 
@@ -70,6 +73,6 @@ Progress: [░░░░░░░░░░] 0%
 
 ## Session Continuity
 
-Last session: 2026-03-18
-Stopped at: Roadmap created — ready to plan Phase 5
+Last session: 2026-03-19T15:15:40.228Z
+Stopped at: Completed 05-02-PLAN.md (GameScreen viewport fixes)
 Resume file: None
