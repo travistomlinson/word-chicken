@@ -57,7 +57,7 @@ export function GameScreen() {
   // Show reconnecting overlay
   if (gameMode === 'pvp' && connectionStatus === 'reconnecting') {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="fixed inset-0 h-dvh z-50 flex items-center justify-center bg-black/50">
         <div className="bg-card max-w-sm w-full mx-4 p-8 rounded-2xl text-center shadow-2xl">
           <div className="w-16 h-1 bg-corbusier-yellow rounded-full mx-auto mb-4" />
           <h2 className="font-jost font-bold text-xl uppercase tracking-wider text-ink mb-2">
@@ -121,7 +121,7 @@ export function GameScreen() {
     }
 
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="fixed inset-0 h-dvh z-50 flex items-center justify-center bg-black/50">
         <div className="bg-card max-w-sm w-full mx-4 p-8 rounded-2xl text-center shadow-2xl">
           <div className="w-16 h-1 bg-corbusier-red rounded-full mx-auto mb-4" />
           <h2 className="font-jost font-bold text-xl uppercase tracking-wider text-ink mb-2">
@@ -172,7 +172,7 @@ export function GameScreen() {
     phase === 'SETUP' || phase === 'HUMAN_TURN' || phase === 'AI_THINKING'
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-surface to-surface/80 p-2 sm:p-4">
+    <div className="flex flex-col min-h-dvh overscroll-none bg-gradient-to-b from-surface to-surface/80 p-2 sm:p-4">
       {/* Top bar: turn indicator + round + quit */}
       <div className="relative flex items-center justify-center mb-3">
         <span className="absolute left-0 text-ink/30 text-[10px] uppercase font-jost tracking-wider">

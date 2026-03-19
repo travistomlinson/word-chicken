@@ -21,6 +21,13 @@
   --color-ink: #e0ddd8;
 }
 
+/* VPRT-05: Extend dark surface to <html> so iOS overscroll
+   rubber-banding reveals dark background, not browser-default white.
+   :has() is Baseline 2023 (Chrome 105+, Firefox 121+, Safari 15.4+). */
+html:has(.dark) {
+  background-color: var(--color-surface);
+}
+
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   20%      { transform: translateX(-6px); }
