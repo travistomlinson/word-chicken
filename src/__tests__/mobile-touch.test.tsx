@@ -145,7 +145,9 @@ describe('TUCH-03 — Lobby keyboard accessibility', () => {
       /return[\s\S]{0,50}<div className="([^"]+)"/
     )
     if (outerContainerMatch) {
-      expect(outerContainerMatch[1]).not.toMatch(/\bh-dvh\b/)
+      // min-h-dvh is fine; only a bare 'h-dvh' (not preceded by 'min-') would clip content
+      const classes = outerContainerMatch[1].split(/\s+/)
+      expect(classes).not.toContain('h-dvh')
     }
   })
 

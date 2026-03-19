@@ -172,7 +172,7 @@ export function GameScreen() {
     phase === 'SETUP' || phase === 'HUMAN_TURN' || phase === 'AI_THINKING'
 
   return (
-    <div className="flex flex-col min-h-dvh overscroll-none bg-gradient-to-b from-surface to-surface/80 p-2 sm:p-4">
+    <div className="flex flex-col min-h-dvh overscroll-none bg-gradient-to-b from-surface to-surface/80 pt-safe pb-safe px-2 sm:px-4">
       {/* Top bar: turn indicator + round + quit */}
       <div className="relative flex items-center justify-center mb-3">
         <span className="absolute left-0 text-ink/30 text-[10px] uppercase font-jost tracking-wider">

@@ -28,6 +28,16 @@ html:has(.dark) {
   background-color: var(--color-surface);
 }
 
+/* Safe-area inset utilities (VPRT-04, TUCH-02, TUCH-03)
+   max() ensures at least 0.5rem padding on non-notched devices.
+   viewport-fit=cover must be set in index.html for non-zero values on iOS. */
+.pt-safe {
+  padding-top: max(env(safe-area-inset-top), 0.5rem);
+}
+.pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom), 0.5rem);
+}
+
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   20%      { transform: translateX(-6px); }

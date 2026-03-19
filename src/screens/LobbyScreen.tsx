@@ -143,7 +143,7 @@ export function LobbyScreen() {
   const isConnected = connectionStatus === 'connected'
 
   return (
-    <div className="min-h-dvh bg-gradient-to-br from-surface via-surface to-corbusier-blue/5 p-4">
+    <div className="min-h-dvh bg-gradient-to-br from-surface via-surface to-corbusier-blue/5 px-4 pt-4 pb-safe">
       <div className="max-w-md mx-auto">
         {/* Header */}
         <div className="mb-8 mt-8">
