@@ -2,12 +2,11 @@ import type { RoundState, PlayerState, StartingWordResult, RoundEndResult } from
 import type { TileDistribution } from './tileBag'
 import { isInDictionary } from './wordValidator'
 import { createBag, dealHand } from './tileBag'
-import { STARTING_WORDS } from './startingWords'
 
 /**
  * Validates a starting word submission:
- * 1. Must be in the dictionary (after Q expansion)
- * 2. Must be in the curated STARTING_WORDS corpus
+ * 1. Must be exactly 3 letters
+ * 2. Must be in the dictionary (after Q expansion)
  * 3. Hand must contain all required letters
  */
 export function validateStartingWord(
@@ -17,14 +16,14 @@ export function validateStartingWord(
 ): StartingWordResult {
   const upper = word.toUpperCase()
 
-  // 1. Dictionary check
-  if (!isInDictionary(upper, dictionary)) {
-    return { valid: false, reason: 'not_a_word' }
+  // 1. Length check
+  if (upper.length !== 3) {
+    return { valid: false, reason: 'not_in_corpus' }
   }
 
-  // 2. Corpus check
-  if (!STARTING_WORDS.includes(upper)) {
-    return { valid: false, reason: 'not_in_corpus' }
+  // 2. Dictionary check
+  if (!isInDictionary(upper, dictionary)) {
+    return { valid: false, reason: 'not_a_word' }
   }
 
   // 3. Hand availability check

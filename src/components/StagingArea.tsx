@@ -2,6 +2,7 @@ import { TileCard } from './TileCard'
 
 interface StagingAreaProps {
   stagedLetters: string[]
+  stagedCommunity?: boolean[]
   onRemoveTile: (index: number) => void
   onSubmit: () => void
   error: string | null
@@ -12,6 +13,7 @@ interface StagingAreaProps {
 
 export function StagingArea({
   stagedLetters,
+  stagedCommunity = [],
   onRemoveTile,
   onSubmit,
   error,
@@ -33,7 +35,7 @@ export function StagingArea({
             <TileCard
               key={idx}
               letter={letter}
-              color="blue"
+              color={stagedCommunity[idx] ? 'yellow' : 'blue'}
               size="md"
               onClick={() => onRemoveTile(idx)}
               disabled={disabled}

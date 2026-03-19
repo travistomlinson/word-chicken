@@ -2,7 +2,6 @@ import { validateTurn } from './wordValidator'
 import { validateStartingWord } from './roundManager'
 import { EASY_WORDS } from '../data/easyWords'
 import { MEDIUM_WORDS } from '../data/mediumWords'
-import { STARTING_WORDS } from './startingWords'
 import type { ValidationConfig } from '../types/game'
 
 /**
@@ -104,20 +103,27 @@ export function findAIMove(
 }
 
 /**
- * Finds a valid starting word for the AI from the curated STARTING_WORDS corpus.
- * Iterates in random order. Returns the word (uppercase) or null if none fits.
+ * Finds a valid starting word for the AI from the dictionary.
+ * Filters to 3-letter words, shuffles, and picks the first one playable from hand.
  */
 export function findAIStartingWord(
   hand: string[],
   dictionary: Set<string>
 ): string | null {
-  // Shuffle a copy of STARTING_WORDS to avoid bias
-  const candidates = shuffleInPlace([...STARTING_WORDS])
+  // Collect all 3-letter words from dictionary
+  const threeLetterWords: string[] = []
+  for (const word of dictionary) {
+    if (word.length === 3) {
+      threeLetterWords.push(word.toUpperCase())
+    }
+  }
 
-  for (const word of candidates) {
+  shuffleInPlace(threeLetterWords)
+
+  for (const word of threeLetterWords) {
     const result = validateStartingWord(word, hand, dictionary)
     if (result.valid) {
-      return word.toUpperCase()
+      return word
     }
   }
 

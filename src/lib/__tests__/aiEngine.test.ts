@@ -192,12 +192,12 @@ describe('findAIStartingWord', () => {
     expect(result).toBeNull()
   })
 
-  it('returns a word in the full STARTING_WORDS corpus', async () => {
-    const { STARTING_WORDS } = await import('../startingWords')
+  it('returns a valid 3-letter dictionary word', () => {
     const hand = ['C', 'A', 'T', 'B', 'A', 'R', 'S', 'E', 'A']
     const result = findAIStartingWord(hand, MINI_DICT)
     if (result !== null) {
-      expect(STARTING_WORDS).toContain(result.toUpperCase())
+      expect(result.length).toBe(3)
+      expect(MINI_DICT.has(result.toLowerCase())).toBe(true)
     }
   })
 })

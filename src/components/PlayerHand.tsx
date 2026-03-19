@@ -97,11 +97,24 @@ export function PlayerHand() {
     setError(null)
   }
 
+  // During HUMAN_TURN, merge current word letters (community tiles) into selectable pool.
+  // Community tiles use negative indices to distinguish from hand tiles.
+  const communityTiles: { letter: string; idx: number; isCommunity: boolean }[] =
+    phase === 'HUMAN_TURN'
+      ? currentWord.split('').map((letter, i) => ({ letter, idx: -(i + 1), isCommunity: true }))
+      : []
+
+  const allTiles = [
+    ...communityTiles,
+    ...hand.map((letter, idx) => ({ letter, idx, isCommunity: false })),
+  ]
+
   // Derived values (computed during render)
-  const stagedLetters = stagedIndices.map(i => hand[i])
-  const remainingHand = hand
-    .map((letter, idx) => ({ letter, idx }))
-    .filter(({ idx }) => !stagedIndices.includes(idx))
+  const stagedLetters = stagedIndices.map(i => {
+    const tile = allTiles.find(t => t.idx === i)
+    return tile?.letter ?? ''
+  })
+  const remainingTiles = allTiles.filter(({ idx }) => !stagedIndices.includes(idx))
 
   function triggerShake(errorMessage: string) {
     setError(errorMessage)
@@ -118,7 +131,7 @@ export function PlayerHand() {
       if (!result.valid) {
         const messages: Record<string, string> = {
           not_a_word: 'Not a valid word',
-          not_in_corpus: 'Not a valid starting word (use a common 3-letter word)',
+          not_in_corpus: 'Starting word must be exactly 3 letters',
           letters_unavailable: "You don't have those letters",
         }
         triggerShake(messages[result.reason] ?? 'Invalid word')
@@ -187,6 +200,7 @@ export function PlayerHand() {
     <div className="flex flex-col items-center w-full">
       <StagingArea
         stagedLetters={stagedLetters}
+        stagedCommunity={stagedIndices.map(i => i < 0)}
         onRemoveTile={handleUnstage}
         onSubmit={handleSubmit}
         error={error}
@@ -195,13 +209,13 @@ export function PlayerHand() {
         isSetup={phase === 'SETUP'}
       />
 
-      {/* Hand tiles — only unstaged tiles shown */}
+      {/* Selectable tiles — community (yellow) + hand (concrete) */}
       <div className="grid grid-cols-5 sm:flex sm:flex-wrap gap-1 sm:gap-2 justify-center mt-4">
-        {remainingHand.map(({ letter, idx }) => (
-          <div key={idx} style={scatterStyle(idx)}>
+        {remainingTiles.map(({ letter, idx, isCommunity }) => (
+          <div key={idx} style={scatterStyle(Math.abs(idx))}>
             <TileCard
               letter={letter}
-              color="concrete"
+              color={isCommunity ? 'yellow' : 'concrete'}
               size="md"
               onClick={() => handleTileClick(idx)}
             />

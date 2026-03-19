@@ -6,7 +6,6 @@ import {
   createRoundState,
   startNextRound,
 } from '../roundManager'
-import { STARTING_WORDS } from '../startingWords'
 import type { RoundState } from '../../types/game'
 
 // A minimal mock dictionary covering words we need for tests
@@ -35,27 +34,8 @@ function makeRoundState(overrides: Partial<RoundState> = {}): RoundState {
   }
 }
 
-describe('STARTING_WORDS corpus', () => {
-  it('contains at least 100 words', () => {
-    expect(STARTING_WORDS.length).toBeGreaterThanOrEqual(100)
-  })
-
-  it('every word is exactly 3 characters', () => {
-    for (const word of STARTING_WORDS) {
-      expect(word.length).toBe(3)
-    }
-  })
-
-  it('every word is uppercase', () => {
-    for (const word of STARTING_WORDS) {
-      expect(word).toBe(word.toUpperCase())
-    }
-  })
-})
-
 describe('validateStartingWord', () => {
-  it('returns valid:true for CAT (in corpus and dictionary)', () => {
-    // CAT is in STARTING_WORDS and 'cat' is in MOCK_DICT
+  it('returns valid:true for any 3-letter dictionary word', () => {
     const hand = ['C', 'A', 'T', 'R', 'S', 'E', 'D', 'O', 'G']
     const result = validateStartingWord('CAT', hand, MOCK_DICT)
     expect(result).toEqual({ valid: true })
@@ -67,34 +47,13 @@ describe('validateStartingWord', () => {
     expect(result).toEqual({ valid: false, reason: 'not_a_word' })
   })
 
-  it('returns valid:false reason:not_in_corpus for ZAX (not in curated corpus)', () => {
-    // ZAX is a valid English word (a type of chopper) but not in our corpus
-    // We simulate by finding a dictionary word not in STARTING_WORDS
-    // Use 'SEA' — it's in MOCK_DICT as 'sea' but let's check if it's in corpus
-    // If SEA is in corpus, find another word... Instead test with a word we know isn't in corpus:
-    // 'FEA' is not a real word but let's use a crafted approach:
-    // Pick any word NOT in STARTING_WORDS but in MOCK_DICT
-    const wordsInDict = ['sea', 'tea', 'pea', 'lea']
-    let notInCorpus: string | null = null
-    for (const w of wordsInDict) {
-      if (!STARTING_WORDS.includes(w.toUpperCase())) {
-        notInCorpus = w.toUpperCase()
-        break
-      }
-    }
-    // LEA (meadow) — verify it is/isn't in corpus then adapt
-    // For the test to be deterministic, we'll use a known not-in-corpus word.
-    // 'LEA' appears in our corpus list, so let's check 'FEA' which is not a real word.
-    // Better approach: mock the corpus check indirectly by testing a word not in the list.
-    // We'll verify ZAX specifically by adding it to mock dict but ensuring it's not in STARTING_WORDS
-    const mockDictWithZax = new Set([...MOCK_DICT, 'zax'])
-    const hand = ['Z', 'A', 'X', 'B', 'C', 'D', 'E', 'F', 'G']
-    const result = validateStartingWord('ZAX', hand, mockDictWithZax)
+  it('returns valid:false reason:not_in_corpus for words not exactly 3 letters', () => {
+    const hand = ['C', 'A', 'R', 'T', 'S', 'E', 'D', 'O', 'G']
+    const result = validateStartingWord('CART', hand, MOCK_DICT)
     expect(result).toEqual({ valid: false, reason: 'not_in_corpus' })
   })
 
   it('returns valid:false reason:letters_unavailable when hand lacks needed letters', () => {
-    // CAT is in corpus and dict, but hand has no C
     const hand = ['A', 'T', 'R', 'S', 'E', 'D', 'O', 'G', 'N']
     const result = validateStartingWord('CAT', hand, MOCK_DICT)
     expect(result).toEqual({ valid: false, reason: 'letters_unavailable' })
