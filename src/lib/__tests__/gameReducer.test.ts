@@ -2,6 +2,13 @@ import { describe, it, expect } from 'vitest'
 import { gameReducer, createInitialGameState } from '../gameReducer'
 import type { GameConfig, GameState, GameAction } from '../../types/game'
 
+/** Assert reducer result is non-null and return typed GameState */
+function reduce(state: GameState, action: GameAction): GameState {
+  const result = gameReducer(state, action)
+  expect(result).not.toBeNull()
+  return result as GameState
+}
+
 // Small controlled dictionary for tests
 const MOCK_DICT = new Set([
   'cat', 'cart', 'carts', 'scat', 'trace', 'crate',
@@ -23,6 +30,7 @@ function makeGameState(overrides: Partial<GameState> = {}): GameState {
     config: BASE_CONFIG,
     roundScores: { human: 0, ai: 0 },
     totalScores: { human: 0, ai: 0 },
+    hintUsed: false,
     round: {
       roundNumber: 1,
       currentWord: 'CAT',
@@ -89,7 +97,7 @@ describe('SUBMIT_STARTING_WORD', () => {
       },
     }
     const action: GameAction = { type: 'SUBMIT_STARTING_WORD', playerId: 'human', word: 'CAT' }
-    const next = gameReducer(state, action)
+    const next = reduce(state, action)
     // After human submits, ai goes next => AI_THINKING
     expect(next.phase).toBe('AI_THINKING')
     expect(next.round.currentWord).toBe('CAT')
@@ -111,7 +119,7 @@ describe('SUBMIT_STARTING_WORD', () => {
       },
     }
     const action: GameAction = { type: 'SUBMIT_STARTING_WORD', playerId: 'human', word: 'CAT' }
-    const next = gameReducer(state, action)
+    const next = reduce(state, action)
     // Human played CAT (3 letters), draws 3 back to reach 9
     expect(next.round.players.human.hand.length).toBe(9)
   })
@@ -119,7 +127,7 @@ describe('SUBMIT_STARTING_WORD', () => {
   it('returns unchanged state when phase is not SETUP', () => {
     const state = makeGameState({ phase: 'HUMAN_TURN' })
     const action: GameAction = { type: 'SUBMIT_STARTING_WORD', playerId: 'human', word: 'CAT' }
-    const next = gameReducer(state, action)
+    const next = reduce(state, action)
     expect(next).toBe(state)
   })
 
@@ -139,7 +147,7 @@ describe('SUBMIT_STARTING_WORD', () => {
       },
     }
     const action: GameAction = { type: 'SUBMIT_STARTING_WORD', playerId: 'human', word: 'XYZ' }
-    const next = gameReducer(state, action)
+    const next = reduce(state, action)
     expect(next).toBe(state)
   })
 })
@@ -163,7 +171,7 @@ describe('SUBMIT_WORD from HUMAN_TURN', () => {
       },
     })
     const action: GameAction = { type: 'SUBMIT_WORD', playerId: 'human', word: 'CART' }
-    const next = gameReducer(state, action)
+    const next = reduce(state, action)
     expect(next.phase).toBe('AI_THINKING')
     expect(next.round.currentPlayerId).toBe('ai')
     expect(next.round.currentWord).toBe('CART')
@@ -184,7 +192,7 @@ describe('SUBMIT_WORD from HUMAN_TURN', () => {
       },
     })
     const action: GameAction = { type: 'SUBMIT_WORD', playerId: 'human', word: 'CART' }
-    const next = gameReducer(state, action)
+    const next = reduce(state, action)
     // CART = 4 points (length) + 0 bonus = 4
     expect(next.round.players.human.score).toBe(4)
   })
@@ -204,7 +212,7 @@ describe('SUBMIT_WORD from HUMAN_TURN', () => {
       },
     })
     const action: GameAction = { type: 'SUBMIT_WORD', playerId: 'human', word: 'CART' }
-    const next = gameReducer(state, action)
+    const next = reduce(state, action)
     expect(next.round.turnHistory).toHaveLength(1)
     expect(next.round.turnHistory[0]).toMatchObject({ playerId: 'human', word: 'CART', score: 4 })
   })
@@ -224,7 +232,7 @@ describe('SUBMIT_WORD from HUMAN_TURN', () => {
       },
     })
     const action: GameAction = { type: 'SUBMIT_WORD', playerId: 'human', word: 'CART' }
-    const next = gameReducer(state, action)
+    const next = reduce(state, action)
     // Hand was 9, used 1 'R', draw 1 from bag => still 9
     expect(next.round.players.human.hand.length).toBe(9)
     // The used 'R' should no longer be there if it was the only R
@@ -234,14 +242,14 @@ describe('SUBMIT_WORD from HUMAN_TURN', () => {
   it('returns unchanged state when word is invalid', () => {
     const state = makeGameState({ phase: 'HUMAN_TURN' })
     const action: GameAction = { type: 'SUBMIT_WORD', playerId: 'human', word: 'XYZZY' }
-    const next = gameReducer(state, action)
+    const next = reduce(state, action)
     expect(next).toBe(state)
   })
 
   it('returns unchanged state when called from wrong phase', () => {
     const state = makeGameState({ phase: 'SETUP' })
     const action: GameAction = { type: 'SUBMIT_WORD', playerId: 'human', word: 'CART' }
-    const next = gameReducer(state, action)
+    const next = reduce(state, action)
     expect(next).toBe(state)
   })
 })
@@ -263,20 +271,15 @@ describe('SUBMIT_WORD from AI_THINKING', () => {
       },
     })
     const action: GameAction = { type: 'SUBMIT_WORD', playerId: 'ai', word: 'CARTS' }
-    const next = gameReducer(state, action)
+    const next = reduce(state, action)
     expect(next.phase).toBe('HUMAN_TURN')
     expect(next.round.currentPlayerId).toBe('human')
   })
 
-  it('returns unchanged state when called from wrong phase (HUMAN_TURN)', () => {
-    const state = makeGameState({ phase: 'HUMAN_TURN' })
-    // Trying to submit as AI during human turn
+  it('returns unchanged state when called from wrong phase (ROUND_END)', () => {
     const action: GameAction = { type: 'SUBMIT_WORD', playerId: 'ai', word: 'CART' }
-    // Even though HUMAN_TURN allows SUBMIT_WORD, the currentPlayerId is 'human' not 'ai'
-    // Actually the reducer guards on phase: HUMAN_TURN allows SUBMIT_WORD from human
-    // We can test that AI submitting from ROUND_END returns unchanged
     const stateRoundEnd = makeGameState({ phase: 'ROUND_END' })
-    const next = gameReducer(stateRoundEnd, action)
+    const next = reduce(stateRoundEnd, action)
     expect(next).toBe(stateRoundEnd)
   })
 })
@@ -287,14 +290,14 @@ describe('ELIMINATE_PLAYER', () => {
   it('removes player from activePlayers', () => {
     const state = makeGameState()
     const action: GameAction = { type: 'ELIMINATE_PLAYER', playerId: 'ai' }
-    const next = gameReducer(state, action)
+    const next = reduce(state, action)
     expect(next.round.activePlayers).not.toContain('ai')
   })
 
   it('transitions to ROUND_END when one player remains', () => {
     const state = makeGameState()
     const action: GameAction = { type: 'ELIMINATE_PLAYER', playerId: 'ai' }
-    const next = gameReducer(state, action)
+    const next = reduce(state, action)
     // Only 'human' left
     expect(next.phase).toBe('ROUND_END')
   })
@@ -312,7 +315,7 @@ describe('ELIMINATE_PLAYER', () => {
       },
     })
     const action: GameAction = { type: 'ELIMINATE_PLAYER', playerId: 'extra' }
-    const next = gameReducer(state, action)
+    const next = reduce(state, action)
     expect(next.phase).toBe('HUMAN_TURN') // unchanged phase (still 2 players left)
     expect(next.round.activePlayers).toHaveLength(2)
   })
@@ -335,7 +338,7 @@ describe('END_ROUND', () => {
       },
     })
     const action: GameAction = { type: 'END_ROUND' }
-    const next = gameReducer(state, action)
+    const next = reduce(state, action)
     // human earned 4+5=9 this round, totalScores was 10 => 19
     expect(next.totalScores.human).toBe(10 + 4 + 5)
     // ai earned 5 this round, totalScores was 5 => 10
@@ -348,7 +351,7 @@ describe('END_ROUND', () => {
   it('returns unchanged state when phase is not ROUND_END', () => {
     const state = makeGameState({ phase: 'HUMAN_TURN' })
     const action: GameAction = { type: 'END_ROUND' }
-    const next = gameReducer(state, action)
+    const next = reduce(state, action)
     expect(next).toBe(state)
   })
 })
@@ -359,14 +362,14 @@ describe('NEXT_ROUND', () => {
   it('resets phase to SETUP', () => {
     const state = makeGameState({ phase: 'ROUND_END' })
     const action: GameAction = { type: 'NEXT_ROUND', winnerId: 'human' }
-    const next = gameReducer(state, action)
+    const next = reduce(state, action)
     expect(next.phase).toBe('SETUP')
   })
 
   it('creates a fresh round with incremented roundNumber', () => {
     const state = makeGameState({ phase: 'ROUND_END' })
     const action: GameAction = { type: 'NEXT_ROUND', winnerId: 'human' }
-    const next = gameReducer(state, action)
+    const next = reduce(state, action)
     expect(next.round.roundNumber).toBe(2)
   })
 
@@ -376,7 +379,7 @@ describe('NEXT_ROUND', () => {
       totalScores: { human: 15, ai: 8 },
     })
     const action: GameAction = { type: 'NEXT_ROUND', winnerId: 'human' }
-    const next = gameReducer(state, action)
+    const next = reduce(state, action)
     expect(next.totalScores.human).toBe(15)
     expect(next.totalScores.ai).toBe(8)
   })
@@ -384,7 +387,7 @@ describe('NEXT_ROUND', () => {
   it('returns unchanged state when phase is not ROUND_END', () => {
     const state = makeGameState({ phase: 'HUMAN_TURN' })
     const action: GameAction = { type: 'NEXT_ROUND', winnerId: 'human' }
-    const next = gameReducer(state, action)
+    const next = reduce(state, action)
     expect(next).toBe(state)
   })
 })
@@ -395,7 +398,7 @@ describe('RESET_GAME', () => {
   it('returns null (initial state signals store to clear)', () => {
     const state = makeGameState()
     const action: GameAction = { type: 'RESET_GAME' }
-    const next = gameReducer(state, action)
+    const next = reduce(state, action)
     expect(next).toBeNull()
   })
 })
@@ -423,7 +426,7 @@ describe('Integration: full round lifecycle', () => {
     }
 
     // Human submits starting word CAT
-    const afterStart = gameReducer(setupState, { type: 'SUBMIT_STARTING_WORD', playerId: 'human', word: 'CAT' })
+    const afterStart = reduce(setupState, { type: 'SUBMIT_STARTING_WORD', playerId: 'human', word: 'CAT' })
     expect(afterStart.phase).toBe('AI_THINKING')
     expect(afterStart.round.currentWord).toBe('CAT')
 
@@ -439,20 +442,20 @@ describe('Integration: full round lifecycle', () => {
         },
       },
     }
-    const afterAI = gameReducer(stateForAI, { type: 'SUBMIT_WORD', playerId: 'ai', word: 'CART' })
+    const afterAI = reduce(stateForAI, { type: 'SUBMIT_WORD', playerId: 'ai', word: 'CART' })
     expect(afterAI.phase).toBe('HUMAN_TURN')
     expect(afterAI.round.currentWord).toBe('CART')
 
     // Eliminate AI
-    const afterElim = gameReducer(afterAI, { type: 'ELIMINATE_PLAYER', playerId: 'ai' })
+    const afterElim = reduce(afterAI, { type: 'ELIMINATE_PLAYER', playerId: 'ai' })
     expect(afterElim.phase).toBe('ROUND_END')
 
     // End round
-    const afterEndRound = gameReducer(afterElim, { type: 'END_ROUND' })
+    const afterEndRound = reduce(afterElim, { type: 'END_ROUND' })
     expect(afterEndRound.roundScores).toBeDefined()
 
     // Next round
-    const afterNextRound = gameReducer(afterEndRound, { type: 'NEXT_ROUND', winnerId: 'human' })
+    const afterNextRound = reduce(afterEndRound, { type: 'NEXT_ROUND', winnerId: 'human' })
     expect(afterNextRound.phase).toBe('SETUP')
     expect(afterNextRound.round.roundNumber).toBe(2)
   })
