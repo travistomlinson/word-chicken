@@ -110,8 +110,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 06-01-PLAN.md — Safe-area inset padding on all screens, test scaffold for Phase 6
-- [ ] 06-02-PLAN.md — Touch target audit on all secondary action buttons (44px minimum)
+- [x] 06-01-PLAN.md — Safe-area inset padding on all screens, test scaffold for Phase 6
+- [ ] 06-02-PLAN.md — Touch target audit on all secondary action buttons (44px minimum) (completed 2026-03-19)
 
 #### Phase 7: Color and Contrast Audit
 **Goal**: All text in both light and dark mode passes WCAG AA contrast — no text is invisible on any surface
@@ -152,6 +152,6 @@ Phases execute in numeric order: 5 → 6 → 7 → 8
 | 3. AI and State Machine | v1.0 | 2/2 | Complete | 2026-03-18 |
 | 4. Game UI | v1.0 | 4/4 | Complete | 2026-03-18 |
 | 5. Viewport Foundation | v1.1 | 2/2 | Complete | 2026-03-19 |
-| 6. Mobile Layout and Touch Audit | v1.1 | 0/2 | Not started | - |
+| 6. Mobile Layout and Touch Audit | 2/2 | Complete   | 2026-03-19 | - |
 | 7. Color and Contrast Audit | v1.1 | 0/TBD | Not started | - |
 | 8. Visual Polish and Hierarchy | v1.1 | 0/TBD | Not started | - |
