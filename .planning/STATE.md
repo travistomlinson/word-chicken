@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Design Audit
 status: planning
-stopped_at: Completed 05-02-PLAN.md (GameScreen viewport fixes)
-last_updated: "2026-03-19T15:15:50.382Z"
+stopped_at: Completed 05-viewport-foundation-01-PLAN.md
+last_updated: "2026-03-19T15:16:08.199Z"
 last_activity: 2026-03-18 — v1.1 roadmap written, ready for Phase 5 planning
 progress:
   total_phases: 8
@@ -60,6 +60,8 @@ Progress: [░░░░░░░░░░] 0%
 - [Research v1.1]: `viewport-fit=cover` must be in index.html before any `env(safe-area-inset-*)` CSS will return non-zero on real iOS.
 - [Research v1.1]: Use `svh` on App shell (not `dvh`) to avoid reflow jitter during gameplay on iOS Safari.
 - [Phase 05-viewport-foundation]: GameScreen uses min-h-dvh (not h-dvh) on outer container to avoid reflow jitter on iOS Safari; both fixed overlays use h-dvh; html:has(.dark) fixes dark mode overscroll bleed; viewport-fit=cover added as Phase 6 gate
+- [Phase 05-viewport-foundation]: App shell loading/error states use min-h-svh (not dvh) to avoid reflow jitter on iOS Safari
+- [Phase 05-viewport-foundation]: Scrollable screens (Config, Lobby) use min-h-dvh so content fills dynamic viewport after browser chrome collapses
 
 ### Pending Todos
 
@@ -73,6 +75,6 @@ Progress: [░░░░░░░░░░] 0%
 
 ## Session Continuity
 
-Last session: 2026-03-19T15:15:40.228Z
-Stopped at: Completed 05-02-PLAN.md (GameScreen viewport fixes)
+Last session: 2026-03-19T15:16:08.197Z
+Stopped at: Completed 05-viewport-foundation-01-PLAN.md
 Resume file: None
