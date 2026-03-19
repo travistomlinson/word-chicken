@@ -216,7 +216,7 @@ export function LobbyScreen() {
                   navigator.clipboard.writeText(lobbyCode)
                 }
               }}
-              className="text-corbusier-blue text-xs font-jost uppercase cursor-pointer hover:text-corbusier-blue/70 bg-transparent border border-corbusier-blue/30 rounded px-4 py-2 transition-colors"
+              className="text-corbusier-blue text-xs font-jost uppercase cursor-pointer hover:text-corbusier-blue/70 bg-transparent border border-corbusier-blue/30 rounded px-4 min-h-[44px] flex items-center transition-colors"
             >
               Copy Code
             </button>

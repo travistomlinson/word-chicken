@@ -116,7 +116,7 @@ export function ConfigScreen() {
           </h1>
           <button
             onClick={() => setModalOpen(true)}
-            className="text-corbusier-blue underline cursor-pointer text-sm font-jost uppercase hover:text-corbusier-blue/70 transition-colors"
+            className="text-corbusier-blue underline cursor-pointer text-sm font-jost uppercase hover:text-corbusier-blue/70 transition-colors min-h-[44px] flex items-center"
           >
             How to Play
           </button>

@@ -28,7 +28,7 @@ export function HowToPlayModal({ isOpen, onClose }: HowToPlayModalProps) {
         </ol>
         <button
           onClick={onClose}
-          className="bg-corbusier-blue text-white font-jost font-bold uppercase px-6 py-2 rounded"
+          className="bg-corbusier-blue text-white font-jost font-bold uppercase px-6 min-h-[44px] flex items-center justify-center rounded cursor-pointer"
         >
           Got It
         </button>
