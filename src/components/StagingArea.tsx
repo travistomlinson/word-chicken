@@ -26,11 +26,11 @@ export function StagingArea({
       {/* Staged tiles row */}
       <div className={[
         'flex gap-1 min-h-[52px] items-center justify-center flex-wrap px-4 py-1 rounded-xl',
-        stagedLetters.length > 0 ? 'bg-charcoal/5' : '',
+        stagedLetters.length > 0 ? 'bg-ink/5' : '',
         shaking ? 'animate-shake' : '',
       ].filter(Boolean).join(' ')}>
         {stagedLetters.length === 0 && !disabled ? (
-          <span className="text-charcoal/30 text-sm font-jost italic">Tap tiles below</span>
+          <span className="text-ink/30 text-sm font-jost italic">Tap tiles below</span>
         ) : (
           stagedLetters.map((letter, idx) => (
             <TileCard

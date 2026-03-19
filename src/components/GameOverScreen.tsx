@@ -49,7 +49,7 @@ export function GameOverScreen() {
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 animate-fade-in">
-      <div className="bg-white max-w-md w-full mx-4 p-8 rounded-2xl text-center shadow-2xl animate-scale-in">
+      <div className="bg-card max-w-md w-full mx-4 p-8 rounded-2xl text-center shadow-2xl animate-scale-in">
         {/* Accent bar */}
         <div className={`w-20 h-1.5 ${accentBg} rounded-full mx-auto mb-6`} />
 
@@ -61,28 +61,28 @@ export function GameOverScreen() {
         {/* Final scores */}
         <div className="flex justify-around items-end mb-6">
           <div className="text-center">
-            <p className="text-xs uppercase tracking-wider text-charcoal/50 mb-1">You</p>
-            <p className={`font-bold transition-all ${iWon ? 'text-4xl text-corbusier-blue' : 'text-2xl text-charcoal'}`}>
+            <p className="text-xs uppercase tracking-wider text-ink/50 mb-1">You</p>
+            <p className={`font-bold transition-all ${iWon ? 'text-4xl text-corbusier-blue' : 'text-2xl text-ink'}`}>
               {myScore}
             </p>
           </div>
-          <div className="text-charcoal/20 text-2xl font-bold">vs</div>
+          <div className="text-ink/20 text-2xl font-bold">vs</div>
           <div className="text-center">
-            <p className="text-xs uppercase tracking-wider text-charcoal/50 mb-1">{opponentLabel}</p>
-            <p className={`font-bold transition-all ${!iWon ? 'text-4xl text-corbusier-red' : 'text-2xl text-charcoal'}`}>
+            <p className="text-xs uppercase tracking-wider text-ink/50 mb-1">{opponentLabel}</p>
+            <p className={`font-bold transition-all ${!iWon ? 'text-4xl text-corbusier-red' : 'text-2xl text-ink'}`}>
               {opponentScore}
             </p>
           </div>
         </div>
 
         {/* Rounds played */}
-        <p className="text-charcoal/50 text-sm mb-2">
+        <p className="text-ink/50 text-sm mb-2">
           Played {round.roundNumber} round{round.roundNumber !== 1 ? 's' : ''}
         </p>
 
         {/* Longest word */}
         {longestWord && (
-          <p className="text-charcoal/50 text-sm mb-6">
+          <p className="text-ink/50 text-sm mb-6">
             Longest word: <span className="font-bold uppercase">{longestWord}</span>
           </p>
         )}
@@ -98,7 +98,7 @@ export function GameOverScreen() {
         </button>
         <button
           onClick={handleNewGame}
-          className="bg-white text-charcoal border-2 border-charcoal/20 font-jost font-bold uppercase px-8 py-3 rounded-lg text-lg w-full hover:border-charcoal/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 cursor-pointer"
+          className="bg-card text-ink border-2 border-ink/20 font-jost font-bold uppercase px-8 py-3 rounded-lg text-lg w-full hover:border-ink/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 cursor-pointer"
         >
           New Game
         </button>

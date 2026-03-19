@@ -383,7 +383,7 @@ export function PlayerHand() {
           )}
           <button
             onClick={handleGiveUp}
-            className="text-charcoal/40 text-xs font-jost uppercase cursor-pointer hover:text-corbusier-red bg-transparent border-none transition-colors"
+            className="text-ink/40 text-xs font-jost uppercase cursor-pointer hover:text-corbusier-red bg-transparent border-none transition-colors"
           >
             Give Up
           </button>

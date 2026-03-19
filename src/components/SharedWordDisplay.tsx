@@ -14,7 +14,7 @@ export function SharedWordDisplay({ word }: SharedWordDisplayProps) {
   if (!word) {
     return (
       <div className="flex justify-center items-center py-4">
-        <span className="text-charcoal/40 font-jost italic text-sm">Waiting for starting word...</span>
+        <span className="text-ink/40 font-jost italic text-sm">Waiting for starting word...</span>
       </div>
     )
   }

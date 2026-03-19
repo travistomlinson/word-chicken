@@ -26,7 +26,7 @@ export function TurnIndicator({ phase, currentPlayerId }: TurnIndicatorProps) {
       )
     }
     return (
-      <div className={`${baseClass} text-charcoal`}>
+      <div className={`${baseClass} text-ink`}>
         Choose a starting word
       </div>
     )

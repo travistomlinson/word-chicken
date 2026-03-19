@@ -17,11 +17,11 @@ export function HowToPlayModal({ isOpen, onClose }: HowToPlayModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white max-w-md w-full mx-4 p-6 rounded">
+      <div className="bg-card max-w-md w-full mx-4 p-6 rounded">
         <h2 className="font-jost font-bold uppercase tracking-widest text-2xl mb-4">
           How to Play
         </h2>
-        <ol className="list-decimal list-inside space-y-2 mb-6 font-jost text-charcoal">
+        <ol className="list-decimal list-inside space-y-2 mb-6 font-jost text-ink">
           {rules.map((rule, i) => (
             <li key={i}>{rule}</li>
           ))}

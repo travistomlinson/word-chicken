@@ -22,11 +22,11 @@ export function ChickenOMeter({ wordLength }: ChickenOMeterProps) {
         aria-label={`Tension meter: ${Math.round(fillPercent)}%`}
       >
         <div
-          className="absolute top-0 left-0 right-0 bg-concrete/90 transition-all duration-500 ease-out"
+          className="absolute top-0 left-0 right-0 bg-surface/90 transition-all duration-500 ease-out"
           style={{ height: `${maskHeight}%` }}
         />
       </div>
-      <span className="text-[10px] font-jost uppercase tracking-wider text-charcoal/40">
+      <span className="text-[10px] font-jost uppercase tracking-wider text-ink/40">
         {wordLength}
       </span>
     </div>

@@ -49,12 +49,12 @@ export function RoundEndCard() {
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 animate-fade-in">
-      <div className="bg-white max-w-md w-full mx-4 p-8 rounded-2xl text-center shadow-2xl animate-scale-in">
+      <div className="bg-card max-w-md w-full mx-4 p-8 rounded-2xl text-center shadow-2xl animate-scale-in">
         {/* Accent bar */}
         <div className={`w-16 h-1 ${accentBg} rounded-full mx-auto mb-4`} />
 
         {/* Round number */}
-        <p className="font-jost text-sm uppercase tracking-wider text-charcoal/50 mb-2">
+        <p className="font-jost text-sm uppercase tracking-wider text-ink/50 mb-2">
           Round {round.roundNumber}
         </p>
 
@@ -66,22 +66,22 @@ export function RoundEndCard() {
         {/* Word chain */}
         {round.turnHistory.length > 0 && (
           <div className="mb-6 max-h-40 overflow-y-auto text-left">
-            <p className="text-xs uppercase tracking-wider text-charcoal/40 mb-2 text-center">Word Chain</p>
+            <p className="text-xs uppercase tracking-wider text-ink/40 mb-2 text-center">Word Chain</p>
             {round.turnHistory.map((entry, idx) => {
               const isMe = entry.playerId === localPlayerId
               const borderColor = isMe ? 'border-l-corbusier-blue' : 'border-l-corbusier-red'
               return (
                 <div key={idx} className={`flex justify-between items-center text-sm font-jost py-1 px-2 border-l-2 ${borderColor}`}>
-                  <span className="text-charcoal/50 text-xs">
+                  <span className="text-ink/50 text-xs">
                     {isMe ? 'You' : opponentLabel}
                   </span>
                   <span className="font-bold uppercase tracking-wider">{entry.word}</span>
-                  <span className="text-charcoal/50 text-xs">+{entry.score}</span>
+                  <span className="text-ink/50 text-xs">+{entry.score}</span>
                 </div>
               )
             })}
             {longestWord && (
-              <p className="text-xs text-charcoal/40 text-center mt-3">
+              <p className="text-xs text-ink/40 text-center mt-3">
                 Longest: <span className="font-bold uppercase">{longestWord}</span>
               </p>
             )}
@@ -91,27 +91,27 @@ export function RoundEndCard() {
         {/* Scores */}
         <div className="flex justify-around mb-6">
           <div>
-            <p className="text-xs uppercase tracking-wider text-charcoal/50 mb-1">Round Points</p>
+            <p className="text-xs uppercase tracking-wider text-ink/50 mb-1">Round Points</p>
             <div className="flex justify-around gap-6">
               <div className="text-center">
-                <p className="text-[10px] text-charcoal/40 uppercase">You</p>
+                <p className="text-[10px] text-ink/40 uppercase">You</p>
                 <p className="text-2xl font-bold">{roundScores[localPlayerId] ?? 0}</p>
               </div>
               <div className="text-center">
-                <p className="text-[10px] text-charcoal/40 uppercase">{opponentLabel}</p>
+                <p className="text-[10px] text-ink/40 uppercase">{opponentLabel}</p>
                 <p className="text-2xl font-bold">{roundScores[opponentId] ?? 0}</p>
               </div>
             </div>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-wider text-charcoal/50 mb-1">Total</p>
+            <p className="text-xs uppercase tracking-wider text-ink/50 mb-1">Total</p>
             <div className="flex justify-around gap-6">
               <div className="text-center">
-                <p className="text-[10px] text-charcoal/40 uppercase">You</p>
+                <p className="text-[10px] text-ink/40 uppercase">You</p>
                 <p className="text-2xl font-bold">{totalScores[localPlayerId] ?? 0}</p>
               </div>
               <div className="text-center">
-                <p className="text-[10px] text-charcoal/40 uppercase">{opponentLabel}</p>
+                <p className="text-[10px] text-ink/40 uppercase">{opponentLabel}</p>
                 <p className="text-2xl font-bold">{totalScores[opponentId] ?? 0}</p>
               </div>
             </div>

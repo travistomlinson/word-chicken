@@ -17,7 +17,7 @@ const colorClasses = {
   red: 'bg-corbusier-red text-white shadow-md shadow-corbusier-red/30',
   blue: 'bg-corbusier-blue text-white shadow-md shadow-corbusier-blue/30',
   yellow: 'bg-corbusier-yellow text-white shadow-md shadow-corbusier-yellow/30',
-  concrete: 'bg-white text-charcoal border border-charcoal/10 shadow-sm',
+  concrete: 'bg-card text-ink border border-ink/10 shadow-sm',
 }
 
 export function TileCard({

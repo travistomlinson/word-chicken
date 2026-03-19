@@ -143,15 +143,15 @@ export function LobbyScreen() {
   const isConnected = connectionStatus === 'connected'
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-concrete via-concrete to-corbusier-blue/5 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-surface via-surface to-corbusier-blue/5 p-4">
       <div className="max-w-md mx-auto">
         {/* Header */}
         <div className="mb-8 mt-8">
           <div className="w-12 h-1 bg-corbusier-yellow rounded-full mb-4" />
-          <h1 className="font-jost font-bold uppercase tracking-widest text-charcoal text-3xl sm:text-4xl mb-1">
+          <h1 className="font-jost font-bold uppercase tracking-widest text-ink text-3xl sm:text-4xl mb-1">
             Play a Friend
           </h1>
-          <p className="font-jost text-charcoal/50 text-sm">
+          <p className="font-jost text-ink/50 text-sm">
             Create a game or join with a code
           </p>
         </div>
@@ -168,10 +168,10 @@ export function LobbyScreen() {
 
             <div className="relative my-4">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-charcoal/10" />
+                <div className="w-full border-t border-ink/10" />
               </div>
               <div className="relative flex justify-center">
-                <span className="bg-concrete px-4 text-charcoal/30 text-sm font-jost uppercase">or</span>
+                <span className="bg-surface px-4 text-ink/30 text-sm font-jost uppercase">or</span>
               </div>
             </div>
 
@@ -182,7 +182,7 @@ export function LobbyScreen() {
                 value={joinCode}
                 onChange={(e) => setJoinCode(e.target.value.toUpperCase().replace(/[^A-Z2-9]/g, ''))}
                 placeholder="ENTER CODE"
-                className="flex-1 text-center font-jost font-bold text-xl uppercase tracking-[0.3em] bg-white border-2 border-charcoal/10 rounded-lg py-3 px-4 text-charcoal placeholder:text-charcoal/20 placeholder:tracking-widest focus:outline-none focus:border-corbusier-yellow transition-colors"
+                className="flex-1 text-center font-jost font-bold text-xl uppercase tracking-[0.3em] bg-card border-2 border-ink/10 rounded-lg py-3 px-4 text-ink placeholder:text-ink/20 placeholder:tracking-widest focus:outline-none focus:border-corbusier-yellow transition-colors"
               />
               <button
                 onClick={handleJoinGame}
@@ -198,17 +198,17 @@ export function LobbyScreen() {
         {/* Host waiting for guest */}
         {role === 'host' && isWaiting && (
           <div className="text-center">
-            <p className="font-jost text-charcoal/50 text-sm uppercase tracking-wider mb-4">
+            <p className="font-jost text-ink/50 text-sm uppercase tracking-wider mb-4">
               Share this code with your opponent
             </p>
-            <div className="bg-white rounded-xl p-6 shadow-lg mb-6">
-              <p className="font-jost font-bold text-5xl tracking-[0.4em] text-charcoal select-all">
+            <div className="bg-card rounded-xl p-6 shadow-lg mb-6">
+              <p className="font-jost font-bold text-5xl tracking-[0.4em] text-ink select-all">
                 {lobbyCode}
               </p>
             </div>
             <div className="flex items-center justify-center gap-2 mb-6">
               <span className="inline-block w-2 h-2 rounded-full bg-corbusier-yellow animate-pulse" />
-              <span className="font-jost text-charcoal/50 text-sm">Waiting for opponent...</span>
+              <span className="font-jost text-ink/50 text-sm">Waiting for opponent...</span>
             </div>
             <button
               onClick={() => {
@@ -228,7 +228,7 @@ export function LobbyScreen() {
           <div className="text-center">
             <div className="flex items-center justify-center gap-2 mb-4">
               <span className="inline-block w-2 h-2 rounded-full bg-corbusier-yellow animate-pulse" />
-              <span className="font-jost text-charcoal/50">Connecting to lobby {lobbyCode}...</span>
+              <span className="font-jost text-ink/50">Connecting to lobby {lobbyCode}...</span>
             </div>
           </div>
         )}
@@ -238,7 +238,7 @@ export function LobbyScreen() {
           <div className="text-center">
             <div className="flex items-center justify-center gap-2">
               <span className="inline-block w-2 h-2 rounded-full bg-green-500" />
-              <span className="font-jost text-charcoal/50">Connected! Starting game...</span>
+              <span className="font-jost text-ink/50">Connected! Starting game...</span>
             </div>
           </div>
         )}
@@ -253,7 +253,7 @@ export function LobbyScreen() {
         {/* Back button */}
         <button
           onClick={handleBack}
-          className="w-full mt-8 bg-white text-charcoal border-2 border-charcoal/10 font-jost font-bold uppercase px-8 py-3 rounded-lg text-sm hover:border-charcoal/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 cursor-pointer"
+          className="w-full mt-8 bg-card text-ink border-2 border-ink/10 font-jost font-bold uppercase px-8 py-3 rounded-lg text-sm hover:border-ink/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 cursor-pointer"
         >
           Back
         </button>
