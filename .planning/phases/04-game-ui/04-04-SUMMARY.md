@@ -36,8 +36,10 @@ key-decisions:
   - "Tile scatter uses random arc trajectory with stagger (index * 0.05s delay) — pure CSS transition via inline style"
   - "Responsive layout uses grid grid-cols-5 on mobile, flex-wrap on sm+ for PlayerHand tiles"
   - "ChickenOMeter h-48 on mobile, h-64 on sm+; ScorePanel text-xl on mobile, text-2xl on sm+"
+  - "Community tiles merged as yellow tiles into player hand during HUMAN_TURN — required for valid word formation"
+  - "Starting words validated against full dictionary rather than curated corpus — deleted startingWords.ts"
 requirements-completed: [UI-04, UI-07, UX-03, SCOR-04, UX-01]
-duration: 2min
+duration: ~30min
 completed: "2026-03-18"
 ---
 
@@ -47,10 +49,10 @@ completed: "2026-03-18"
 
 ## Performance
 
-- **Duration:** 2 min
+- **Duration:** ~30 min
 - **Started:** 2026-03-18T23:45:45Z
-- **Completed:** 2026-03-18T23:47:53Z
-- **Tasks:** 2 (+ 1 human-verify checkpoint pending)
+- **Completed:** 2026-03-18
+- **Tasks:** 3 (2 auto + 1 human-verify, approved)
 - **Files modified:** 6
 
 ## Accomplishments
@@ -65,7 +67,7 @@ completed: "2026-03-18"
 
 1. **Task 1: Create RoundEndCard and GameOverScreen** - `310ddd8` (feat)
 2. **Task 2: Wire screens, scatter animation, responsive layout** - `9e827d9` (feat)
-3. **Task 3: Human verification checkpoint** - pending
+3. **Task 3: Human verification + bug fixes** - `630e7f1` (fix)
 
 ## Files Created/Modified
 
@@ -85,11 +87,32 @@ completed: "2026-03-18"
 
 ## Deviations from Plan
 
-None — plan executed exactly as written.
+### Auto-fixed Issues
+
+**1. [Rule 1 - Bug] Community tiles missing from player hand during HUMAN_TURN**
+- **Found during:** Task 3 (human verification)
+- **Issue:** The plan specified player tiles only in PlayerHand. During play, the player needs access to the letters already in the current word (community tiles) to extend it — without them, forming a valid superset word was impossible.
+- **Fix:** Merged current word letters as yellow-styled tiles into the player's hand display during HUMAN_TURN. Tapping a yellow tile stages it as part of the new word.
+- **Files modified:** `src/components/PlayerHand.tsx`
+- **Verification:** Human verified — player can now form valid extending words using community tile letters.
+- **Committed in:** `630e7f1` (Task 3 fix commit)
+
+**2. [Rule 1 - Bug] Curated STARTING_WORDS list too restrictive**
+- **Found during:** Task 3 (human verification)
+- **Issue:** Common valid 3-letter words like "BYE" were absent from the curated corpus, blocking players from starting games with perfectly valid words.
+- **Fix:** Deleted `src/data/startingWords.ts` and replaced corpus-based validation with direct dictionary lookup — any 3-letter word in the game dictionary is now accepted as a starting word.
+- **Files modified:** `src/data/startingWords.ts` (deleted), `src/store/gameSlice.ts` (validateStartingWord updated)
+- **Verification:** Human verified — "BYE" and other previously blocked words now accepted as starting words.
+- **Committed in:** `630e7f1` (Task 3 fix commit)
+
+---
+
+**Total deviations:** 2 auto-fixed (2 Rule 1 bugs found during human verification)
+**Impact on plan:** Both fixes were required for the game to be playable as designed. No scope creep.
 
 ## Issues Encountered
 
-None.
+None beyond the two bugs documented above, which were caught and fixed during human verification.
 
 ## User Setup Required
 
@@ -116,3 +139,4 @@ None - no external service configuration required.
 - FOUND: src/components/ChickenOMeter.tsx
 - FOUND: commit 310ddd8 (Task 1)
 - FOUND: commit 9e827d9 (Task 2)
+- FOUND: commit 630e7f1 (Task 3 bug fixes, human-verified approved)

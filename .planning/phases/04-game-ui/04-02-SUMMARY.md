@@ -127,6 +127,17 @@ None - no external service configuration required.
 - GameScreen has `<div id="player-hand-area" />` placeholder for PlayerHand injection
 - Plan 04 (end-game screens) can replace the ROUND_END/GAME_OVER placeholder divs
 
+## Self-Check: PASSED
+
+- FOUND: src/components/SharedWordDisplay.tsx
+- FOUND: src/components/ChickenOMeter.tsx
+- FOUND: src/components/TurnIndicator.tsx
+- FOUND: src/components/WordHistory.tsx
+- FOUND: src/components/ScorePanel.tsx
+- FOUND: src/screens/GameScreen.tsx
+- FOUND: fad1306 (Task 1 commit)
+- FOUND: bbdecbd (Task 2 commit)
+
 ---
 *Phase: 04-game-ui*
 *Completed: 2026-03-18*

@@ -58,7 +58,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **UI-01**: Current word displayed prominently, updated each turn
 - [x] **UI-02**: Player's 9-tile hand displayed as clickable/tappable tiles
 - [x] **UI-03**: Clear turn indicator showing whose turn it is (player vs AI)
-- [ ] **UI-04**: Game over screen with win/loss result, score summary, and "play again" option
+- [x] **UI-04**: Game over screen with win/loss result, score summary, and "play again" option
 - [x] **UI-05**: Word history display showing the sequence of words and who played each turn
 - [x] **UI-06**: Tension ramp visualization ("chicken-o-meter") showing escalating pressure as the word grows
 - [x] **UI-07**: Round start and round end transitions are visually clear
@@ -74,7 +74,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **UX-01**: Keyboard input support — desktop users can type to select tiles
 - [x] **UX-02**: "How to Play" modal explaining the rules for first-time players
-- [ ] **UX-03**: Responsive layout — playable on both desktop and mobile browsers
+- [x] **UX-03**: Responsive layout — playable on both desktop and mobile browsers
 
 ## v2 Requirements
 
@@ -149,7 +149,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UI-01 | Phase 4 | Complete |
 | UI-02 | Phase 4 | Complete |
 | UI-03 | Phase 4 | Complete |
-| UI-04 | Phase 4 | Pending |
+| UI-04 | Phase 4 | Complete |
 | UI-05 | Phase 4 | Complete |
 | UI-06 | Phase 4 | Complete |
 | UI-07 | Phase 4 | Complete |
@@ -159,7 +159,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CONF-04 | Phase 4 | Complete |
 | UX-01 | Phase 4 | Complete |
 | UX-02 | Phase 4 | Complete |
-| UX-03 | Phase 4 | Pending |
+| UX-03 | Phase 4 | Complete |
 
 **Coverage:**
 - v1 requirements: 37 total

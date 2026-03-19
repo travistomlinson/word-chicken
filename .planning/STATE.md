@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-04-PLAN.md — RoundEndCard, GameOverScreen, scatter animation, responsive layout. Awaiting human verification (Task 3).
-last_updated: "2026-03-18T23:49:02.006Z"
+stopped_at: Completed 04-04-PLAN.md — full game loop complete, human verification approved
+last_updated: "2026-03-19T00:04:48.850Z"
 last_activity: "2026-03-18 — Completed 02-01 WordValidator: pure validation with Q-expansion, multiset superset turns, plural-S ban, 11 tests"
 progress:
   total_phases: 4
@@ -99,6 +99,8 @@ Recent decisions affecting current work:
 - [Phase 04-game-ui]: RoundEndCard uses useRef guard to dispatch END_ROUND only once per mount, reset before NEXT_ROUND dispatch
 - [Phase 04-game-ui]: GameOverScreen shown via local useState in GameScreen — no GAME_OVER FSM state needed for quit-triggered flow
 - [Phase 04-game-ui]: Tile scatter animation uses random arc trajectory with per-tile stagger via pure CSS transitions and inline styles
+- [Phase 04-game-ui]: Community tiles merged as yellow tiles into player hand during HUMAN_TURN — required for valid word formation
+- [Phase 04-game-ui]: Starting words validated against full dictionary rather than curated corpus — deleted startingWords.ts
 
 ### Pending Todos
 
@@ -111,6 +113,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-18T23:49:02.003Z
-Stopped at: Completed 04-04-PLAN.md — RoundEndCard, GameOverScreen, scatter animation, responsive layout. Awaiting human verification (Task 3).
+Last session: 2026-03-19T00:04:48.848Z
+Stopped at: Completed 04-04-PLAN.md — full game loop complete, human verification approved
 Resume file: None
