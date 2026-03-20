@@ -139,9 +139,11 @@ Plans:
   3. The ChickenOMeter reads as a tension bar on mobile — wide enough (32-40px) that its fill level is perceptible at a glance
   4. A staged tile in the PlayerHand has an unambiguous "taken" appearance — clearly distinct from an available tile, not just slightly dimmed
   5. The RoundEndCard appears as an overlay consistent with the GameOverScreen, not inline in the game layout
-**Plans**: TBD
+**Plans**: 2 plans
 
-Plans: TBD
+Plans:
+- [ ] 08-01-PLAN.md — Test scaffold, TurnIndicator dominance, ChickenOMeter width, RoundEndCard verification
+- [ ] 08-02-PLAN.md — Staged tile 'taken' color variant, ScorePanel round score display
 
 ## Progress
 
@@ -157,4 +159,4 @@ Phases execute in numeric order: 5 → 6 → 7 → 8
 | 5. Viewport Foundation | v1.1 | 2/2 | Complete | 2026-03-19 |
 | 6. Mobile Layout and Touch Audit | v1.1 | 2/2 | Complete | 2026-03-19 |
 | 7. Color and Contrast Audit | v1.1 | 2/3 | Gap closure | - |
-| 8. Visual Polish and Hierarchy | v1.1 | 0/TBD | Not started | - |
+| 8. Visual Polish and Hierarchy | v1.1 | 0/2 | Not started | - |
