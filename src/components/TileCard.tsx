@@ -16,7 +16,7 @@ const sizeClasses = {
 const colorClasses = {
   red: 'bg-corbusier-red text-white shadow-md shadow-corbusier-red/30',
   blue: 'bg-corbusier-blue text-white shadow-md shadow-corbusier-blue/30',
-  yellow: 'bg-corbusier-yellow text-white shadow-md shadow-corbusier-yellow/30',
+  yellow: 'bg-corbusier-yellow text-charcoal shadow-md shadow-corbusier-yellow/30',
   concrete: 'bg-card text-ink border border-ink/10 shadow-sm',
 }
 

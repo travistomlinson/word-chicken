@@ -135,7 +135,7 @@ export function ConfigScreen() {
                 className={[
                   'w-full p-4 rounded-lg text-left transition-all duration-200',
                   opt.bg,
-                  'text-white',
+                  opt.bg === 'bg-corbusier-yellow' ? 'text-charcoal' : 'text-white',
                   config.difficulty === opt.value
                     ? 'ring-2 ring-ink ring-offset-2 ring-offset-surface scale-[1.02] shadow-lg'
                     : 'opacity-60 hover:opacity-80',
@@ -202,7 +202,7 @@ export function ConfigScreen() {
         </button>
         <button
           onClick={handlePlayFriend}
-          className="w-full bg-corbusier-yellow text-white font-jost font-bold uppercase text-lg py-4 rounded-lg mt-3 shadow-lg shadow-corbusier-yellow/20 hover:shadow-xl hover:shadow-corbusier-yellow/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer"
+          className="w-full bg-corbusier-yellow text-charcoal font-jost font-bold uppercase text-lg py-4 rounded-lg mt-3 shadow-lg shadow-corbusier-yellow/20 hover:shadow-xl hover:shadow-corbusier-yellow/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer"
         >
           Play a Friend
         </button>

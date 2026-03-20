@@ -19,28 +19,38 @@ describe('COLR-03: Yellow background contrast', () => {
   })
 
   it('ConfigScreen Play a Friend button does not use text-white on yellow bg', () => {
-    // The "Play a Friend" button has bg-corbusier-yellow — must not have text-white
-    const playFriendMatch = configSource.match(
-      /bg-corbusier-yellow[^>]*text-white|text-white[^>]*bg-corbusier-yellow/
+    // The "Play a Friend" button className string has bg-corbusier-yellow — must use text-charcoal
+    // Find the Play a Friend button's className line (the line with bg-corbusier-yellow that is NOT a ternary)
+    const lines = configSource.split('\n')
+    const violations = lines.filter(
+      (line) =>
+        line.includes('bg-corbusier-yellow') &&
+        line.includes('text-white') &&
+        // Exclude ternary expressions like: ? 'text-charcoal' : 'text-white'
+        !line.includes('?')
     )
-    expect(playFriendMatch).toBeNull()
+    expect(violations).toEqual([])
   })
 
   it('ConfigScreen difficulty cards apply conditional text color for yellow bg', () => {
-    // The medium (yellow) difficulty card must NOT have both bg-corbusier-yellow and text-white
-    // on the same className string. The hardcoded 'text-white' must be conditional.
-    // Strategy: look for the difficultyOptions map — it should NOT include a plain 'text-white'
-    // string that applies unconditionally to all bg variants
+    // The medium (yellow) difficulty card must NOT have a bare unconditional 'text-white'
+    // in the difficulty map. Allowed: ternary like `opt.bg === '...' ? 'text-charcoal' : 'text-white'`
+    // Disallowed: standalone `'text-white'` on its own array element line.
     const difficultyMapSection = configSource.match(
       /difficultyOptions\.map[\s\S]*?<\/button>/
     )
     expect(difficultyMapSection).not.toBeNull()
     const section = difficultyMapSection![0]
 
-    // Should NOT contain a plain unconditional 'text-white' string inside the map
-    // (it must be conditional based on bg color)
-    const hasUnconditional = /['"]text-white['"]\s*[,\]]/.test(section)
-    expect(hasUnconditional).toBe(false)
+    // Check that 'text-white' only appears as the falsy branch of a ternary (after ':')
+    // A standalone line like `  'text-white',` is unconditional — disallowed.
+    // Lines with `? ... : 'text-white'` are conditional — allowed.
+    const lines = section.split('\n')
+    const unconditionalLines = lines.filter((line) => {
+      // Line contains 'text-white' but is NOT a ternary line (no '?' before 'text-white')
+      return /['"]text-white['"]/.test(line) && !/\?/.test(line)
+    })
+    expect(unconditionalLines).toEqual([])
   })
 })
 

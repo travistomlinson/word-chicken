@@ -15,10 +15,9 @@ export function ChickenOMeter({ wordLength }: ChickenOMeterProps) {
     <div className="flex flex-col items-center gap-2">
       <div
         className={[
-          'relative h-48 sm:h-64 w-5 rounded-full overflow-hidden',
+          'relative h-48 sm:h-64 w-5 rounded-full overflow-hidden gradient-tension',
           isHot ? 'animate-pulse' : '',
         ].join(' ')}
-        style={{ background: 'linear-gradient(to top, #003f91, #f5a623, #d0021b)' }}
         aria-label={`Tension meter: ${Math.round(fillPercent)}%`}
       >
         <div
@@ -26,7 +25,7 @@ export function ChickenOMeter({ wordLength }: ChickenOMeterProps) {
           style={{ height: `${maskHeight}%` }}
         />
       </div>
-      <span className="text-[10px] font-jost uppercase tracking-wider text-ink/40">
+      <span className="text-[10px] font-jost uppercase tracking-wider text-ink-secondary">
         {wordLength}
       </span>
     </div>
