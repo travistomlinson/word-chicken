@@ -5,13 +5,15 @@ interface ScorePanelProps {
   roundScores: Record<string, number>
 }
 
-export function ScorePanel({ totalScores, roundScores: _roundScores }: ScorePanelProps) {
+export function ScorePanel({ totalScores, roundScores }: ScorePanelProps) {
   const gameMode = useMultiplayerStore(s => s.gameMode)
   const localPlayerId = useMultiplayerStore(s => s.localPlayerId)
 
   const opponentId = localPlayerId === 'human' ? 'ai' : 'human'
   const myScore = totalScores[localPlayerId] ?? 0
   const opponentScore = totalScores[opponentId] ?? 0
+  const myRoundScore = roundScores[localPlayerId] ?? 0
+  const opponentRoundScore = roundScores[opponentId] ?? 0
   const myLeads = myScore > opponentScore
   const opponentLeads = opponentScore > myScore
 
@@ -28,8 +30,9 @@ export function ScorePanel({ totalScores, roundScores: _roundScores }: ScorePane
           'font-bold text-ink transition-all duration-300',
           myLeads ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl',
         ].join(' ')}>
-          {myScore}
+          {myRoundScore}
         </span>
+        <span className="text-xs text-ink-secondary">Total: {myScore}</span>
       </div>
       <span className="text-ink/20 text-sm font-bold">vs</span>
       <div className={[
@@ -41,8 +44,9 @@ export function ScorePanel({ totalScores, roundScores: _roundScores }: ScorePane
           'font-bold text-ink transition-all duration-300',
           opponentLeads ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl',
         ].join(' ')}>
-          {opponentScore}
+          {opponentRoundScore}
         </span>
+        <span className="text-xs text-ink-secondary">Total: {opponentScore}</span>
       </div>
     </div>
   )

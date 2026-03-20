@@ -26,7 +26,7 @@ describe('PLSH-01: TurnIndicator visual dominance', () => {
 // PLSH-02: ScorePanel round score hierarchy — roundScores must be used in JSX
 // Plan 02 will implement and enable this test
 // ---------------------------------------------------------------------------
-describe.skip('PLSH-02: ScorePanel round score hierarchy', () => {
+describe('PLSH-02: ScorePanel round score hierarchy', () => {
   const source = readFileSync(resolve(__dirname, '../components/ScorePanel.tsx'), 'utf-8')
   const fileName = basename(resolve(__dirname, '../components/ScorePanel.tsx'))
 
