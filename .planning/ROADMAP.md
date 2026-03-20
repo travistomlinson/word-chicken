@@ -122,11 +122,12 @@ Plans:
   2. In dark mode, no informational text uses an opacity below /50 — all text is readable on OLED displays
   3. Yellow tile and button backgrounds display dark charcoal text instead of white, passing WCAG AA
   4. The ChickenOMeter gradient is driven by CSS design tokens rather than hardcoded hex values — changing a color token updates the gradient automatically
-**Plans**: 2 plans
+**Plans**: 3 plans
 
 Plans:
-- [ ] 07-01-PLAN.md — Test scaffold, CSS design tokens, yellow text fix, ChickenOMeter gradient tokenization
-- [ ] 07-02-PLAN.md — Replace all failing text-ink opacity and brand color text with contrast-safe tokens
+- [x] 07-01-PLAN.md — Test scaffold, CSS design tokens, yellow text fix, ChickenOMeter gradient tokenization
+- [x] 07-02-PLAN.md — Replace all failing text-ink opacity and brand color text with contrast-safe tokens
+- [ ] 07-03-PLAN.md — Gap closure: Fix LobbyScreen Join button yellow text-white violation, extend COLR-03 test
 
 #### Phase 8: Visual Polish and Hierarchy
 **Goal**: The game's key status signals have clear visual weight — turn state, score, and tension are readable at a glance
@@ -155,5 +156,5 @@ Phases execute in numeric order: 5 → 6 → 7 → 8
 | 4. Game UI | v1.0 | 4/4 | Complete | 2026-03-18 |
 | 5. Viewport Foundation | v1.1 | 2/2 | Complete | 2026-03-19 |
 | 6. Mobile Layout and Touch Audit | v1.1 | 2/2 | Complete | 2026-03-19 |
-| 7. Color and Contrast Audit | 2/2 | Complete   | 2026-03-20 | - |
+| 7. Color and Contrast Audit | v1.1 | 2/3 | Gap closure | - |
 | 8. Visual Polish and Hierarchy | v1.1 | 0/TBD | Not started | - |
