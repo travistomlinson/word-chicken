@@ -12,6 +12,10 @@
   --color-surface: #f2f0eb;
   --color-card: #ffffff;
   --color-ink: #3a3a3a;
+  /* COLR-01/02: Secondary ink and accent tokens (4.5:1+ on all surfaces) */
+  --color-ink-secondary: #6b6967;
+  --color-accent-primary: #003f91;
+  --color-accent-danger: #d0021b;
   --font-jost: 'Jost', sans-serif;
 }
 
@@ -19,6 +23,10 @@
   --color-surface: #1c1c24;
   --color-card: #2a2a34;
   --color-ink: #e0ddd8;
+  /* COLR-01/02: Dark mode overrides maintain 4.5:1+ contrast */
+  --color-ink-secondary: #a09e9a;
+  --color-accent-primary: #5b8de0;
+  --color-accent-danger: #f07070;
 }
 
 /* VPRT-05: Extend dark surface to <html> so iOS overscroll
@@ -36,6 +44,16 @@ html:has(.dark) {
 }
 .pb-safe {
   padding-bottom: max(env(safe-area-inset-bottom), 0.5rem);
+}
+
+/* COLR-04: ChickenOMeter gradient utility — tokenized for design system consistency */
+.gradient-tension {
+  background: linear-gradient(
+    to top,
+    var(--color-corbusier-blue),
+    var(--color-corbusier-yellow),
+    var(--color-corbusier-red)
+  );
 }
 
 @keyframes shake {
