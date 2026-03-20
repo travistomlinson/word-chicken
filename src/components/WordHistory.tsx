@@ -18,7 +18,7 @@ export function WordHistory({ turnHistory }: WordHistoryProps) {
 
   return (
     <div className="flex flex-col gap-0.5 max-h-48 overflow-y-auto">
-      <p className="text-[10px] uppercase tracking-wider text-ink/30 font-jost mb-1">History</p>
+      <p className="text-[10px] uppercase tracking-wider text-ink-secondary font-jost mb-1">History</p>
       {turnHistory.map((entry, index) => {
         const isMe = entry.playerId === localPlayerId
         const playerLabel = isMe ? 'You' : (gameMode === 'pvp' ? 'Them' : 'AI')
@@ -36,7 +36,7 @@ export function WordHistory({ turnHistory }: WordHistoryProps) {
             <span className="font-bold tracking-wider text-ink text-xs">
               {entry.word}
             </span>
-            <span className="text-ink/40 text-[10px] ml-auto">
+            <span className="text-ink-secondary text-[10px] ml-auto">
               +{entry.score}
             </span>
           </div>

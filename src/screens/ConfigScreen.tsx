@@ -97,7 +97,7 @@ export function ConfigScreen() {
         <div className="flex justify-end pt-2">
           <button
             onClick={toggleDarkMode}
-            className="text-ink/50 hover:text-ink transition-colors cursor-pointer p-2"
+            className="text-ink-secondary hover:text-ink transition-colors cursor-pointer p-2"
             aria-label="Toggle dark mode"
           >
             {darkMode ? (

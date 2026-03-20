@@ -151,7 +151,7 @@ export function LobbyScreen() {
           <h1 className="font-jost font-bold uppercase tracking-widest text-ink text-3xl sm:text-4xl mb-1">
             Play a Friend
           </h1>
-          <p className="font-jost text-ink/50 text-sm">
+          <p className="font-jost text-ink-secondary text-sm">
             Create a game or join with a code
           </p>
         </div>
@@ -182,7 +182,7 @@ export function LobbyScreen() {
                 value={joinCode}
                 onChange={(e) => setJoinCode(e.target.value.toUpperCase().replace(/[^A-Z2-9]/g, ''))}
                 placeholder="ENTER CODE"
-                className="flex-1 text-center font-jost font-bold text-xl uppercase tracking-[0.3em] bg-card border-2 border-ink/10 rounded-lg py-3 px-4 text-ink placeholder:text-ink/20 placeholder:tracking-widest focus:outline-none focus:border-corbusier-yellow transition-colors"
+                className="flex-1 text-center font-jost font-bold text-xl uppercase tracking-[0.3em] bg-card border-2 border-ink/10 rounded-lg py-3 px-4 text-ink placeholder:text-ink-secondary placeholder:tracking-widest focus:outline-none focus:border-corbusier-yellow transition-colors"
               />
               <button
                 onClick={handleJoinGame}
@@ -198,7 +198,7 @@ export function LobbyScreen() {
         {/* Host waiting for guest */}
         {role === 'host' && isWaiting && (
           <div className="text-center">
-            <p className="font-jost text-ink/50 text-sm uppercase tracking-wider mb-4">
+            <p className="font-jost text-ink-secondary text-sm uppercase tracking-wider mb-4">
               Share this code with your opponent
             </p>
             <div className="bg-card rounded-xl p-6 shadow-lg mb-6">
@@ -208,7 +208,7 @@ export function LobbyScreen() {
             </div>
             <div className="flex items-center justify-center gap-2 mb-6">
               <span className="inline-block w-2 h-2 rounded-full bg-corbusier-yellow animate-pulse" />
-              <span className="font-jost text-ink/50 text-sm">Waiting for opponent...</span>
+              <span className="font-jost text-ink-secondary text-sm">Waiting for opponent...</span>
             </div>
             <button
               onClick={() => {
@@ -228,7 +228,7 @@ export function LobbyScreen() {
           <div className="text-center">
             <div className="flex items-center justify-center gap-2 mb-4">
               <span className="inline-block w-2 h-2 rounded-full bg-corbusier-yellow animate-pulse" />
-              <span className="font-jost text-ink/50">Connecting to lobby {lobbyCode}...</span>
+              <span className="font-jost text-ink-secondary">Connecting to lobby {lobbyCode}...</span>
             </div>
           </div>
         )}
@@ -238,7 +238,7 @@ export function LobbyScreen() {
           <div className="text-center">
             <div className="flex items-center justify-center gap-2">
               <span className="inline-block w-2 h-2 rounded-full bg-green-500" />
-              <span className="font-jost text-ink/50">Connected! Starting game...</span>
+              <span className="font-jost text-ink-secondary">Connected! Starting game...</span>
             </div>
           </div>
         )}

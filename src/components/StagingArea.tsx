@@ -30,7 +30,7 @@ export function StagingArea({
         shaking ? 'animate-shake' : '',
       ].filter(Boolean).join(' ')}>
         {stagedLetters.length === 0 && !disabled ? (
-          <span className="text-ink/30 text-sm font-jost italic">Tap tiles below</span>
+          <span className="text-ink-secondary text-sm font-jost italic">Tap tiles below</span>
         ) : (
           stagedLetters.map((letter, idx) => (
             <TileCard

@@ -61,14 +61,14 @@ export function GameOverScreen() {
         {/* Final scores */}
         <div className="flex justify-around items-end mb-6">
           <div className="text-center">
-            <p className="text-xs uppercase tracking-wider text-ink/50 mb-1">You</p>
+            <p className="text-xs uppercase tracking-wider text-ink-secondary mb-1">You</p>
             <p className={`font-bold transition-all ${iWon ? 'text-4xl text-corbusier-blue' : 'text-2xl text-ink'}`}>
               {myScore}
             </p>
           </div>
           <div className="text-ink/20 text-2xl font-bold">vs</div>
           <div className="text-center">
-            <p className="text-xs uppercase tracking-wider text-ink/50 mb-1">{opponentLabel}</p>
+            <p className="text-xs uppercase tracking-wider text-ink-secondary mb-1">{opponentLabel}</p>
             <p className={`font-bold transition-all ${!iWon ? 'text-4xl text-corbusier-red' : 'text-2xl text-ink'}`}>
               {opponentScore}
             </p>
@@ -76,13 +76,13 @@ export function GameOverScreen() {
         </div>
 
         {/* Rounds played */}
-        <p className="text-ink/50 text-sm mb-2">
+        <p className="text-ink-secondary text-sm mb-2">
           Played {round.roundNumber} round{round.roundNumber !== 1 ? 's' : ''}
         </p>
 
         {/* Longest word */}
         {longestWord && (
-          <p className="text-ink/50 text-sm mb-6">
+          <p className="text-ink-secondary text-sm mb-6">
             Longest word: <span className="font-bold uppercase">{longestWord}</span>
           </p>
         )}

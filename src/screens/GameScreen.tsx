@@ -65,7 +65,7 @@ export function GameScreen() {
           </h2>
           <div className="flex items-center justify-center gap-2 mb-6">
             <span className="inline-block w-2 h-2 rounded-full bg-corbusier-yellow animate-pulse" />
-            <span className="font-jost text-ink/50 text-sm">Waiting for opponent...</span>
+            <span className="font-jost text-ink-secondary text-sm">Waiting for opponent...</span>
           </div>
           <button
             onClick={() => {
@@ -127,7 +127,7 @@ export function GameScreen() {
           <h2 className="font-jost font-bold text-xl uppercase tracking-wider text-ink mb-2">
             Disconnected
           </h2>
-          <p className="font-jost text-ink/60 text-sm mb-6">{mpErrorMessage}</p>
+          <p className="font-jost text-ink-secondary text-sm mb-6">{mpErrorMessage}</p>
           <div className="flex flex-col gap-3">
             {!isQuit && lobbyCode && (
               <button
@@ -175,13 +175,13 @@ export function GameScreen() {
     <div className="flex flex-col min-h-dvh overscroll-none bg-gradient-to-b from-surface to-surface/80 pt-safe pb-safe px-2 sm:px-4">
       {/* Top bar: turn indicator + round + quit */}
       <div className="relative flex items-center justify-center mb-3">
-        <span className="absolute left-0 text-ink/30 text-[10px] uppercase font-jost tracking-wider">
+        <span className="absolute left-0 text-ink-secondary text-[10px] uppercase font-jost tracking-wider">
           R{round.roundNumber}
         </span>
         <TurnIndicator phase={phase} currentPlayerId={round.currentPlayerId} />
         <button
           onClick={handleQuit}
-          className="absolute right-0 text-ink/40 text-xs uppercase font-jost hover:text-corbusier-red transition-colors cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-end"
+          className="absolute right-0 text-ink-secondary text-xs uppercase font-jost hover:text-accent-danger transition-colors cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-end"
         >
           Quit
         </button>
