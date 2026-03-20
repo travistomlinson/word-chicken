@@ -61,7 +61,7 @@ describe('PLSH-03: ChickenOMeter tension bar width', () => {
 // PLSH-04: Staged tiles must have a distinct visual state (not concrete, remain clickable)
 // Plan 02 will implement and enable this test
 // ---------------------------------------------------------------------------
-describe.skip('PLSH-04: Staged tile distinct visual state', () => {
+describe('PLSH-04: Staged tile distinct visual state', () => {
   const source = readFileSync(resolve(__dirname, '../components/PlayerHand.tsx'), 'utf-8')
   const fileName = basename(resolve(__dirname, '../components/PlayerHand.tsx'))
 

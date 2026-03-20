@@ -342,10 +342,9 @@ export function PlayerHand() {
                 <div key={idx} style={entranceStyle(idx)}>
                   <TileCard
                     letter={letter}
-                    color={isStaged ? 'concrete' : isCommunity ? 'yellow' : 'concrete'}
+                    color={isStaged ? 'staged' : isCommunity ? 'yellow' : 'concrete'}
                     size="md"
                     onClick={() => handleTileClick(idx)}
-                    disabled={isStaged}
                   />
                 </div>
               )
@@ -360,10 +359,9 @@ export function PlayerHand() {
             <div key={idx} style={entranceStyle(i)}>
               <TileCard
                 letter={letter}
-                color={isStaged ? 'concrete' : isCommunity ? 'yellow' : 'concrete'}
+                color={isStaged ? 'staged' : isCommunity ? 'yellow' : 'concrete'}
                 size="md"
                 onClick={() => handleTileClick(idx)}
-                disabled={isStaged}
               />
             </div>
           )

@@ -2,7 +2,7 @@ interface TileCardProps {
   letter: string
   size?: 'sm' | 'md' | 'lg'
   onClick?: () => void
-  color?: 'red' | 'blue' | 'yellow' | 'concrete'
+  color?: 'red' | 'blue' | 'yellow' | 'concrete' | 'staged'
   disabled?: boolean
   className?: string
 }
@@ -18,6 +18,7 @@ const colorClasses = {
   blue: 'bg-corbusier-blue text-white shadow-md shadow-corbusier-blue/30',
   yellow: 'bg-corbusier-yellow text-charcoal shadow-md shadow-corbusier-yellow/30',
   concrete: 'bg-card text-ink border border-ink/10 shadow-sm',
+  staged: 'bg-ink/15 text-ink-secondary border-2 border-dashed border-ink/40 shadow-none',
 }
 
 export function TileCard({
