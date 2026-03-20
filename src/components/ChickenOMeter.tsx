@@ -15,7 +15,7 @@ export function ChickenOMeter({ wordLength }: ChickenOMeterProps) {
     <div className="flex flex-col items-center gap-2">
       <div
         className={[
-          'relative h-48 sm:h-64 w-5 rounded-full overflow-hidden gradient-tension',
+          'relative h-48 sm:h-64 w-8 rounded-full overflow-hidden gradient-tension',
           isHot ? 'animate-pulse' : '',
         ].join(' ')}
         aria-label={`Tension meter: ${Math.round(fillPercent)}%`}

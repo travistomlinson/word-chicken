@@ -10,7 +10,7 @@ export function TurnIndicator({ phase, currentPlayerId }: TurnIndicatorProps) {
   const gameMode = useMultiplayerStore(s => s.gameMode)
   const localPlayerId = useMultiplayerStore(s => s.localPlayerId)
 
-  const baseClass = 'font-jost uppercase tracking-wider text-sm py-2 text-center transition-all duration-300'
+  const baseClass = 'font-jost uppercase tracking-wider text-lg py-2 text-center transition-all duration-300'
 
   const isMyTurn = (phase === 'SETUP' && currentPlayerId === localPlayerId)
     || (phase === 'HUMAN_TURN' && localPlayerId === 'human')
