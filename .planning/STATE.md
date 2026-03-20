@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Design Audit
 status: planning
-stopped_at: Completed 07-color-and-contrast-audit-03-PLAN.md
-last_updated: "2026-03-20T03:45:01.820Z"
+stopped_at: Completed 08-visual-polish-and-hierarchy-01-PLAN.md
+last_updated: "2026-03-20T15:34:02.087Z"
 last_activity: 2026-03-18 — v1.1 roadmap written, ready for Phase 5 planning
 progress:
   total_phases: 8
   completed_phases: 7
-  total_plans: 18
-  completed_plans: 18
+  total_plans: 20
+  completed_plans: 19
   percent: 0
 ---
 
@@ -53,6 +53,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 07-color-and-contrast-audit P01 | 4m | 2 tasks | 5 files |
 | Phase 07-color-and-contrast-audit P02 | 5m | 2 tasks | 13 files |
 | Phase 07-color-and-contrast-audit P03 | 1m | 2 tasks | 2 files |
+| Phase 08-visual-polish-and-hierarchy P01 | 3m | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -75,6 +76,8 @@ Progress: [░░░░░░░░░░] 0%
 - [Phase 07-color-and-contrast-audit]: ChickenOMeter word length label changed to text-ink-secondary alongside COLR-04 work
 - [Phase Phase 07-color-and-contrast-audit]: Decorative separators (vs, or) retain WCAG-exempt low-opacity styling; color-contrast.test.ts uses basename() for Windows path compat
 - [Phase Phase 07-color-and-contrast-audit]: LobbyScreen Join button uses text-charcoal on bg-corbusier-yellow — matches ConfigScreen and TileCard patterns, 5.61:1 contrast ratio
+- [Phase Phase 08-visual-polish-and-hierarchy]: TurnIndicator baseClass uses text-lg only (not font-bold in baseClass) — font-bold remains on individual active-state branches as intended
+- [Phase Phase 08-visual-polish-and-hierarchy]: PLSH-05 verified as already met — RoundEndCard overlay structure matches GameOverScreen exactly, no code changes needed
 
 ### Pending Todos
 
@@ -88,6 +91,6 @@ Progress: [░░░░░░░░░░] 0%
 
 ## Session Continuity
 
-Last session: 2026-03-20T03:42:33.869Z
-Stopped at: Completed 07-color-and-contrast-audit-03-PLAN.md
+Last session: 2026-03-20T15:34:02.084Z
+Stopped at: Completed 08-visual-polish-and-hierarchy-01-PLAN.md
 Resume file: None
