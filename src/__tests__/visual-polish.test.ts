@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'fs'
 import { resolve, basename } from 'path'
@@ -38,7 +39,7 @@ describe('PLSH-02: ScorePanel round score hierarchy', () => {
     // roundScores must appear in JSX rendering, not just in the destructuring line
     const lines = source.split('\n')
     const jsxUseLines = lines.filter(
-      (line) => line.includes('roundScores') && !line.includes('const ') && !line.includes('=')
+      (line: string) => line.includes('roundScores') && !line.includes('const ') && !line.includes('=')
     )
     expect(jsxUseLines.length).toBeGreaterThan(0)
   })

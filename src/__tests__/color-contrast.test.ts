@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'fs'
 import { resolve, basename } from 'path'
@@ -24,7 +25,7 @@ describe('COLR-03: Yellow background contrast', () => {
     // Find the Play a Friend button's className line (the line with bg-corbusier-yellow that is NOT a ternary)
     const lines = configSource.split('\n')
     const violations = lines.filter(
-      (line) =>
+      (line: string) =>
         line.includes('bg-corbusier-yellow') &&
         line.includes('text-white') &&
         // Exclude ternary expressions like: ? 'text-charcoal' : 'text-white'
@@ -36,7 +37,7 @@ describe('COLR-03: Yellow background contrast', () => {
   it('LobbyScreen Join button does not use text-white on yellow bg', () => {
     const lines = lobbySource.split('\n')
     const violations = lines.filter(
-      (line) =>
+      (line: string) =>
         line.includes('bg-corbusier-yellow') &&
         line.includes('text-white') &&
         !line.includes('?')
@@ -58,7 +59,7 @@ describe('COLR-03: Yellow background contrast', () => {
     // A standalone line like `  'text-white',` is unconditional — disallowed.
     // Lines with `? ... : 'text-white'` are conditional — allowed.
     const lines = section.split('\n')
-    const unconditionalLines = lines.filter((line) => {
+    const unconditionalLines = lines.filter((line: string) => {
       // Line contains 'text-white' but is NOT a ternary line (no '?' before 'text-white')
       return /['"]text-white['"]/.test(line) && !/\?/.test(line)
     })

@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'fs'
 import { resolve } from 'path'
@@ -19,7 +20,7 @@ describe('Viewport classes', () => {
       // Both reconnecting and disconnect overlays should have h-dvh
       const fixedOverlays = source.match(/fixed inset-0[^"]*"/g) || []
       expect(fixedOverlays.length).toBeGreaterThanOrEqual(2)
-      fixedOverlays.forEach(overlay => {
+      fixedOverlays.forEach((overlay: string) => {
         expect(overlay).toContain('h-dvh')
       })
     })
