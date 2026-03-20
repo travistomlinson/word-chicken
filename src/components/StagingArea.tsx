@@ -47,7 +47,7 @@ export function StagingArea({
 
       {/* Error text */}
       {error !== null && (
-        <p className="text-corbusier-red text-xs font-jost font-bold animate-fade-in">{error}</p>
+        <p className="text-accent-danger text-xs font-jost font-bold animate-fade-in">{error}</p>
       )}
 
       {/* Submit button */}

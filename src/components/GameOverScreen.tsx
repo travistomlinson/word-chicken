@@ -22,7 +22,7 @@ export function GameOverScreen() {
   const opponentScore = totalScores[opponentId] ?? 0
   const iWon = myScore >= opponentScore
   const resultText = iWon ? 'VICTORY' : 'DEFEAT'
-  const resultColor = iWon ? 'text-corbusier-blue' : 'text-corbusier-red'
+  const resultColor = iWon ? 'text-accent-primary' : 'text-accent-danger'
   const accentBg = iWon ? 'bg-corbusier-blue' : 'bg-corbusier-red'
 
   const longestWord = round.turnHistory.reduce(
@@ -62,14 +62,14 @@ export function GameOverScreen() {
         <div className="flex justify-around items-end mb-6">
           <div className="text-center">
             <p className="text-xs uppercase tracking-wider text-ink-secondary mb-1">You</p>
-            <p className={`font-bold transition-all ${iWon ? 'text-4xl text-corbusier-blue' : 'text-2xl text-ink'}`}>
+            <p className={`font-bold transition-all ${iWon ? 'text-4xl text-accent-primary' : 'text-2xl text-ink'}`}>
               {myScore}
             </p>
           </div>
           <div className="text-ink/20 text-2xl font-bold">vs</div>
           <div className="text-center">
             <p className="text-xs uppercase tracking-wider text-ink-secondary mb-1">{opponentLabel}</p>
-            <p className={`font-bold transition-all ${!iWon ? 'text-4xl text-corbusier-red' : 'text-2xl text-ink'}`}>
+            <p className={`font-bold transition-all ${!iWon ? 'text-4xl text-accent-danger' : 'text-2xl text-ink'}`}>
               {opponentScore}
             </p>
           </div>

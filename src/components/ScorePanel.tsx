@@ -23,7 +23,7 @@ export function ScorePanel({ totalScores, roundScores: _roundScores }: ScorePane
         'flex flex-col items-center px-4 py-1 rounded-lg transition-all duration-300',
         myLeads ? 'bg-corbusier-blue/10' : '',
       ].join(' ')}>
-        <span className="text-corbusier-blue font-bold uppercase text-[10px] tracking-wider">You</span>
+        <span className="text-accent-primary font-bold uppercase text-[10px] tracking-wider">You</span>
         <span className={[
           'font-bold text-ink transition-all duration-300',
           myLeads ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl',
@@ -36,7 +36,7 @@ export function ScorePanel({ totalScores, roundScores: _roundScores }: ScorePane
         'flex flex-col items-center px-4 py-1 rounded-lg transition-all duration-300',
         opponentLeads ? 'bg-corbusier-red/10' : '',
       ].join(' ')}>
-        <span className="text-corbusier-red font-bold uppercase text-[10px] tracking-wider">{opponentLabel}</span>
+        <span className="text-accent-danger font-bold uppercase text-[10px] tracking-wider">{opponentLabel}</span>
         <span className={[
           'font-bold text-ink transition-all duration-300',
           opponentLeads ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl',

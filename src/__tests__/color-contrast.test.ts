@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'fs'
-import { resolve } from 'path'
+import { resolve, basename } from 'path'
 
 // ---------------------------------------------------------------------------
 // COLR-03: Yellow background tiles must use dark charcoal text, not white
@@ -107,7 +107,7 @@ describe('COLR-04: ChickenOMeter tokenized gradient', () => {
 // COLR-01: Secondary text must meet 4.5:1 — ink/N < 70 flags
 // Plan 02 will enable these
 // ---------------------------------------------------------------------------
-describe.skip('COLR-01: Secondary text contrast (Plan 02 will enable these)', () => {
+describe('COLR-01: Secondary text contrast', () => {
   // Decorative exemptions: these are intentionally low-opacity decorative elements
   const DECORATIVE_EXEMPTIONS: Record<string, string[]> = {
     'GameScreen.tsx': ['"vs"', 'separator'],
@@ -124,7 +124,7 @@ describe.skip('COLR-01: Secondary text contrast (Plan 02 will enable these)', ()
   ]
 
   files.forEach((filePath) => {
-    const fileName = filePath.split('/').pop()!
+    const fileName = basename(filePath)
     it(`${fileName} has no text-ink/N below 70 (except decorative)`, () => {
       let source: string
       try {
@@ -159,7 +159,7 @@ describe.skip('COLR-01: Secondary text contrast (Plan 02 will enable these)', ()
 // COLR-02: Brand colors as text must have dark: override or use accent tokens
 // Plan 02 will enable these
 // ---------------------------------------------------------------------------
-describe.skip('COLR-02: Brand color text in dark mode (Plan 02 will enable these)', () => {
+describe('COLR-02: Brand color text in dark mode', () => {
   const componentDir = resolve(__dirname, '../components')
   const screensDir = resolve(__dirname, '../screens')
 
@@ -170,7 +170,7 @@ describe.skip('COLR-02: Brand color text in dark mode (Plan 02 will enable these
   ]
 
   files.forEach((filePath) => {
-    const fileName = filePath.split('/').pop()!
+    const fileName = basename(filePath)
     it(`${fileName} does not use text-corbusier-blue or text-corbusier-red without dark: override`, () => {
       let source: string
       try {

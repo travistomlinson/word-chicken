@@ -29,7 +29,7 @@ export function RoundEndCard() {
   const winnerId = round.activePlayers[0]
   const iWon = winnerId === localPlayerId
   const winnerName = iWon ? 'You' : (gameMode === 'pvp' ? 'Opponent' : 'AI')
-  const winnerColor = iWon ? 'text-corbusier-blue' : 'text-corbusier-red'
+  const winnerColor = iWon ? 'text-accent-primary' : 'text-accent-danger'
   const accentBg = iWon ? 'bg-corbusier-blue' : 'bg-corbusier-red'
 
   const opponentLabel = gameMode === 'pvp' ? 'Them' : 'AI'

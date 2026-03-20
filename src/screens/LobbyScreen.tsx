@@ -171,7 +171,7 @@ export function LobbyScreen() {
                 <div className="w-full border-t border-ink/10" />
               </div>
               <div className="relative flex justify-center">
-                <span className="bg-surface px-4 text-ink/30 text-sm font-jost uppercase">or</span>
+                <span className="bg-surface px-4 text-ink/30 text-sm font-jost uppercase">or</span>{/* separator */}
               </div>
             </div>
 
@@ -216,7 +216,7 @@ export function LobbyScreen() {
                   navigator.clipboard.writeText(lobbyCode)
                 }
               }}
-              className="text-corbusier-blue text-xs font-jost uppercase cursor-pointer hover:text-corbusier-blue/70 bg-transparent border border-corbusier-blue/30 rounded px-4 min-h-[44px] flex items-center transition-colors"
+              className="text-accent-primary text-xs font-jost uppercase cursor-pointer hover:text-accent-primary/70 bg-transparent border border-accent-primary/30 rounded px-4 min-h-[44px] flex items-center transition-colors"
             >
               Copy Code
             </button>
@@ -246,7 +246,7 @@ export function LobbyScreen() {
         {/* Error */}
         {errorMessage && (
           <div className="mt-4 p-3 bg-corbusier-red/10 rounded-lg">
-            <p className="font-jost text-corbusier-red text-sm text-center">{errorMessage}</p>
+            <p className="font-jost text-accent-danger text-sm text-center">{errorMessage}</p>
           </div>
         )}
 

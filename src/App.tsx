@@ -79,7 +79,7 @@ function App() {
   if (status === 'error') {
     return (
       <div className={`bg-surface min-h-svh font-jost flex items-center justify-center ${darkMode ? 'dark' : ''}`}>
-        <span className="text-corbusier-red">Failed to load dictionary.</span>
+        <span className="text-accent-danger">Failed to load dictionary.</span>
       </div>
     )
   }

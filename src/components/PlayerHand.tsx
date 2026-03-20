@@ -376,7 +376,7 @@ export function PlayerHand() {
           {!hintUsed && (
             <button
               onClick={handleHint}
-              className="text-corbusier-blue text-xs font-jost uppercase cursor-pointer hover:text-corbusier-blue/70 bg-transparent border border-corbusier-blue/30 rounded px-3 min-h-[44px] flex items-center transition-colors"
+              className="text-accent-primary text-xs font-jost uppercase cursor-pointer hover:text-accent-primary/70 bg-transparent border border-accent-primary/30 rounded px-3 min-h-[44px] flex items-center transition-colors"
             >
               Show a Word
             </button>

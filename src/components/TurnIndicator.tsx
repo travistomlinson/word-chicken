@@ -19,7 +19,7 @@ export function TurnIndicator({ phase, currentPlayerId }: TurnIndicatorProps) {
   if (phase === 'SETUP') {
     if (gameMode === 'pvp' && currentPlayerId !== localPlayerId) {
       return (
-        <div className={`${baseClass} text-corbusier-red font-bold`}>
+        <div className={`${baseClass} text-accent-danger font-bold`}>
           <span className="inline-block w-2 h-2 rounded-full bg-corbusier-red mr-2 animate-pulse" />
           Opponent choosing starting word...
         </div>
@@ -34,7 +34,7 @@ export function TurnIndicator({ phase, currentPlayerId }: TurnIndicatorProps) {
 
   if (isMyTurn) {
     return (
-      <div className={`${baseClass} text-corbusier-blue font-bold`}>
+      <div className={`${baseClass} text-accent-primary font-bold`}>
         <span className="inline-block w-2 h-2 rounded-full bg-corbusier-blue mr-2 animate-pulse" />
         Your Turn
       </div>
@@ -44,7 +44,7 @@ export function TurnIndicator({ phase, currentPlayerId }: TurnIndicatorProps) {
   if (phase === 'HUMAN_TURN' || phase === 'AI_THINKING') {
     const label = gameMode === 'pvp' ? 'Opponent is thinking...' : 'AI is thinking...'
     return (
-      <div className={`${baseClass} text-corbusier-red font-bold`}>
+      <div className={`${baseClass} text-accent-danger font-bold`}>
         <span className="inline-block w-2 h-2 rounded-full bg-corbusier-red mr-2 animate-pulse" />
         {label}
       </div>

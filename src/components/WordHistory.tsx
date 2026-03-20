@@ -22,7 +22,7 @@ export function WordHistory({ turnHistory }: WordHistoryProps) {
       {turnHistory.map((entry, index) => {
         const isMe = entry.playerId === localPlayerId
         const playerLabel = isMe ? 'You' : (gameMode === 'pvp' ? 'Them' : 'AI')
-        const labelColor = isMe ? 'text-corbusier-blue' : 'text-corbusier-red'
+        const labelColor = isMe ? 'text-accent-primary' : 'text-accent-danger'
         const borderColor = isMe ? 'border-l-corbusier-blue' : 'border-l-corbusier-red'
 
         return (
