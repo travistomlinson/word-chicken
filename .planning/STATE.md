@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Design Audit
 status: planning
-stopped_at: Completed 08-visual-polish-and-hierarchy-01-PLAN.md
-last_updated: "2026-03-20T15:34:02.087Z"
+stopped_at: Completed 08-visual-polish-and-hierarchy-02-PLAN.md
+last_updated: "2026-03-20T15:38:09.129Z"
 last_activity: 2026-03-18 — v1.1 roadmap written, ready for Phase 5 planning
 progress:
   total_phases: 8
-  completed_phases: 7
+  completed_phases: 8
   total_plans: 20
-  completed_plans: 19
+  completed_plans: 20
   percent: 0
 ---
 
@@ -54,6 +54,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 07-color-and-contrast-audit P02 | 5m | 2 tasks | 13 files |
 | Phase 07-color-and-contrast-audit P03 | 1m | 2 tasks | 2 files |
 | Phase 08-visual-polish-and-hierarchy P01 | 3m | 2 tasks | 3 files |
+| Phase 08-visual-polish-and-hierarchy P02 | 2m | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -78,6 +79,8 @@ Progress: [░░░░░░░░░░] 0%
 - [Phase Phase 07-color-and-contrast-audit]: LobbyScreen Join button uses text-charcoal on bg-corbusier-yellow — matches ConfigScreen and TileCard patterns, 5.61:1 contrast ratio
 - [Phase Phase 08-visual-polish-and-hierarchy]: TurnIndicator baseClass uses text-lg only (not font-bold in baseClass) — font-bold remains on individual active-state branches as intended
 - [Phase Phase 08-visual-polish-and-hierarchy]: PLSH-05 verified as already met — RoundEndCard overlay structure matches GameOverScreen exactly, no code changes needed
+- [Phase Phase 08-visual-polish-and-hierarchy]: Staged tiles use bg-ink/15 + border-dashed + border-ink/40 — token-based so it works in both light and dark mode without additional theming
+- [Phase Phase 08-visual-polish-and-hierarchy]: ScorePanel round score as primary large number, total score as 'Total: N' in text-xs text-ink-secondary below — hierarchy clear without layout changes
 
 ### Pending Todos
 
@@ -91,6 +94,6 @@ Progress: [░░░░░░░░░░] 0%
 
 ## Session Continuity
 
-Last session: 2026-03-20T15:34:02.084Z
-Stopped at: Completed 08-visual-polish-and-hierarchy-01-PLAN.md
+Last session: 2026-03-20T15:38:09.126Z
+Stopped at: Completed 08-visual-polish-and-hierarchy-02-PLAN.md
 Resume file: None

@@ -31,9 +31,9 @@ Requirements for the design audit and fix pass. Each maps to roadmap phases.
 ### Visual Polish
 
 - [x] **PLSH-01**: Turn indicator has clear visual dominance over round counter and Quit button in the top bar
-- [ ] **PLSH-02**: Score panel visually distinguishes round score (primary) from total score (secondary)
+- [x] **PLSH-02**: Score panel visually distinguishes round score (primary) from total score (secondary)
 - [x] **PLSH-03**: ChickenOMeter is wide enough to read as a tension indicator on mobile (32-40px vs current 20px)
-- [ ] **PLSH-04**: Staged tiles have an unambiguous "taken" visual state in the player hand
+- [x] **PLSH-04**: Staged tiles have an unambiguous "taken" visual state in the player hand
 - [x] **PLSH-05**: RoundEndCard displays as an overlay consistent with GameOverScreen styling
 
 ## v1.2+ Requirements
@@ -78,9 +78,9 @@ Deferred to future release.
 | COLR-03 | Phase 7 | Complete |
 | COLR-04 | Phase 7 | Complete |
 | PLSH-01 | Phase 8 | Complete |
-| PLSH-02 | Phase 8 | Pending |
+| PLSH-02 | Phase 8 | Complete |
 | PLSH-03 | Phase 8 | Complete |
-| PLSH-04 | Phase 8 | Pending |
+| PLSH-04 | Phase 8 | Complete |
 | PLSH-05 | Phase 8 | Complete |
 
 **Coverage:**
