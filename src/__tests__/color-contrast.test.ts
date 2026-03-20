@@ -8,6 +8,7 @@ import { resolve, basename } from 'path'
 describe('COLR-03: Yellow background contrast', () => {
   const tileCardSource = readFileSync(resolve(__dirname, '../components/TileCard.tsx'), 'utf-8')
   const configSource = readFileSync(resolve(__dirname, '../screens/ConfigScreen.tsx'), 'utf-8')
+  const lobbySource = readFileSync(resolve(__dirname, '../screens/LobbyScreen.tsx'), 'utf-8')
 
   it('TileCard yellow colorClass uses text-charcoal (not text-white)', () => {
     // Extract the yellow entry from colorClasses
@@ -27,6 +28,17 @@ describe('COLR-03: Yellow background contrast', () => {
         line.includes('bg-corbusier-yellow') &&
         line.includes('text-white') &&
         // Exclude ternary expressions like: ? 'text-charcoal' : 'text-white'
+        !line.includes('?')
+    )
+    expect(violations).toEqual([])
+  })
+
+  it('LobbyScreen Join button does not use text-white on yellow bg', () => {
+    const lines = lobbySource.split('\n')
+    const violations = lines.filter(
+      (line) =>
+        line.includes('bg-corbusier-yellow') &&
+        line.includes('text-white') &&
         !line.includes('?')
     )
     expect(violations).toEqual([])

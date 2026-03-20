@@ -187,7 +187,7 @@ export function LobbyScreen() {
               <button
                 onClick={handleJoinGame}
                 disabled={joinCode.length !== 5}
-                className="bg-corbusier-yellow text-white font-jost font-bold uppercase px-6 py-3 rounded-lg shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                className="bg-corbusier-yellow text-charcoal font-jost font-bold uppercase px-6 py-3 rounded-lg shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Join
               </button>
