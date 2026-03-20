@@ -23,8 +23,8 @@ Requirements for the design audit and fix pass. Each maps to roadmap phases.
 
 ### Color & Contrast
 
-- [ ] **COLR-01**: All text passes WCAG AA contrast ratio (4.5:1 for normal text, 3:1 for large text) in light mode
-- [ ] **COLR-02**: All text passes WCAG AA contrast ratio in dark mode — no opacity below /50 for informational text
+- [x] **COLR-01**: All text passes WCAG AA contrast ratio (4.5:1 for normal text, 3:1 for large text) in light mode
+- [x] **COLR-02**: All text passes WCAG AA contrast ratio in dark mode — no opacity below /50 for informational text
 - [x] **COLR-03**: Yellow backgrounds use dark text (charcoal) instead of white text for WCAG AA compliance
 - [x] **COLR-04**: ChickenOMeter gradient uses CSS custom properties from the design token system instead of hardcoded hex values
 
@@ -73,8 +73,8 @@ Deferred to future release.
 | TUCH-01 | Phase 6 | Complete |
 | TUCH-02 | Phase 6 | Complete |
 | TUCH-03 | Phase 6 | Complete |
-| COLR-01 | Phase 7 | Pending |
-| COLR-02 | Phase 7 | Pending |
+| COLR-01 | Phase 7 | Complete |
+| COLR-02 | Phase 7 | Complete |
 | COLR-03 | Phase 7 | Complete |
 | COLR-04 | Phase 7 | Complete |
 | PLSH-01 | Phase 8 | Pending |
